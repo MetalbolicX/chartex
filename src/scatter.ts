@@ -166,9 +166,9 @@ const createBox = (
   }
 
   if (type === "data") {
-    result += `${moveCursorDown(hasSides ? top - height : top)}${moveCursorBackward(
-      left + getOriginalTextLength(style)
-    )}`;
+    result += `${moveCursorDown(
+      hasSides ? top - height : top
+    )}${moveCursorBackward(left + getOriginalTextLength(style))}`;
   }
 
   return result;
@@ -201,16 +201,13 @@ const plotDataPoints = (
   const allSides = data.map((item) => item.sides || defaultSides);
 
   return data
-    .map((item, index) =>
-      createBox(
-        allSides[index][0],
-        allSides[index][1],
-        styles[index],
-        item.value[0] * 2 + left + 1,
-        item.value[1],
-        "data"
-      )
-    )
+    .map((item, index) => {
+      const [x, y] = item.value;
+      const [width, height] = allSides[index];
+      const style = styles[index];
+
+      return createBox(width, height, style, x * 2 + left + 1, y, "data");
+    })
     .join("");
 };
 
@@ -234,22 +231,25 @@ const drawVerticalAxis = (
   ratio: [number, number],
   zero: string
 ): string => {
+  const [vLine, vArrow] = vAxis;
+  const [, vRatio] = ratio;
+
   let result = `${moveCursorBackward(width * 2)}${moveCursorUp(
     height + 1
-  )}${PADDING_CHARACTER.repeat(left + 1)}${vAxis[1]}`;
+  )}${PADDING_CHARACTER.repeat(left + 1)}${vArrow}`;
 
   for (let i = 0; i < height + 1; i++) {
     const scaleValue =
       (height - i) % vGap === 0 && i !== height
-        ? ((height - i) * ratio[1]).toString()
+        ? ((height - i) * vRatio).toString()
         : "";
 
-    result += `${EOL}${scaleValue.padStart(left + 1)}${vAxis[0]}`;
+    result += `${EOL}${scaleValue.padStart(left + 1)}${vLine}`;
   }
 
-  result += `${moveCursorBackward()}${zero}${moveCursorDown(1)}${moveCursorBackward(
+  result += `${moveCursorBackward()}${zero}${moveCursorDown(
     1
-  )}0${moveCursorUp(1)}`;
+  )}${moveCursorBackward(1)}0${moveCursorUp(1)}`;
 
   return result;
 };
@@ -272,19 +272,22 @@ const drawHorizontalAxis = (
   ratio: [number, number],
   hName: string
 ): string => {
+  const [hPlus, hMinus, hArrow] = hAxis;
+  const [hRatio] = ratio;
+
   let result = "";
 
   for (let i = 1; i < width * 2 + hGap; i++) {
     if (!(i % (hGap * 2))) {
-      result += hAxis[0];
+      result += hPlus;
 
       // Draw scale markers for horizontal axis
-      const scaleValue = (i / 2) * ratio[0];
+      const scaleValue = (i / 2) * hRatio;
       const valueLength = scaleValue.toString().length;
 
-      result += `${moveCursorDown(1)}${moveCursorBackward(1)}${scaleValue}${moveCursorUp(
+      result += `${moveCursorDown(1)}${moveCursorBackward(
         1
-      )}`;
+      )}${scaleValue}${moveCursorUp(1)}`;
 
       if (valueLength > 1) {
         result += moveCursorBackward(valueLength - 1);
@@ -293,10 +296,10 @@ const drawHorizontalAxis = (
       continue;
     }
 
-    result += hAxis[1];
+    result += hMinus;
   }
 
-  result += `${hAxis[2]}${PADDING_CHARACTER}${hName}${EOL}`;
+  result += `${hArrow}${PADDING_CHARACTER}${hName}${EOL}`;
 
   return result;
 };
