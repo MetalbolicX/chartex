@@ -14,7 +14,7 @@ type BackgroundColor =
 
 interface ChartDataItem {
   key: string;
-  value: number;
+  value: number | number[]; // Allow both single numbers and arrays
 }
 
 const BACKGROUND_COLORS: Record<BackgroundColor, string> = {

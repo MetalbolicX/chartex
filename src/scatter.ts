@@ -28,7 +28,7 @@ interface ScatterPlotOptions {
 }
 
 interface ScatterDataItem extends ChartDataItem {
-  value: number[]; // Override to use coordinate pairs
+  value: [number, number]; // More specific: exactly 2 coordinates
   style?: string;
   sides?: [number, number];
 }

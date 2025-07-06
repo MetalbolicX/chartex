@@ -15,6 +15,7 @@ interface BarChartOptions {
 }
 
 interface ExtendedChartDataItem extends ChartDataItem {
+  value: number; // Override to use single numeric values
   style?: string;
 }
 
@@ -44,7 +45,7 @@ const createBarChart = (
 
   let result = PADDING_CHARACTER.repeat(left);
 
-  const values = data.map((item) => item.value);
+  const values = data.flatMap((item) => item.value);
   const maximumValue = Math.max(...values);
   const dataLength = data.length;
 
