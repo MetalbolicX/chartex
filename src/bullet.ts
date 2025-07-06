@@ -81,6 +81,7 @@ const createBulletChart = (
  * @param left - The left padding amount.
  * @returns Formatted chart line string.
  */
+// ...existing code...
 const createChartLine = (
   item: BulletDataItem,
   maximumValue: number,
@@ -96,7 +97,7 @@ const createChartLine = (
   const barCharacter = itemStyle || defaultStyle;
   const currentBarWidth = itemBarWidth || defaultBarWidth;
 
-  const barLine = `${barCharacter.repeat(ratioLength)}${EOL}${PADDING_CHARACTER.repeat(left)}`;
+  const barLine = `${barCharacter.repeat(ratioLength)} ${value}${EOL}${PADDING_CHARACTER.repeat(left)}`;
   const keyLabel = `${key.padStart(maximumKeyLength)}${PADDING_CHARACTER}`;
 
   return Array.from({ length: currentBarWidth }, (_, barIndex) => {
@@ -108,5 +109,6 @@ const createChartLine = (
     return `${linePrefix}${barLine}`;
   }).join("");
 };
+// ...existing code...
 
 export { createBulletChart, type BulletChartOptions, type BulletDataItem };

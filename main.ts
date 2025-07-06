@@ -1,7 +1,10 @@
-import { createGaugeChart } from "./src/index.ts";
+import { createBulletChart } from "./src/index.ts";
 
-const gaugeData = [
-  { key: 'A', value: 0.5 }
+const bulletData = [
+  { key: 'Month', value: 5 },
+  { key: 'Week', value: 3 },
+  { key: 'Day', value: 20, barWidth: 1 },
+  { key: 'Now', value: 15, barWidth: 1 }
 ]
 
-console.log(createGaugeChart(gaugeData));
+console.log(createBulletChart(bulletData));
