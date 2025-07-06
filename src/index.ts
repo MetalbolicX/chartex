@@ -2,6 +2,7 @@ import { createColoredBackground, createColoredText } from "./utils.ts";
 import { createBarChart } from "./bar.ts";
 import { createScatterPlot } from "./scatter.ts";
 import { createBulletChart } from "./bullet.ts";
+import { createPieChart } from "./pie.ts";
 
 export {
   createColoredBackground,
@@ -9,11 +10,6 @@ export {
   createBarChart,
   createScatterPlot,
   createBulletChart,
+  createPieChart,
 };
 
-// export type {
-//   BarChartDataItem,
-//   BarChartOptions,
-//   ScatterDataItem,
-//   ScatterPlotOptions,
-// } from "./types.ts";

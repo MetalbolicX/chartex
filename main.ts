@@ -1,10 +1,11 @@
-import { createBulletChart } from "./src/index.ts";
+import { createPieChart } from "./src/index.ts";
 
-const bulletData = [
-  { key: "Month", value: 5 },
-  { key: "Week", value: 3 },
-  { key: "Day", value: 20, barWidth: 1 },
-  { key: "Now", value: 15, barWidth: 1 },
-];
+// Pie
+const pieData = [
+  { key: 'A', value: 5, style: '* ' },
+  { key: 'B', value: 10, style: '+ ' },
+  { key: 'C', value: 10, style: '# ' },
+  { key: 'D', value: 10, style: 'O ' }
+]
 
-console.log(createBulletChart(bulletData));
+console.log(createPieChart(pieData));
