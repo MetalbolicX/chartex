@@ -1,8 +1,14 @@
-export function add(a: number, b: number): number {
-  return a + b;
-}
+import { createBarChart } from "./src/index.ts";
 
-// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
-if (import.meta.main) {
-  console.log("Add 2 + 3 =", add(2, 3));
-}
+// Bar
+const barData = [
+  { key: 'A', value: 5, style: '*' },
+  { key: 'B', value: 3, style: '+' },
+  { key: 'C', value: 11 },
+  { key: 'D', value: 1 },
+  { key: 'E', value: 5 },
+  { key: 'F', value: 7, padding: 1 },
+  { key: 'G', value: 0 }
+];
+
+console.log(createBarChart(barData));
