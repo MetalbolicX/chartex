@@ -1,0 +1,22 @@
+{
+  "name": "chartex",
+  "version": "0.1.0",
+  "description": "A data visualization library for the terminal using ASCII characters.",
+  "type": "module",
+  "scripts": {
+    "start": "echo \"Hello world\""
+  },
+  "author": {
+    "name": "José Martínez Santana"
+  },
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/MetalbolicX/chartex.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MetalbolicX/chartex/issues"
+  },
+  "files": ["src"],
+  "license": "MIT",
+  "dependencies": {}
+}
