@@ -1,4 +1,4 @@
-import { createColoredBackground, createColoredText } from "./utils/utils.ts";
+import { paintBackground, paintText } from "./utils/utils.ts";
 import { createBarChart } from "./bar.ts";
 import { createScatterPlot } from "./scatter.ts";
 import { createBulletChart } from "./bullet.ts";
@@ -22,8 +22,8 @@ import {
 } from "./types/types.ts";
 
 export {
-  createColoredBackground,
-  createColoredText,
+  paintBackground,
+  paintText,
   createBarChart,
   createScatterPlot,
   createBulletChart,
