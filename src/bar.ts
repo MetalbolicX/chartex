@@ -3,21 +3,9 @@ import {
   centerTextInWidth,
   validateChartData,
   EOL,
-  type ChartDataItem,
-} from "./utils.ts";
+} from "./utils/utils.ts";
 
-interface BarChartOptions {
-  barWidth?: number;
-  left?: number;
-  height?: number;
-  padding?: number;
-  style?: string;
-}
-
-interface ExtendedChartDataItem extends ChartDataItem {
-  value: number; // Override to use single numeric values
-  style?: string;
-}
+import type { BarChartDataItem, BarChartOptions } from "./types/types.ts";
 
 /**
  * Creates a vertical bar chart representation from the provided data.
@@ -27,7 +15,7 @@ interface ExtendedChartDataItem extends ChartDataItem {
  * @throws TypeError if data is invalid.
  */
 const createBarChart = (
-  data: ExtendedChartDataItem[],
+  data: BarChartDataItem[],
   options?: BarChartOptions
 ): string => {
   validateChartData(data);
@@ -138,4 +126,4 @@ const formatKeyLabel = (
   )}`;
 };
 
-export { createBarChart, type BarChartOptions, type ExtendedChartDataItem };
+export { createBarChart };

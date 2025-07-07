@@ -7,31 +7,9 @@ import {
   moveCursorDown,
   moveCursorBackward,
   getOriginalTextLength,
-  type ChartDataItem,
-} from "./utils.ts";
+} from "./utils/utils.ts";
 
-interface ScatterPlotOptions {
-  width?: number;
-  left?: number;
-  height?: number;
-  style?: string;
-  sides?: [number, number];
-  hAxis?: [string, string, string];
-  vAxis?: [string, string];
-  hName?: string;
-  vName?: string;
-  zero?: string;
-  ratio?: [number, number];
-  hGap?: number;
-  vGap?: number;
-  legendGap?: number;
-}
-
-interface ScatterDataItem extends ChartDataItem {
-  value: [number, number]; // More specific: exactly 2 coordinates
-  style?: string;
-  sides?: [number, number];
-}
+import type { ScatterDataItem, ScatterPlotOptions } from "./types/types.ts";
 
 type BoxType = "coordinate" | "data";
 
@@ -304,4 +282,4 @@ const drawHorizontalAxis = (
   return result;
 };
 
-export { createScatterPlot, type ScatterPlotOptions, type ScatterDataItem };
+export { createScatterPlot };

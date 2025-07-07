@@ -3,22 +3,9 @@ import {
   validateChartData,
   getMaximumKeyLength,
   EOL,
-  type ChartDataItem,
-} from "./utils.ts";
+} from "./utils/utils.ts";
 
-interface BulletChartOptions {
-  barWidth?: number;
-  style?: string;
-  left?: number;
-  width?: number;
-  padding?: number;
-}
-
-interface BulletDataItem extends ChartDataItem {
-  value: number;
-  style?: string;
-  barWidth?: number;
-}
+import type { BulletDataItem, BulletChartOptions } from "./types/types.ts";
 
 /**
  * Creates a horizontal bullet chart representation from the provided data.
@@ -97,7 +84,9 @@ const createChartLine = (
   const barCharacter = itemStyle || defaultStyle;
   const currentBarWidth = itemBarWidth || defaultBarWidth;
 
-  const barLine = `${barCharacter.repeat(ratioLength)} ${value}${EOL}${PADDING_CHARACTER.repeat(left)}`;
+  const barLine = `${barCharacter.repeat(
+    ratioLength
+  )} ${value}${EOL}${PADDING_CHARACTER.repeat(left)}`;
   const keyLabel = `${key.padStart(maximumKeyLength)}${PADDING_CHARACTER}`;
 
   return Array.from({ length: currentBarWidth }, (_, barIndex) => {
@@ -109,6 +98,5 @@ const createChartLine = (
     return `${linePrefix}${barLine}`;
   }).join("");
 };
-// ...existing code...
 
-export { createBulletChart, type BulletChartOptions, type BulletDataItem };
+export { createBulletChart };

@@ -3,19 +3,9 @@ import {
   PADDING_CHARACTER,
   getMaximumKeyLength,
   EOL,
-  type ChartDataItem,
-} from "./utils.ts";
+} from "./utils/utils.ts";
 
-interface PieChartOptions {
-  radius?: number;
-  left?: number;
-  innerRadius?: number;
-}
-
-interface PieDataItem extends ChartDataItem {
-  value: number;
-  style: string; // Required for pie charts
-}
+import type { PieDataItem, PieChartOptions } from "./types/types.ts";
 
 /**
  * Creates a pie chart or donut chart visualization from the provided data.
@@ -207,6 +197,4 @@ const createDonutChart = (
 export {
   createPieChart,
   createDonutChart,
-  type PieChartOptions,
-  type PieDataItem,
 };

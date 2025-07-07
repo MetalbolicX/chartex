@@ -1,22 +1,7 @@
 import { EOL } from "@std/fs";
+import type { ChartDataItem, BackgroundColor } from "../types/types.ts";
 
 const PADDING_CHARACTER = " ";
-
-type BackgroundColor =
-  | "black"
-  | "red"
-  | "green"
-  | "yellow"
-  | "blue"
-  | "magenta"
-  | "cyan"
-  | "white";
-
-interface ChartDataItem {
-  key: string;
-  value: number | number[]; // Allow both single numbers and arrays
-}
-
 const BACKGROUND_COLORS: Record<BackgroundColor, string> = {
   black: "40",
   red: "41",
@@ -162,6 +147,4 @@ export {
   moveCursorUp,
   moveCursorDown,
   moveCursorBackward,
-  type BackgroundColor,
-  type ChartDataItem,
 };

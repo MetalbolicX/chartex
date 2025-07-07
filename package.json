@@ -3,12 +3,23 @@
   "version": "0.1.0",
   "description": "A data visualization library for the terminal using ASCII characters.",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "echo \"Hello world\""
+    "start": "echo \"Hello world\"",
+    "build": "tsup index.ts --format cjs,esm --dts --out-dir dist"
   },
   "author": {
     "name": "José Martínez Santana"
   },
+  "keywords": [
+    "terminal",
+    "data-visualization",
+    "ascii",
+    "charting",
+    "cli",
+    "javascript",
+    "shell"
+  ],
   "repository": {
     "type": "github",
     "url": "https://github.com/MetalbolicX/chartex.git"
@@ -18,5 +29,8 @@
   },
   "files": ["src"],
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "tsup": "^8.5.0"
+  }
 }

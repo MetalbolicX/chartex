@@ -3,20 +3,9 @@ import {
   validateChartData,
   centerTextInWidth,
   EOL,
-  type ChartDataItem,
-} from "./utils.ts";
+} from "./utils/utils.ts";
 
-interface GaugeChartOptions {
-  radius?: number;
-  left?: number;
-  style?: string;
-  bgStyle?: string;
-}
-
-interface GaugeDataItem extends ChartDataItem {
-  value: number; // Override to use single numeric values (0-1 range for percentage)
-  style?: string;
-}
+import type { GaugeDataItem, GaugeChartOptions } from "./types/types.ts";
 
 /**
  * Creates a gauge chart visualization from the provided data.
@@ -172,4 +161,4 @@ const generateGaugeScale = (radius: number, label: string): string => {
   return `${leftPadding}0${PADDING_CHARACTER.repeat(radius - 4)}${centerLabel}${rightPadding}100`;
 };
 
-export { createGaugeChart, type GaugeChartOptions, type GaugeDataItem };
+export { createGaugeChart };
