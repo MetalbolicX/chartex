@@ -1,6 +1,6 @@
 {
   "name": "chartex",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A data visualization library for the terminal using ASCII characters.",
   "type": "module",
   "homepage": "https://metalbolicx.github.io/chartex/#/",
