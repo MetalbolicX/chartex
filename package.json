@@ -14,6 +14,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "docs": "docsify serve docs",
     "start": "echo \"Hello world\"",
     "build": "tsup src/index.ts --format esm,cjs --dts --minify"
   },
