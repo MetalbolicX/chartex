@@ -5,7 +5,7 @@ import {
   EOL,
 } from "./utils/utils.ts";
 
-import type { BulletDataItem, BulletChartOptions } from "./types/types.ts";
+import type { BulletChartDatum, BulletChartOptions } from "./types/types.ts";
 
 /**
  * Creates a horizontal bullet chart representation from the provided data.
@@ -27,7 +27,7 @@ import type { BulletDataItem, BulletChartOptions } from "./types/types.ts";
  * ```
  */
 const renderBulletChart = (
-  data: BulletDataItem[],
+  data: BulletChartDatum[],
   options?: BulletChartOptions
 ): string => {
   validateChartData(data);
@@ -82,7 +82,7 @@ const renderBulletChart = (
  */
 // ...existing code...
 const createChartLine = (
-  item: BulletDataItem,
+  item: BulletChartDatum,
   maximumValue: number,
   width: number,
   defaultStyle: string,

@@ -1,5 +1,5 @@
 import { EOL } from "os";
-import type { ChartDataItem, BackgroundColor } from "../types/types.ts";
+import type { ChartDatum, BackgroundColor } from "../types/types.ts";
 
 const PADDING_CHARACTER = " ";
 const BACKGROUND_COLORS: Record<BackgroundColor, string> = {
@@ -80,7 +80,7 @@ const centerTextInWidth = (text: string, width: number): string => {
  * @param data - Array of chart data items to validate.
  * @throws TypeError if data is invalid.
  */
-const validateChartData = (data: ChartDataItem[]): void => {
+const validateChartData = (data: ChartDatum[]): void => {
   if (
     !Array.isArray(data) ||
     data.length === 0 ||
@@ -95,7 +95,7 @@ const validateChartData = (data: ChartDataItem[]): void => {
  * @param data - Array of chart data items.
  * @returns The length of the longest key.
  */
-const getMaximumKeyLength = (data: ChartDataItem[]): number =>
+const getMaximumKeyLength = (data: ChartDatum[]): number =>
   Math.max(...data.map((item) => item.key.length));
 
 /**

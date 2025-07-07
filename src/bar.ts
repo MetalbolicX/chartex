@@ -5,7 +5,7 @@ import {
   EOL,
 } from "./utils/utils.ts";
 
-import type { BarChartDataItem, BarChartOptions } from "./types/types.ts";
+import type { BarChartDatum, BarChartOptions } from "./types/types.ts";
 
 /**
  * Creates a vertical bar chart representation from the provided data.
@@ -27,7 +27,7 @@ import type { BarChartDataItem, BarChartOptions } from "./types/types.ts";
  * ```
  */
 const renderBarChart = (
-  data: BarChartDataItem[],
+  data: BarChartDatum[],
   options?: BarChartOptions
 ): string => {
   validateChartData(data);

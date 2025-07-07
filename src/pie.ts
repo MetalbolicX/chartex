@@ -5,7 +5,7 @@ import {
   EOL,
 } from "./utils/utils.ts";
 
-import type { PieDataItem, PieChartOptions } from "./types/types.ts";
+import type { PieChartDatum, PieChartOptions } from "./types/types.ts";
 
 /**
  * Creates a pie chart or donut chart visualization from the provided data.
@@ -28,7 +28,7 @@ import type { PieDataItem, PieChartOptions } from "./types/types.ts";
  * ```
  */
 const renderPieChart = (
-  data: PieDataItem[],
+  data: PieChartDatum[],
   options?: PieChartOptions,
   isDonut: boolean = false
 ): string => {
@@ -172,7 +172,7 @@ const generatePieVisualization = (
  * @returns The formatted legend string.
  */
 const generatePieLegend = (
-  data: PieDataItem[],
+  data: PieChartDatum[],
   styles: string[],
   keys: string[],
   values: number[],
@@ -214,7 +214,7 @@ const generatePieLegend = (
  * ```
  */
 const renderDonutChart = (
-  data: PieDataItem[],
+  data: PieChartDatum[],
   options?: PieChartOptions
 ): string => renderPieChart(data, options, true);
 

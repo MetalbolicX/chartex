@@ -8,7 +8,7 @@ type BackgroundColor =
   | "cyan"
   | "white";
 
-interface ChartDataItem {
+interface ChartDatum {
   key: string;
   value: number | [number, number]; // Allow both single numbers and arrays
 }
@@ -21,7 +21,7 @@ interface BarChartOptions {
   style?: string;
 }
 
-interface BarChartDataItem extends ChartDataItem {
+interface BarChartDatum extends ChartDatum {
   value: number; // Override to use single numeric values
   style?: string;
 }
@@ -34,7 +34,7 @@ interface BulletChartOptions {
   padding?: number;
 }
 
-interface BulletDataItem extends ChartDataItem {
+interface BulletChartDatum extends ChartDatum {
   value: number;
   style?: string;
   barWidth?: number;
@@ -46,7 +46,7 @@ interface PieChartOptions {
   innerRadius?: number;
 }
 
-interface PieDataItem extends ChartDataItem {
+interface PieChartDatum extends ChartDatum {
   value: number;
   style: string; // Required for pie charts
 }
@@ -58,7 +58,7 @@ interface GaugeChartOptions {
   bgStyle?: string;
 }
 
-interface GaugeDataItem extends ChartDataItem {
+interface GaugeChartDatum extends ChartDatum {
   value: number; // Override to use single numeric values (0-1 range for percentage)
   style?: string;
 }
@@ -80,7 +80,7 @@ interface ScatterPlotOptions {
   legendGap?: number;
 }
 
-interface ScatterDataItem extends ChartDataItem {
+interface ScatterPlotDatum extends ChartDatum {
   value: [number, number]; // More specific: exactly 2 coordinates
   style?: string;
   sides?: [number, number];
@@ -88,15 +88,15 @@ interface ScatterDataItem extends ChartDataItem {
 
 export {
   type BackgroundColor,
-  type ChartDataItem,
+  type ChartDatum,
   type BarChartOptions,
-  type BarChartDataItem,
+  type BarChartDatum,
   type BulletChartOptions,
-  type BulletDataItem,
+  type BulletChartDatum,
   type PieChartOptions,
-  type PieDataItem,
+  type PieChartDatum,
   type GaugeChartOptions,
-  type GaugeDataItem,
+  type GaugeChartDatum,
   type ScatterPlotOptions,
-  type ScatterDataItem,
+  type ScatterPlotDatum,
 }

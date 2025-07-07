@@ -9,7 +9,7 @@ import {
   getOriginalTextLength,
 } from "./utils/utils.ts";
 
-import type { ScatterDataItem, ScatterPlotOptions } from "./types/types.ts";
+import type { ScatterPlotDatum, ScatterPlotOptions } from "./types/types.ts";
 
 type BoxType = "coordinate" | "data";
 
@@ -33,7 +33,7 @@ type BoxType = "coordinate" | "data";
  * ```
  */
 const renderScatterPlot = (
-  data: ScatterDataItem[],
+  data: ScatterPlotDatum[],
   options?: ScatterPlotOptions
 ): string => {
   validateChartData(data);
@@ -103,7 +103,7 @@ const renderScatterPlot = (
  * @returns Formatted legend string.
  */
 const generateLegend = (
-  data: ScatterDataItem[],
+  data: ScatterPlotDatum[],
   defaultStyle: string,
   left: number,
   vName: string,
@@ -182,7 +182,7 @@ const createCoordinateBox = (width: number, height: number): string =>
  * @returns Formatted data points string.
  */
 const plotDataPoints = (
-  data: ScatterDataItem[],
+  data: ScatterPlotDatum[],
   defaultStyle: string,
   defaultSides: [number, number],
   left: number

@@ -5,7 +5,7 @@ import {
   EOL,
 } from "./utils/utils.ts";
 
-import type { GaugeDataItem, GaugeChartOptions } from "./types/types.ts";
+import type { GaugeChartDatum, GaugeChartOptions } from "./types/types.ts";
 
 /**
  * Creates a gauge chart visualization from the provided data.
@@ -23,7 +23,7 @@ import type { GaugeDataItem, GaugeChartOptions } from "./types/types.ts";
  * ```
  */
 const renderGaugeChart = (
-  data: GaugeDataItem[],
+  data: GaugeChartDatum[],
   options?: GaugeChartOptions
 ): string => {
   validateChartData(data);
@@ -72,7 +72,7 @@ const renderGaugeChart = (
 const generateGaugeVisualization = (
   radius: number,
   left: number,
-  gaugeData: GaugeDataItem,
+  gaugeData: GaugeChartDatum,
   defaultStyle: string,
   backgroundStyle: string
 ): string => {
@@ -143,7 +143,7 @@ const generateCenterContent = (
 const generateGaugeSegment = (
   rowIndex: number,
   columnIndex: number,
-  gaugeData: GaugeDataItem,
+  gaugeData: GaugeChartDatum,
   defaultStyle: string,
   backgroundStyle: string
 ): string => {
