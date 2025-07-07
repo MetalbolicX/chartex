@@ -1,4 +1,4 @@
-import { EOL } from "@std/fs";
+import { EOL } from "os";
 import type { ChartDataItem, BackgroundColor } from "../types/types.ts";
 
 const PADDING_CHARACTER = " ";
