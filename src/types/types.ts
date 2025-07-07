@@ -10,7 +10,7 @@ type BackgroundColor =
 
 interface ChartDataItem {
   key: string;
-  value: number | number[]; // Allow both single numbers and arrays
+  value: number | [number, number]; // Allow both single numbers and arrays
 }
 
 interface BarChartOptions {
