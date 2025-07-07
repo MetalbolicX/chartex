@@ -13,8 +13,20 @@ import type { BulletDataItem, BulletChartOptions } from "./types/types.ts";
  * @param options - Configuration options for the bullet chart appearance.
  * @returns A string representation of the bullet chart.
  * @throws TypeError if data is invalid.
+ * @example
+ * ```typescript
+ * import { renderBulletChart } from "chartex";
+ * const data = [
+ *   { key: "A", value: 10, style: "#" },
+ *   { key: "B", value: 20, style: "*" },
+ *   { key: "C", value: 15, style: "+" },
+ * ];
+ * const options = { barWidth: 4, left: 2, width: 20, padding: 1, style: "-" };
+ * const chart = renderBulletChart(data, options);
+ * console.log(chart);
+ * ```
  */
-const createBulletChart = (
+const renderBulletChart = (
   data: BulletDataItem[],
   options?: BulletChartOptions
 ): string => {
@@ -99,4 +111,4 @@ const createChartLine = (
   }).join("");
 };
 
-export { createBulletChart };
+export { renderBulletChart };

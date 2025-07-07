@@ -1,45 +1,45 @@
-import { paintBackground, paintText } from "./utils/utils.ts";
-import { createBarChart } from "./bar.ts";
-import { createScatterPlot } from "./scatter.ts";
-import { createBulletChart } from "./bullet.ts";
-import { createPieChart } from "./pie.ts";
-import { createDonutChart } from "./pie.ts";
-import { createGaugeChart } from "./gauge.ts";
+import { bg, fg } from "./utils/utils.ts";
+import { renderBarChart } from "./bar.ts";
+import { renderBulletChart } from "./bullet.ts";
+import { renderDonutChart } from "./pie.ts";
+import { renderGaugeChart } from "./gauge.ts";
+import { renderScatterPlot } from "./scatter.ts";
+import { renderPieChart } from "./pie.ts";
 
 import {
   type BackgroundColor,
-  type ChartDataItem,
-  type BarChartOptions,
   type BarChartDataItem,
+  type BarChartOptions,
   type BulletChartOptions,
   type BulletDataItem,
-  type PieChartOptions,
-  type PieDataItem,
+  type ChartDataItem,
   type GaugeChartOptions,
   type GaugeDataItem,
-  type ScatterPlotOptions,
+  type PieChartOptions,
+  type PieDataItem,
   type ScatterDataItem,
+  type ScatterPlotOptions,
 } from "./types/types.ts";
 
 export {
-  paintBackground,
-  paintText,
-  createBarChart,
-  createScatterPlot,
-  createBulletChart,
-  createPieChart,
-  createGaugeChart,
-  createDonutChart,
-  BackgroundColor,
-  type ChartDataItem,
-  type BarChartOptions,
+  type BackgroundColor,
+  bg,
+  renderBarChart,
+  renderBulletChart,
+  renderDonutChart,
+  renderGaugeChart,
+  renderPieChart,
+  renderScatterPlot,
+  fg,
   type BarChartDataItem,
+  type BarChartOptions,
   type BulletChartOptions,
   type BulletDataItem,
-  type PieChartOptions,
-  type PieDataItem,
+  type ChartDataItem,
   type GaugeChartOptions,
   type GaugeDataItem,
-  type ScatterPlotOptions,
+  type PieChartOptions,
+  type PieDataItem,
   type ScatterDataItem,
+  type ScatterPlotOptions,
 };

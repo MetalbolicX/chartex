@@ -20,7 +20,7 @@ const BACKGROUND_COLORS: Record<BackgroundColor, string> = {
  * @returns ANSI escape sequence for colored background.
  * @throws TypeError if color is invalid.
  */
-const paintBackground = (
+const bg = (
   color: BackgroundColor = "cyan",
   length: number = 1
 ): string => {
@@ -40,7 +40,7 @@ const paintBackground = (
  * @returns ANSI escape sequence for colored text.
  * @throws TypeError if color is invalid.
  */
-const paintText = (
+const fg = (
   color: BackgroundColor = "cyan",
   text: string
 ): string => {
@@ -135,16 +135,16 @@ const moveCursorDown = (steps: number = 1): string => `\x1b[${steps}B`;
 const moveCursorBackward = (steps: number = 1): string => `\x1b[${steps}D`;
 
 export {
-  PADDING_CHARACTER,
-  EOL,
-  paintBackground,
-  paintText,
+  bg,
   centerTextInWidth,
-  validateChartData,
+  EOL,
+  fg,
   getMaximumKeyLength,
   getOriginalTextLength,
+  moveCursorBackward,
+  moveCursorDown,
   moveCursorForward,
   moveCursorUp,
-  moveCursorDown,
-  moveCursorBackward,
+  PADDING_CHARACTER,
+  validateChartData,
 };

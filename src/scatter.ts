@@ -19,8 +19,20 @@ type BoxType = "coordinate" | "data";
  * @param options - Configuration options for the scatter plot appearance.
  * @returns A string representation of the scatter plot.
  * @throws TypeError if data is invalid.
+ * @example
+ * ```typescript
+ * import { renderScatterPlot } from "chartex";
+ * const data = [
+ *  { key: "A", value: [1, 2], style: "#" },
+ *  { key: "B", value: [3, 4], style: "*" },
+ *  { key: "C", value: [5, 6], style: "+" },
+ * ];
+ * const options = { width: 10, height: 10, left: 2, style: "# " };
+ * const chart = renderScatterPlot(data, options);
+ * console.log(chart);
+ * ```
  */
-const createScatterPlot = (
+const renderScatterPlot = (
   data: ScatterDataItem[],
   options?: ScatterPlotOptions
 ): string => {
@@ -282,4 +294,4 @@ const drawHorizontalAxis = (
   return result;
 };
 
-export { createScatterPlot };
+export { renderScatterPlot };

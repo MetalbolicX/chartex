@@ -79,7 +79,9 @@ To build and run your ReScript application, see the [Compile and Run](https://me
 ## 📚 Documentation
 
 <div align="center">
+
   [![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](https://metalbolicx.github.io/chartex/#/api-reference)
+
 </div>
 
 ## ✍ Do you want to learn more?

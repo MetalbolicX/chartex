@@ -13,8 +13,20 @@ import type { BarChartDataItem, BarChartOptions } from "./types/types.ts";
  * @param options - Configuration options for the bar chart appearance.
  * @returns A string representation of the bar chart.
  * @throws TypeError if data is invalid.
+ * @example
+ * ```typescript
+ * import { renderBarChart } from "chartex";
+ * const data = [
+ *   { key: "A", value: 10, style: "#" },
+ *   { key: "B", value: 20, style: "*" },
+ *   { key: "C", value: 15, style: "+" },
+ * ];
+ * const options = { barWidth: 4, left: 2, height: 8, padding: 2, style: "-" };
+ * const chart = renderBarChart(data, options);
+ * console.log(chart);
+ * ```
  */
-const createBarChart = (
+const renderBarChart = (
   data: BarChartDataItem[],
   options?: BarChartOptions
 ): string => {
@@ -126,4 +138,4 @@ const formatKeyLabel = (
   )}`;
 };
 
-export { createBarChart };
+export { renderBarChart };

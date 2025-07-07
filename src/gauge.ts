@@ -13,8 +13,16 @@ import type { GaugeDataItem, GaugeChartOptions } from "./types/types.ts";
  * @param options - Configuration options for the gauge chart appearance.
  * @returns A string representation of the gauge chart.
  * @throws TypeError if data is invalid or contains more than one item.
+ * @example
+ * ```typescript
+ * import { renderGaugeChart } from "chartex";
+ * const data = [{ key: "Speed", value: 0.75, style: "#" }];
+ * const options = { radius: 5, left: 2, style: "# ", bgStyle: "+ " };
+ * const chart = renderGaugeChart(data, options);
+ * console.log(chart);
+ * ```
  */
-const createGaugeChart = (
+const renderGaugeChart = (
   data: GaugeDataItem[],
   options?: GaugeChartOptions
 ): string => {
@@ -161,4 +169,4 @@ const generateGaugeScale = (radius: number, label: string): string => {
   return `${leftPadding}0${PADDING_CHARACTER.repeat(radius - 4)}${centerLabel}${rightPadding}100`;
 };
 
-export { createGaugeChart };
+export { renderGaugeChart };

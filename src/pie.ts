@@ -14,8 +14,20 @@ import type { PieDataItem, PieChartOptions } from "./types/types.ts";
  * @param isDonut - Whether to render as a donut chart with inner hole.
  * @returns A string representation of the pie chart.
  * @throws TypeError if data is invalid.
+ * @example
+ * ```typescript
+ * import { renderPieChart } from "chartex";
+ * const data = [
+ *  { key: "A", value: 10, style: "#" },
+ *  { key: "B", value: 20, style: "*" },
+ *  { key: "C", value: 15, style: "+" },
+ * ];
+ * const options = { radius: 4, left: 2, innerRadius: 1 };
+ * const chart = renderPieChart(data, options);
+ * console.log(chart);
+ * ```
  */
-const createPieChart = (
+const renderPieChart = (
   data: PieDataItem[],
   options?: PieChartOptions,
   isDonut: boolean = false
@@ -188,13 +200,25 @@ const generatePieLegend = (
  * @param options - Configuration options for the donut chart appearance.
  * @returns A string representation of the donut chart.
  * @throws TypeError if data is invalid.
+ * @example
+ * ```typescript
+ * import { renderDonutChart } from "chartex";
+ * const data = [
+ *  { key: "A", value: 10, style: "#" },
+ *  { key: "B", value: 20, style: "*" },
+ *  { key: "C", value: 15, style: "+" },
+ * ];
+ * const options = { radius: 4, left: 2, innerRadius: 1 };
+ * const chart = renderDonutChart(data, options);
+ * console.log(chart);
+ * ```
  */
-const createDonutChart = (
+const renderDonutChart = (
   data: PieDataItem[],
   options?: PieChartOptions
-): string => createPieChart(data, options, true);
+): string => renderPieChart(data, options, true);
 
 export {
-  createPieChart,
-  createDonutChart,
+  renderPieChart,
+  renderDonutChart,
 };
