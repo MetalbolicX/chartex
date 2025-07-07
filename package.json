@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A data visualization library for the terminal using ASCII characters.",
   "type": "module",
+  "homepage": "https://metalbolicx.github.io/chartex/#/",
   "exports": {
     "import": "./dist/index.js",
     "require": "./dist/index.cjs"
