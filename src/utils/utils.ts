@@ -1,150 +1,136 @@
 import { EOL } from "node:os";
-import type { ChartDatum, BackgroundColor } from "../types/types.ts";
+import { BackgroundColor, ChartDatum } from "../types/types.ts";
 
-const PADDING_CHARACTER = " ";
-const BACKGROUND_COLORS: Record<BackgroundColor, string> = {
-  black: "40",
-  red: "41",
-  green: "42",
-  yellow: "43",
-  blue: "44",
-  magenta: "45",
-  cyan: "46",
-  white: "47",
+const PAD = " ";
+
+const bgColors: Record<BackgroundColor, string> = {
+  "black": "40",
+  "red": "41",
+  "green": "42",
+  "yellow": "43",
+  "blue": "44",
+  "magenta": "45",
+  "cyan": "46",
+  "white": "47"
 };
 
 /**
- * Creates a colored background block with specified color and length.
- * @param color - The background color to use.
- * @param length - The number of padding characters to repeat.
- * @returns ANSI escape sequence for colored background.
- * @throws TypeError if color is invalid.
+ * Creates a background color string with specified color and length
+ * @param color - The background color to use
+ * @param length - The length of the background color block
+ * @returns The formatted background color string
  */
-const bg = (
-  color: BackgroundColor = "cyan",
-  length: number = 1
-): string => {
-  const ansiColorCode = BACKGROUND_COLORS[color];
-
-  if (!ansiColorCode) {
+const bg = (color: BackgroundColor = "cyan", length: number = 1): string => {
+  const currentBg = bgColors[color];
+  if (!currentBg) {
     throw new TypeError(`Invalid backgroundColor: ${JSON.stringify(color)}`);
   }
 
-  return `\x1b[${ansiColorCode}m${PADDING_CHARACTER.repeat(length)}\x1b[0m`;
+  return `\x1b[${currentBg}m${PAD.repeat(length)}\x1b[0m`;
 };
 
 /**
- * Creates colored foreground text with specified color.
- * @param color - The foreground color to use.
- * @param text - The text to colorize.
- * @returns ANSI escape sequence for colored text.
- * @throws TypeError if color is invalid.
+ * Creates a foreground color string with specified color and text
+ * @param color - The foreground color to use
+ * @param str - The string to color
+ * @returns The formatted foreground color string
  */
-const fg = (
-  color: BackgroundColor = "cyan",
-  text: string
-): string => {
-  const backgroundColorCode = BACKGROUND_COLORS[color];
-
-  if (!backgroundColorCode) {
+const fg = (color: BackgroundColor = "cyan", str: string): string => {
+  const currentBg = bgColors[color];
+  if (!currentBg) {
     throw new TypeError(`Invalid foregroundColor: ${JSON.stringify(color)}`);
   }
 
-  const foregroundColorCode = parseInt(backgroundColorCode) - 10;
-  return `\x1b[${foregroundColorCode}m${text}\x1b[0m`;
+  const colorCode = parseInt(currentBg) - 10;
+  return `\x1b[${colorCode}m${str}\x1b[0m`;
 };
 
 /**
- * Centers text within a specified width by adding padding.
- * @param text - The text to center.
- * @param width - The total width to center within.
- * @returns Centered text with appropriate padding.
+ * Pads a string to center it within a specified width
+ * @param str - The string to pad
+ * @param width - The target width
+ * @returns The padded string
  */
-const centerTextInWidth = (text: string, width: number): string => {
-  const textLength = text.length;
+const padMid = (str: string, width: number): string => {
+  const mid = Math.round((width - str.length) / 2);
+  const length = str.length;
 
-  if (textLength > width) {
-    return text.padEnd(width);
-  }
-
-  const paddingLength = Math.round((width - textLength) / 2);
-  const extraPadding = paddingLength * 2 + textLength > width ? -1 : 0;
-
-  return `${PADDING_CHARACTER.repeat(
-    paddingLength
-  )}${text}${PADDING_CHARACTER.repeat(paddingLength + extraPadding)}`;
+  return length > width
+    ? str.padEnd(width)
+    : `${PAD.repeat(mid)}${str}${PAD.repeat(mid + ((mid * 2 + length) > width ? -1 : 0))}`;
 };
 
 /**
- * Validates chart data array structure and content.
- * @param data - Array of chart data items to validate.
- * @throws TypeError if data is invalid.
+ * Verifies that the data array is valid for chart rendering
+ * @param data - The data array to verify
+ * @throws TypeError if data is invalid
  */
-const validateChartData = (data: ChartDatum[]): void => {
-  if (
-    !Array.isArray(data) ||
-    data.length === 0 ||
-    !data.every((item) => item.key && !Number.isNaN(item.value))
+const verifyData = (data: ChartDatum[]): void => {
+  const length = data.length;
+
+  if (!Array.isArray(data) ||
+    length === 0 ||
+    !data.every(item => item.key && !Number.isNaN(Number(item.value)))
   ) {
     throw new TypeError(`Invalid data: ${JSON.stringify(data)}`);
   }
 };
 
 /**
- * Finds the maximum key length in chart data array.
- * @param data - Array of chart data items.
- * @returns The length of the longest key.
+ * Finds the maximum key length in the data array
+ * @param data - The data array to analyze
+ * @returns The maximum key length
  */
-const getMaximumKeyLength = (data: ChartDatum[]): number =>
-  Math.max(...data.map((item) => item.key.length));
+const maxKeyLen = (data: ChartDatum[]): number =>
+  Math.max(...data.map(item => item.key.length));
 
 /**
- * Gets the original length of a string without ANSI escape sequences.
- * @param text - The text to measure.
- * @returns The length without escape sequences.
+ * Gets the original length of a string without ANSI escape sequences
+ * @param str - The string to measure
+ * @returns The original string length
  */
-const getOriginalTextLength = (text: string): number =>
-  text.replace(/\x1b\[[0-9;]*m/g, "").length;
+const getOriginLen = (str: string): number =>
+  str.replace(/\x1b\[[0-9;]*m/g, "").length;
 
 /**
- * Creates ANSI escape sequence to move cursor forward.
- * @param steps - Number of steps to move forward.
- * @returns ANSI escape sequence for cursor movement.
+ * Moves cursor forward by specified steps
+ * @param step - Number of steps to move forward
+ * @returns The cursor movement string
  */
-const moveCursorForward = (steps: number = 1): string => `\x1b[${steps}C`;
+const curForward = (step: number = 1): string => `\x1b[${step}C`;
 
 /**
- * Creates ANSI escape sequence to move cursor up.
- * @param steps - Number of steps to move up.
- * @returns ANSI escape sequence for cursor movement.
+ * Moves cursor up by specified steps
+ * @param step - Number of steps to move up
+ * @returns The cursor movement string
  */
-const moveCursorUp = (steps: number = 1): string => `\x1b[${steps}A`;
+const curUp = (step: number = 1): string => `\x1b[${step}A`;
 
 /**
- * Creates ANSI escape sequence to move cursor down.
- * @param steps - Number of steps to move down.
- * @returns ANSI escape sequence for cursor movement.
+ * Moves cursor down by specified steps
+ * @param step - Number of steps to move down
+ * @returns The cursor movement string
  */
-const moveCursorDown = (steps: number = 1): string => `\x1b[${steps}B`;
+const curDown = (step: number = 1): string => `\x1b[${step}B`;
 
 /**
- * Creates ANSI escape sequence to move cursor backward.
- * @param steps - Number of steps to move backward.
- * @returns ANSI escape sequence for cursor movement.
+ * Moves cursor back by specified steps
+ * @param step - Number of steps to move back
+ * @returns The cursor movement string
  */
-const moveCursorBackward = (steps: number = 1): string => `\x1b[${steps}D`;
+const curBack = (step: number = 1): string => `\x1b[${step}D`;
 
 export {
-  bg,
-  centerTextInWidth,
+  PAD,
   EOL,
+  bg,
   fg,
-  getMaximumKeyLength,
-  getOriginalTextLength,
-  moveCursorBackward,
-  moveCursorDown,
-  moveCursorForward,
-  moveCursorUp,
-  PADDING_CHARACTER,
-  validateChartData,
+  padMid,
+  verifyData,
+  maxKeyLen,
+  getOriginLen,
+  curForward,
+  curUp,
+  curDown,
+  curBack
 };

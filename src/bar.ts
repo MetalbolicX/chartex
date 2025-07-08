@@ -1,7 +1,7 @@
 import {
-  PADDING_CHARACTER,
-  centerTextInWidth,
-  validateChartData,
+  PAD,
+  padMid,
+  verifyData,
   EOL,
 } from "./utils/utils.ts";
 
@@ -30,7 +30,7 @@ const renderBarChart = (
   data: BarChartDatum[],
   options?: BarChartOptions
 ): string => {
-  validateChartData(data);
+  verifyData(data);
 
   const chartOptions: Required<BarChartOptions> = {
     barWidth: 3,
@@ -43,7 +43,7 @@ const renderBarChart = (
 
   const { barWidth, left, height, padding, style } = chartOptions;
 
-  let result = PADDING_CHARACTER.repeat(left);
+  let result = PAD.repeat(left);
 
   const values = data.flatMap((item) => item.value);
   const maximumValue = Math.max(...values);
@@ -64,24 +64,24 @@ const renderBarChart = (
       );
 
       if (paddingCharacter === valueString) {
-        result += `${centerTextInWidth(
+        result += `${padMid(
           valueString,
           barWidth
-        )}${PADDING_CHARACTER.repeat(padding)}`;
+        )}${PAD.repeat(padding)}`;
         continue;
       }
 
       if (rowIndex !== height + 1) {
         result += `${paddingCharacter.repeat(
           barWidth
-        )}${PADDING_CHARACTER.repeat(padding)}`;
+        )}${PAD.repeat(padding)}`;
       } else {
         result += formatKeyLabel(currentItem.key, barWidth, padding);
       }
     }
 
     if (rowIndex !== height + 1) {
-      result += `${EOL}${PADDING_CHARACTER.repeat(left)}`;
+      result += `${EOL}${PAD.repeat(left)}`;
     }
   }
 
@@ -103,7 +103,7 @@ const getPaddingCharacter = (
   styleCharacter: string
 ): string => {
   if (ratio > currentRow + 2) {
-    return PADDING_CHARACTER;
+    return PAD;
   }
 
   if (Math.round(ratio) === currentRow) {
@@ -114,7 +114,7 @@ const getPaddingCharacter = (
     return styleCharacter;
   }
 
-  return PADDING_CHARACTER;
+  return PAD;
 };
 
 /**
@@ -133,7 +133,7 @@ const formatKeyLabel = (
     return key.padEnd(barWidth + padding);
   }
 
-  return `${centerTextInWidth(key, barWidth)}${PADDING_CHARACTER.repeat(
+  return `${padMid(key, barWidth)}${PAD.repeat(
     padding
   )}`;
 };

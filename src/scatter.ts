@@ -1,136 +1,32 @@
 import {
+  // bg,
+  // centerTextInWidth,
+  // fg,
+  // getMaximumKeyLength,
   EOL,
-  PADDING_CHARACTER,
-  validateChartData,
-  moveCursorForward,
-  moveCursorUp,
-  moveCursorDown,
-  moveCursorBackward,
-  getOriginalTextLength,
+  getOriginLen,
+  curBack,
+  curDown,
+  curForward,
+  curUp,
+  PAD,
+  verifyData,
 } from "./utils/utils.ts";
-
-import type { ScatterPlotDatum, ScatterPlotOptions } from "./types/types.ts";
+import type { ScatterPlotOptions, ScatterPlotDatum } from "./types/types.ts";
 
 type BoxType = "coordinate" | "data";
 
 /**
- * Creates a scatter plot visualization from the provided coordinate data.
- * @param data - Array of scatter plot data items with coordinate pairs.
- * @param options - Configuration options for the scatter plot appearance.
- * @returns A string representation of the scatter plot.
- * @throws TypeError if data is invalid.
- * @example
- * ```typescript
- * import { renderScatterPlot } from "chartex";
- * const data = [
- *  { key: "A", value: [1, 2], style: "#" },
- *  { key: "B", value: [3, 4], style: "*" },
- *  { key: "C", value: [5, 6], style: "+" },
- * ];
- * const options = { width: 10, height: 10, left: 2, style: "# " };
- * const chart = renderScatterPlot(data, options);
- * console.log(chart);
- * ```
- */
-const renderScatterPlot = (
-  data: ScatterPlotDatum[],
-  options?: ScatterPlotOptions
-): string => {
-  validateChartData(data);
-
-  const plotOptions: Required<ScatterPlotOptions> = {
-    width: 10,
-    left: 2,
-    height: 10,
-    style: "# ",
-    sides: [1, 1],
-    hAxis: ["+", "-", ">"],
-    vAxis: ["|", "A"],
-    hName: "X Axis",
-    vName: "Y Axis",
-    zero: "+",
-    ratio: [1, 1],
-    hGap: 2,
-    vGap: 2,
-    legendGap: 0,
-    ...options,
-  };
-
-  const {
-    left,
-    height,
-    style,
-    sides,
-    width,
-    zero,
-    hAxis,
-    vAxis,
-    ratio,
-    hName,
-    vName,
-    hGap,
-    vGap,
-    legendGap,
-  } = plotOptions;
-
-  let result = "";
-
-  // Generate legend
-  result += generateLegend(data, style, left, vName, legendGap);
-
-  // Create coordinate system background
-  result += createCoordinateBox(width + left, height + 1);
-
-  // Plot data points
-  result += plotDataPoints(data, style, sides, left);
-
-  // Draw vertical axis
-  result += drawVerticalAxis(width, height, left, vAxis, vGap, ratio, zero);
-
-  // Draw horizontal axis
-  result += drawHorizontalAxis(width, height, hAxis, hGap, ratio, hName);
-
-  return result;
-};
-
-/**
- * Generates the legend section for the scatter plot.
- * @param data - Array of scatter plot data items.
- * @param defaultStyle - Default style character.
- * @param left - Left padding amount.
- * @param vName - Vertical axis name.
- * @param legendGap - Gap between legend items.
- * @returns Formatted legend string.
- */
-const generateLegend = (
-  data: ScatterPlotDatum[],
-  defaultStyle: string,
-  left: number,
-  vName: string,
-  legendGap: number
-): string => {
-  const uniqueKeys = new Set(data.map((item) => item.key));
-  const legendItems = Array.from(uniqueKeys).map((key) => {
-    const item = data.find((dataItem) => dataItem.key === key);
-    return `${key}: ${item?.style || defaultStyle}`;
-  });
-
-  return `${PADDING_CHARACTER.repeat(left)}${vName}${PADDING_CHARACTER.repeat(
-    legendGap
-  )}${legendItems.join(" | ")}${EOL.repeat(2)}`;
-};
-
-/**
- * Creates a box for drawing charts with specified dimensions and style.
+ * Prints a box with specified dimensions and style.
  * @param width - The width of the box.
  * @param height - The height of the box.
- * @param style - The style character to use for drawing.
- * @param left - Left offset position.
- * @param top - Top offset position.
- * @param type - The type of box being created.
- * @returns Formatted box string with cursor positioning.
+ * @param style - The style string to fill the box with.
+ * @param left - The left offset position.
+ * @param top - The top offset position.
+ * @param type - The type of box (coordinate or data).
+ * @returns The formatted box string.
  */
-const createBox = (
+const printBox = (
   width: number,
   height: number,
   style: string = "# ",
@@ -138,17 +34,17 @@ const createBox = (
   top: number = 0,
   type: BoxType = "coordinate"
 ): string => {
-  let result = moveCursorForward(left) + moveCursorUp(top);
-  const hasSides = width > 1 || height > 1;
+  let result = curForward(left) + curUp(top);
+  const hasSide = width > 1 || height > 1;
 
-  for (let rowIndex = 0; rowIndex < height; rowIndex++) {
-    for (let columnIndex = 0; columnIndex < width; columnIndex++) {
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
       result += style;
     }
 
-    if (hasSides) {
-      if (rowIndex !== height - 1) {
-        result += `${EOL}${moveCursorForward(left)}`;
+    if (hasSide) {
+      if (i !== height - 1) {
+        result += EOL + curForward(left);
       } else {
         result += EOL;
       }
@@ -156,140 +52,184 @@ const createBox = (
   }
 
   if (type === "data") {
-    result += `${moveCursorDown(
-      hasSides ? top - height : top
-    )}${moveCursorBackward(left + getOriginalTextLength(style))}`;
+    result += curDown(hasSide ? (top - height) : top) +
+              curBack(left + getOriginLen(style));
   }
 
   return result;
 };
 
 /**
- * Creates the coordinate system background box.
- * @param width - The width of the coordinate system.
- * @param height - The height of the coordinate system.
- * @returns Formatted coordinate box string.
- */
-const createCoordinateBox = (width: number, height: number): string =>
-  createBox(width, height, PADDING_CHARACTER.repeat(2));
-
-/**
- * Plots all data points on the scatter plot.
+ * Creates a legend string from the data items.
  * @param data - Array of scatter plot data items.
- * @param defaultStyle - Default style character.
- * @param defaultSides - Default dimensions for data points.
- * @param left - Left padding amount.
- * @returns Formatted data points string.
+ * @param defaultStyle - Default style to use if item doesn't have one.
+ * @returns The formatted legend string.
  */
-const plotDataPoints = (
-  data: ScatterPlotDatum[],
-  defaultStyle: string,
-  defaultSides: [number, number],
-  left: number
-): string => {
-  const styles = data.map((item) => item.style || defaultStyle);
-  const allSides = data.map((item) => item.sides || defaultSides);
+const createLegend = (data: ScatterPlotDatum[], defaultStyle: string): string => {
+  const keys = new Set(data.map(item => item.key));
 
-  return data
-    .map((item, index) => {
-      const [x, y] = item.value;
-      const [width, height] = allSides[index];
-      const style = styles[index];
-
-      return createBox(width, height, style, x * 2 + left + 1, y, "data");
+  return Array.from(keys)
+    .map(key => {
+      const item = data.find(dataItem => dataItem.key === key);
+      const style = item?.style || defaultStyle;
+      return `${key}: ${style}`;
     })
-    .join("");
+    .join(" | ");
 };
 
 /**
- * Draws the vertical axis with labels and scale markers.
- * @param width - The width of the plot area.
- * @param height - The height of the plot area.
- * @param left - Left padding amount.
- * @param vAxis - Vertical axis characters [line, arrow].
- * @param vGap - Vertical gap between scale markers.
- * @param ratio - Scale ratio [horizontal, vertical].
- * @param zero - Zero point character.
- * @returns Formatted vertical axis string.
+ * Draws the vertical axis with scale markers.
+ * @param height - The height of the chart.
+ * @param left - The left padding.
+ * @param vAxis - The vertical axis configuration.
+ * @param vGap - The vertical gap between scale markers.
+ * @param ratio - The ratio for scaling values.
+ * @returns The formatted vertical axis string.
  */
 const drawVerticalAxis = (
-  width: number,
   height: number,
   left: number,
   vAxis: [string, string],
   vGap: number,
-  ratio: [number, number],
-  zero: string
+  ratio: [number, number]
 ): string => {
-  const [vLine, vArrow] = vAxis;
-  const [, vRatio] = ratio;
-
-  let result = `${moveCursorBackward(width * 2)}${moveCursorUp(
-    height + 1
-  )}${PADDING_CHARACTER.repeat(left + 1)}${vArrow}`;
+  let result = PAD.repeat(left + 1) + vAxis[1];
 
   for (let i = 0; i < height + 1; i++) {
-    const scaleValue =
-      (height - i) % vGap === 0 && i !== height
-        ? ((height - i) * vRatio).toString()
-        : "";
+    const scaleValue = ((height - i) % vGap === 0 && i !== height)
+      ? ((height - i) * ratio[1]).toString()
+      : "";
 
-    result += `${EOL}${scaleValue.padStart(left + 1)}${vLine}`;
+    result += EOL + scaleValue.padStart(left + 1) + vAxis[0];
   }
-
-  result += `${moveCursorBackward()}${zero}${moveCursorDown(
-    1
-  )}${moveCursorBackward(1)}0${moveCursorUp(1)}`;
 
   return result;
 };
 
 /**
- * Draws the horizontal axis with labels and scale markers.
- * @param width - The width of the plot area.
- * @param height - The height of the plot area.
- * @param hAxis - Horizontal axis characters [plus, minus, arrow].
- * @param hGap - Horizontal gap between scale markers.
- * @param ratio - Scale ratio [horizontal, vertical].
- * @param hName - Horizontal axis name.
- * @returns Formatted horizontal axis string.
+ * Draws the horizontal axis with scale markers.
+ * @param width - The width of the chart.
+ * @param hAxis - The horizontal axis configuration.
+ * @param hGap - The horizontal gap between scale markers.
+ * @param ratio - The ratio for scaling values.
+ * @param hName - The name of the horizontal axis.
+ * @returns The formatted horizontal axis string.
  */
 const drawHorizontalAxis = (
   width: number,
-  _height: number,
   hAxis: [string, string, string],
   hGap: number,
   ratio: [number, number],
   hName: string
 ): string => {
-  const [hPlus, hMinus, hArrow] = hAxis;
-  const [hRatio] = ratio;
-
   let result = "";
 
-  for (let i = 1; i < width * 2 + hGap; i++) {
+  for (let i = 1; i < (width * 2) + hGap; i++) {
     if (!(i % (hGap * 2))) {
-      result += hPlus;
+      result += hAxis[0];
 
-      // Draw scale markers for horizontal axis
-      const scaleValue = (i / 2) * hRatio;
-      const valueLength = scaleValue.toString().length;
+      // Draw scale of horizontal axis
+      const item = (i / 2) * ratio[0];
+      const len = item.toString().length;
 
-      result += `${moveCursorDown(1)}${moveCursorBackward(
-        1
-      )}${scaleValue}${moveCursorUp(1)}`;
-
-      if (valueLength > 1) {
-        result += moveCursorBackward(valueLength - 1);
+      result += curDown(1) + curBack(1) + item + curUp(1);
+      if (len > 1) {
+        result += curBack(len - 1);
       }
 
       continue;
     }
 
-    result += hMinus;
+    result += hAxis[1];
   }
 
-  result += `${hArrow}${PADDING_CHARACTER}${hName}${EOL}`;
+  result += hAxis[2] + PAD + hName + EOL;
+  return result;
+};
+
+/**
+ * Renders data points on the scatter plot.
+ * @param data - Array of scatter plot data items.
+ * @param defaultStyle - Default style to use if item doesn't have one.
+ * @param defaultSides - Default sides to use if item doesn't have them.
+ * @param left - The left padding.
+ * @returns The formatted data points string.
+ */
+const renderDataPoints = (
+  data: ScatterPlotDatum[],
+  defaultStyle: string,
+  defaultSides: [number, number],
+  left: number
+): string => {
+  return data
+    .map(item => {
+      const style = item.style || defaultStyle;
+      const sides = item.sides || defaultSides;
+
+      return printBox(
+        sides[0],
+        sides[1],
+        style,
+        item.value[0] * 2 + left + 1,
+        item.value[1],
+        "data"
+      );
+    })
+    .join("");
+};
+
+/**
+ * Creates a scatter plot chart from the provided data.
+ * @param data - Array of scatter plot data items.
+ * @param options - Configuration options for the scatter plot.
+ * @returns The formatted scatter plot string.
+ * @throws TypeError if data is invalid.
+ */
+const renderScatterPlot = (
+  data: ScatterPlotDatum[],
+  options: ScatterPlotOptions = {}
+): string => {
+  verifyData(data);
+  const {
+    width = 10,
+    left = 2,
+    height = 10,
+    style = "# ",
+    sides = [1, 1],
+    hAxis = ["+", "-", ">"],
+    vAxis = ["|", "A"],
+    hName = "X Axis",
+    vName = "Y Axis",
+    zero = "+",
+    ratio = [1, 1],
+    hGap = 2,
+    vGap = 2,
+    legendGap = 0,
+  } = options;
+
+  let result = "";
+
+  // Add vertical axis name and legend
+  result += PAD.repeat(left) + vName;
+  result += PAD.repeat(legendGap);
+  result += createLegend(data, style) + EOL.repeat(2);
+
+  // Draw coordinate box
+  result += printBox(width + left, height + 1, PAD.repeat(2));
+
+  // Render data points
+  result += renderDataPoints(data, style, sides, left);
+
+  // Draw vertical axis
+  result += curBack(width * 2) + curUp(height + 1);
+  result += drawVerticalAxis(height, left, vAxis, vGap, ratio);
+
+  // Draw origin point
+  result += curBack() + zero + curDown(1) +
+            curBack(1) + "0" + curUp(1);
+
+  // Draw horizontal axis
+  result += drawHorizontalAxis(width, hAxis, hGap, ratio, hName);
 
   return result;
 };

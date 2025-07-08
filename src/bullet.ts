@@ -1,7 +1,7 @@
 import {
-  PADDING_CHARACTER,
-  validateChartData,
-  getMaximumKeyLength,
+  PAD,
+  verifyData,
+  maxKeyLen,
   EOL,
 } from "./utils/utils.ts";
 
@@ -30,7 +30,7 @@ const renderBulletChart = (
   data: BulletChartDatum[],
   options?: BulletChartOptions
 ): string => {
-  validateChartData(data);
+  verifyData(data);
 
   const chartOptions: Required<BulletChartOptions> = {
     barWidth: 1,
@@ -43,11 +43,11 @@ const renderBulletChart = (
 
   const { barWidth, left, width, padding, style } = chartOptions;
 
-  const result = PADDING_CHARACTER.repeat(left);
+  const result = PAD.repeat(left);
 
   const values = data.map(({ value }) => value);
   const maximumValue = Math.max(...values);
-  const maximumKeyLength = getMaximumKeyLength(data);
+  const maximumKeyLength = maxKeyLen(data);
 
   return data.reduce((accumulator, currentItem, index) => {
     const chartLine = createChartLine(
@@ -63,7 +63,7 @@ const renderBulletChart = (
     const isLastItem = index === data.length - 1;
     const lineSeparator = isLastItem
       ? ""
-      : `${EOL.repeat(padding)}${PADDING_CHARACTER.repeat(left)}`;
+      : `${EOL.repeat(padding)}${PAD.repeat(left)}`;
 
     return `${accumulator}${chartLine}${lineSeparator}`;
   }, result);
@@ -98,14 +98,14 @@ const createChartLine = (
 
   const barLine = `${barCharacter.repeat(
     ratioLength
-  )} ${value}${EOL}${PADDING_CHARACTER.repeat(left)}`;
-  const keyLabel = `${key.padStart(maximumKeyLength)}${PADDING_CHARACTER}`;
+  )} ${value}${EOL}${PAD.repeat(left)}`;
+  const keyLabel = `${key.padStart(maximumKeyLength)}${PAD}`;
 
   return Array.from({ length: currentBarWidth }, (_, barIndex) => {
     const isFirstBar = barIndex === 0;
     const linePrefix = isFirstBar
       ? keyLabel
-      : `${PADDING_CHARACTER.repeat(maximumKeyLength + 1)}`;
+      : `${PAD.repeat(maximumKeyLength + 1)}`;
 
     return `${linePrefix}${barLine}`;
   }).join("");

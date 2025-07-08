@@ -1,7 +1,7 @@
 import {
-  validateChartData,
-  PADDING_CHARACTER,
-  getMaximumKeyLength,
+  verifyData,
+  PAD,
+  maxKeyLen,
   EOL,
 } from "./utils/utils.ts";
 
@@ -32,7 +32,7 @@ const renderPieChart = (
   options?: PieChartOptions,
   isDonut: boolean = false
 ): string => {
-  validateChartData(data);
+  verifyData(data);
 
   const chartOptions: Required<PieChartOptions> = {
     radius: 4,
@@ -48,12 +48,12 @@ const renderPieChart = (
   const ratios = values.map((value) => value / totalValue);
   const styles = data.map(({ style }) => style);
   const keys = data.map(({ key }) => key);
-  const maximumKeyLength = getMaximumKeyLength(data);
+  const maximumKeyLength = maxKeyLen(data);
   const [, , ..._restStyles] = styles; // Get gap character from last style
   const gapCharacter = styles.at(-1) ?? "";
   const radiusLimit = isDonut ? innerRadius : 0;
 
-  let result = PADDING_CHARACTER.repeat(left);
+  let result = PAD.repeat(left);
 
   // Generate pie chart visualization
   result += generatePieVisualization(
@@ -147,17 +147,17 @@ const generatePieVisualization = (
             Math.abs(columnIndex) <= radiusLimit);
 
         visualization += shouldShowInnerHole
-          ? PADDING_CHARACTER.repeat(2)
+          ? PAD.repeat(2)
           : getStyleCharacter(styles, ratios, angleParameter, gapCharacter);
       } else {
-        visualization += PADDING_CHARACTER.repeat(2);
+        visualization += PAD.repeat(2);
       }
     }
 
-    visualization += `${EOL}${PADDING_CHARACTER.repeat(left)}`;
+    visualization += `${EOL}${PAD.repeat(left)}`;
   }
 
-  return `${visualization}${EOL}${PADDING_CHARACTER.repeat(left)}`;
+  return `${visualization}${EOL}${PAD.repeat(left)}`;
 };
 
 /**
@@ -186,11 +186,11 @@ const generatePieLegend = (
     const value = values[index];
     const percentage = (ratios[index] * 100).toFixed(0);
 
-    return `${style}${PADDING_CHARACTER}${key}: ${value}${PADDING_CHARACTER}(${percentage}%)`;
+    return `${style}${PAD}${key}: ${value}${PAD}(${percentage}%)`;
   });
 
   return legendItems
-    .map((item) => `${item}${EOL}${PADDING_CHARACTER.repeat(left)}`)
+    .map((item) => `${item}${EOL}${PAD.repeat(left)}`)
     .join("");
 };
 

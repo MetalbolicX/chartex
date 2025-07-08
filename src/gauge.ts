@@ -1,7 +1,7 @@
 import {
-  PADDING_CHARACTER,
-  validateChartData,
-  centerTextInWidth,
+  PAD,
+  verifyData,
+  padMid,
   EOL,
 } from "./utils/utils.ts";
 
@@ -26,7 +26,7 @@ const renderGaugeChart = (
   data: GaugeChartDatum[],
   options?: GaugeChartOptions
 ): string => {
-  validateChartData(data);
+  verifyData(data);
 
   if (data.length !== 1) {
     throw new TypeError("Gauge chart requires exactly one data item");
@@ -43,7 +43,7 @@ const renderGaugeChart = (
   const { radius, left, style, bgStyle } = chartOptions;
   const [gaugeData] = data;
 
-  let result = PADDING_CHARACTER.repeat(left);
+  let result = PAD.repeat(left);
 
   // Generate the semicircular gauge visualization
   result += generateGaugeVisualization(
@@ -102,11 +102,11 @@ const generateGaugeVisualization = (
           );
         }
       } else {
-        visualization += PADDING_CHARACTER.repeat(2);
+        visualization += PAD.repeat(2);
       }
     }
 
-    visualization += `${EOL}${PADDING_CHARACTER.repeat(left)}`;
+    visualization += `${EOL}${PAD.repeat(left)}`;
   }
 
   return visualization;
@@ -128,7 +128,7 @@ const generateCenterContent = (
 
   return isPercentagePosition
     ? Math.round(value * 100).toString()
-    : PADDING_CHARACTER.repeat(2);
+    : PAD.repeat(2);
 };
 
 /**
@@ -162,11 +162,11 @@ const generateGaugeSegment = (
  * @returns The formatted scale string.
  */
 const generateGaugeScale = (radius: number, label: string): string => {
-  const leftPadding = PADDING_CHARACTER.repeat(radius - 2);
-  const centerLabel = centerTextInWidth(label, 11);
-  const rightPadding = PADDING_CHARACTER.repeat(radius - 4);
+  const leftPadding = PAD.repeat(radius - 2);
+  const centerLabel = padMid(label, 11);
+  const rightPadding = PAD.repeat(radius - 4);
 
-  return `${leftPadding}0${PADDING_CHARACTER.repeat(radius - 4)}${centerLabel}${rightPadding}100`;
+  return `${leftPadding}0${PAD.repeat(radius - 4)}${centerLabel}${rightPadding}100`;
 };
 
 export { renderGaugeChart };
