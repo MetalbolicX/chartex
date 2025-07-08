@@ -41,7 +41,8 @@ const fg = (color: BackgroundColor = "cyan", str: string): string => {
     throw new TypeError(`Invalid foregroundColor: ${JSON.stringify(color)}`);
   }
 
-  const colorCode = parseInt(currentBg) - 10;
+  // Fix: Use the same calculation as in utils.mjs
+  const colorCode = parseInt(bgColors[color]) - 10;
   return `\x1b[${colorCode}m${str}\x1b[0m`;
 };
 
