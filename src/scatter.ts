@@ -1,8 +1,4 @@
 import {
-  // bg,
-  // centerTextInWidth,
-  // fg,
-  // getMaximumKeyLength,
   EOL,
   getOriginLen,
   curBack,
@@ -60,125 +56,6 @@ const printBox = (
 };
 
 /**
- * Creates a legend string from the data items.
- * @param data - Array of scatter plot data items.
- * @param defaultStyle - Default style to use if item doesn't have one.
- * @returns The formatted legend string.
- */
-const createLegend = (data: ScatterPlotDatum[], defaultStyle: string): string => {
-  const keys = new Set(data.map(item => item.key));
-
-  return Array.from(keys)
-    .map(key => {
-      const item = data.find(dataItem => dataItem.key === key);
-      const style = item?.style || defaultStyle;
-      return `${key}: ${style}`;
-    })
-    .join(" | ");
-};
-
-/**
- * Draws the vertical axis with scale markers.
- * @param height - The height of the chart.
- * @param left - The left padding.
- * @param vAxis - The vertical axis configuration.
- * @param vGap - The vertical gap between scale markers.
- * @param ratio - The ratio for scaling values.
- * @returns The formatted vertical axis string.
- */
-const drawVerticalAxis = (
-  height: number,
-  left: number,
-  vAxis: [string, string],
-  vGap: number,
-  ratio: [number, number]
-): string => {
-  let result = PAD.repeat(left + 1) + vAxis[1];
-
-  for (let i = 0; i < height + 1; i++) {
-    const scaleValue = ((height - i) % vGap === 0 && i !== height)
-      ? ((height - i) * ratio[1]).toString()
-      : "";
-
-    result += EOL + scaleValue.padStart(left + 1) + vAxis[0];
-  }
-
-  return result;
-};
-
-/**
- * Draws the horizontal axis with scale markers.
- * @param width - The width of the chart.
- * @param hAxis - The horizontal axis configuration.
- * @param hGap - The horizontal gap between scale markers.
- * @param ratio - The ratio for scaling values.
- * @param hName - The name of the horizontal axis.
- * @returns The formatted horizontal axis string.
- */
-const drawHorizontalAxis = (
-  width: number,
-  hAxis: [string, string, string],
-  hGap: number,
-  ratio: [number, number],
-  hName: string
-): string => {
-  let result = "";
-
-  for (let i = 1; i < (width * 2) + hGap; i++) {
-    if (!(i % (hGap * 2))) {
-      result += hAxis[0];
-
-      // Draw scale of horizontal axis
-      const item = (i / 2) * ratio[0];
-      const len = item.toString().length;
-
-      result += curDown(1) + curBack(1) + item + curUp(1);
-      if (len > 1) {
-        result += curBack(len - 1);
-      }
-
-      continue;
-    }
-
-    result += hAxis[1];
-  }
-
-  result += hAxis[2] + PAD + hName + EOL;
-  return result;
-};
-
-/**
- * Renders data points on the scatter plot.
- * @param data - Array of scatter plot data items.
- * @param defaultStyle - Default style to use if item doesn't have one.
- * @param defaultSides - Default sides to use if item doesn't have them.
- * @param left - The left padding.
- * @returns The formatted data points string.
- */
-const renderDataPoints = (
-  data: ScatterPlotDatum[],
-  defaultStyle: string,
-  defaultSides: [number, number],
-  left: number
-): string => {
-  return data
-    .map(item => {
-      const style = item.style || defaultStyle;
-      const sides = item.sides || defaultSides;
-
-      return printBox(
-        sides[0],
-        sides[1],
-        style,
-        item.value[0] * 2 + left + 1,
-        item.value[1],
-        "data"
-      );
-    })
-    .join("");
-};
-
-/**
  * Creates a scatter plot chart from the provided data.
  * @param data - Array of scatter plot data items.
  * @param options - Configuration options for the scatter plot.
@@ -190,46 +67,100 @@ const renderScatterPlot = (
   options: ScatterPlotOptions = {}
 ): string => {
   verifyData(data);
+
+  const newOpts = {
+    width: 10,
+    left: 2,
+    height: 10,
+    style: "# ",
+    sides: [1, 1] as [number, number],
+    hAxis: ["+", "-", ">"] as [string, string, string],
+    vAxis: ["|", "A"] as [string, string],
+    hName: "X Axis",
+    vName: "Y Axis",
+    zero: "+",
+    ratio: [1, 1] as [number, number],
+    hGap: 2,
+    vGap: 2,
+    legendGap: 0,
+    ...options
+  };
+
   const {
-    width = 10,
-    left = 2,
-    height = 10,
-    style = "# ",
-    sides = [1, 1],
-    hAxis = ["+", "-", ">"],
-    vAxis = ["|", "A"],
-    hName = "X Axis",
-    vName = "Y Axis",
-    zero = "+",
-    ratio = [1, 1],
-    hGap = 2,
-    vGap = 2,
-    legendGap = 0,
-  } = options;
+    left, height, style, sides, width, zero, hAxis, vAxis, ratio,
+    hName, vName, hGap, vGap, legendGap
+  } = newOpts;
 
+  let tmp: string;
   let result = "";
+  const styles = data.map(item => item.style || style);
+  const allSides = data.map(item => item.sides || sides);
+  const keys = new Set(data.map(item => item.key));
 
-  // Add vertical axis name and legend
+  // Calculate min/max values for proper scaling
+  const xValues = data.map(item => item.value[0]);
+  const yValues = data.map(item => item.value[1]);
+  const minX = Math.min(...xValues);
+  const maxX = Math.max(...xValues);
+  const minY = Math.min(...yValues);
+  const maxY = Math.max(...yValues);
+
   result += PAD.repeat(left) + vName;
   result += PAD.repeat(legendGap);
-  result += createLegend(data, style) + EOL.repeat(2);
+  result += Array.from(keys)
+    .map(key => `${key}: ${data.find(item => item.key === key)?.style || style}`)
+    .join(" | ") + EOL.repeat(2);
 
-  // Draw coordinate box
   result += printBox(width + left, height + 1, PAD.repeat(2));
 
-  // Render data points
-  result += renderDataPoints(data, style, sides, left);
+  // Render data points with proper scaling
+  data.forEach((item, index) => {
+    // Scale the coordinates to fit within the chart dimensions
+    const scaledX = Math.round(((item.value[0] - minX) / (maxX - minX)) * width);
+    const scaledY = Math.round(((item.value[1] - minY) / (maxY - minY)) * height);
 
-  // Draw vertical axis
-  result += curBack(width * 2) + curUp(height + 1);
-  result += drawVerticalAxis(height, left, vAxis, vGap, ratio);
+    result += printBox(
+      allSides[index][0],
+      allSides[index][1],
+      styles[index],
+      scaledX * 2 + left + 1,
+      height - scaledY, // Invert Y coordinate (0 at bottom)
+      "data"
+    );
+  });
 
-  // Draw origin point
-  result += curBack() + zero + curDown(1) +
-            curBack(1) + "0" + curUp(1);
+  result += curBack(width * 2) + curUp(height + 1) +
+            PAD.repeat(left + 1) + vAxis[1];
 
-  // Draw horizontal axis
-  result += drawHorizontalAxis(width, hAxis, hGap, ratio, hName);
+  for (let i = 0; i < height + 1; i++) {
+    tmp = ((height - i) % vGap === 0 && i !== height)
+      ? Math.round(minY + ((height - i) / height) * (maxY - minY)).toString()
+      : "";
+    result += EOL + tmp.padStart(left + 1) + vAxis[0];
+  }
+
+  result += curBack() + zero + curDown(1) + curBack(1) + minX.toString() + curUp(1);
+
+  for (let i = 1; i < (width * 2) + hGap; i++) {
+    if (!(i % (hGap * 2))) {
+      result += hAxis[0];
+
+      // Draw scale of horizontal axis with proper scaling
+      const scaleValue = Math.round(minX + ((i / 2) / width) * (maxX - minX));
+      const len = scaleValue.toString().length;
+
+      result += curDown(1) + curBack(1) + scaleValue + curUp(1);
+      if (len > 1) {
+        result += curBack(len - 1);
+      }
+
+      continue;
+    }
+
+    result += hAxis[1];
+  }
+
+  result += hAxis[2] + PAD + hName + EOL;
 
   return result;
 };

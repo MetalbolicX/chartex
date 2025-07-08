@@ -144,7 +144,6 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/node
 # Ignore for ReScript
 .DS_Store
-/lib/
 .bs.lock
 .merlin
 /**/*.res.mjs
