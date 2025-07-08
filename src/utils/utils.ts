@@ -1,4 +1,4 @@
-import { EOL } from "os";
+import { EOL } from "node:os";
 import type { ChartDatum, BackgroundColor } from "../types/types.ts";
 
 const PADDING_CHARACTER = " ";
