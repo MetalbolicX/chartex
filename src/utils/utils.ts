@@ -4,14 +4,14 @@ import { BackgroundColor, ChartDatum } from "../types/types.ts";
 const PAD = " ";
 
 const bgColors: Record<BackgroundColor, string> = {
-  "black": "40",
-  "red": "41",
-  "green": "42",
-  "yellow": "43",
-  "blue": "44",
-  "magenta": "45",
-  "cyan": "46",
-  "white": "47"
+  black: "40",
+  red: "41",
+  green: "42",
+  yellow: "43",
+  blue: "44",
+  magenta: "45",
+  cyan: "46",
+  white: "47",
 };
 
 /**
@@ -57,7 +57,9 @@ const padMid = (str: string, width: number): string => {
 
   return length > width
     ? str.padEnd(width)
-    : `${PAD.repeat(mid)}${str}${PAD.repeat(mid + ((mid * 2 + length) > width ? -1 : 0))}`;
+    : `${PAD.repeat(mid)}${str}${PAD.repeat(
+        mid + (mid * 2 + length > width ? -1 : 0)
+      )}`;
 };
 
 /**
@@ -68,10 +70,30 @@ const padMid = (str: string, width: number): string => {
 const verifyData = (data: ChartDatum[]): void => {
   const length = data.length;
 
-  if (!Array.isArray(data) ||
-    length === 0 ||
-    !data.every(item => item.key && !Number.isNaN(Number(item.value)))
-  ) {
+  if (!Array.isArray(data) || length === 0) {
+    throw new TypeError(`Invalid data: ${JSON.stringify(data)}`);
+  }
+
+  const isValidItem = (item: ChartDatum): boolean => {
+    if (!item.key) return false;
+
+    // Handle single number values
+    if (typeof item.value === "number") {
+      return !Number.isNaN(item.value);
+    }
+
+    // Handle coordinate array values [x, y]
+    if (Array.isArray(item.value)) {
+      return (
+        item.value.length === 2 &&
+        item.value.every((val) => typeof val === "number" && !Number.isNaN(val))
+      );
+    }
+
+    return false;
+  };
+
+  if (!data.every(isValidItem)) {
     throw new TypeError(`Invalid data: ${JSON.stringify(data)}`);
   }
 };
@@ -82,7 +104,7 @@ const verifyData = (data: ChartDatum[]): void => {
  * @returns The maximum key length
  */
 const maxKeyLen = (data: ChartDatum[]): number =>
-  Math.max(...data.map(item => item.key.length));
+  Math.max(...data.map((item) => item.key.length));
 
 /**
  * Gets the original length of a string without ANSI escape sequences
@@ -132,5 +154,5 @@ export {
   curForward,
   curUp,
   curDown,
-  curBack
+  curBack,
 };
