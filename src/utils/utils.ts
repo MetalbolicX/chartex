@@ -1,5 +1,5 @@
 import { EOL } from "node:os";
-import type { BackgroundColor, ChartDatum } from "../types/types.ts";
+import type { BackgroundColor, ChartDatum, ScatterPlotDatum } from "../types/types.ts";
 
 /**
  * Padding character used throughout the utility functions
@@ -146,18 +146,142 @@ const curDown = (step: number = 1): string => `\x1b[${step}B`;
  */
 const curBack = (step: number = 1): string => `\x1b[${step}D`;
 
+/**
+ * Transforms data with x/y coordinates into ScatterPlotDatum format
+ * @param data - Array of objects with x, y coordinates and optional category
+ * @param categoryKey - Key name for the category field (default: "category")
+ * @param xKey - Key name for the x coordinate field (default: "x")
+ * @param yKey - Key name for the y coordinate field (default: "y")
+ * @param defaultStyle - Default style to apply if none provided
+ * @returns Array of ScatterPlotDatum objects
+ */
+const transformScatterData = <T extends Record<string, any>>(
+  data: T[],
+  categoryKey: keyof T = "category" as keyof T,
+  xKey: keyof T = "x" as keyof T,
+  yKey: keyof T = "y" as keyof T,
+  defaultStyle?: string
+): ScatterPlotDatum[] => {
+  return data.map((item) => ({
+    key: String(item[categoryKey] ?? "Unknown"),
+    value: [Number(item[xKey]), Number(item[yKey])] as [number, number],
+    ...(defaultStyle && { style: defaultStyle }),
+  }));
+};
+
+/**
+ * Transforms data with value field into chart datum format
+ * @param data - Array of objects with value and optional category
+ * @param categoryKey - Key name for the category field (default: "category")
+ * @param valueKey - Key name for the value field (default: "value")
+ * @param defaultStyle - Default style to apply if none provided
+ * @returns Array of chart datum objects
+ */
+const transformChartData = <T extends Record<string, any>>(
+  data: T[],
+  categoryKey: keyof T = "category" as keyof T,
+  valueKey: keyof T = "value" as keyof T,
+  defaultStyle?: string
+): Array<{ key: string; value: number; style?: string }> => {
+  return data.map((item) => ({
+    key: String(item[categoryKey] ?? "Unknown"),
+    value: Number(item[valueKey]),
+    ...(defaultStyle && { style: defaultStyle }),
+  }));
+};
+
+/**
+ * Transforms array of values into chart datum format with auto-generated keys
+ * @param values - Array of numeric values
+ * @param keyPrefix - Prefix for auto-generated keys (default: "Item")
+ * @param defaultStyle - Default style to apply if none provided
+ * @returns Array of chart datum objects
+ */
+const transformSimpleData = (
+  values: number[],
+  keyPrefix: string = "Item",
+  defaultStyle?: string
+): Array<{ key: string; value: number; style?: string }> => {
+  return values.map((value, index) => ({
+    key: `${keyPrefix} ${index + 1}`,
+    value,
+    ...(defaultStyle && { style: defaultStyle }),
+  }));
+};
+
+/**
+ * Transforms key-value pairs object into chart datum format
+ * @param data - Object with string keys and numeric values
+ * @param defaultStyle - Default style to apply if none provided
+ * @returns Array of chart datum objects
+ */
+const transformObjectData = (
+  data: Record<string, number>,
+  defaultStyle?: string
+): Array<{ key: string; value: number; style?: string }> => {
+  return Object.entries(data).map(([key, value]) => ({
+    key,
+    value,
+    ...(defaultStyle && { style: defaultStyle }),
+  }));
+};
+
+/**
+ * Transforms data with custom field mapping
+ * @param data - Array of objects to transform
+ * @param mapping - Object defining field mappings
+ * @param defaultStyle - Default style to apply if none provided
+ * @returns Array of chart datum objects
+ */
+const transformCustomData = <T extends Record<string, any>>(
+  data: T[],
+  mapping: {
+    key: keyof T;
+    value: keyof T;
+    x?: keyof T;
+    y?: keyof T;
+  },
+  defaultStyle?: string
+): Array<{ key: string; value: number | [number, number]; style?: string }> => {
+  return data.map((item) => {
+    const baseData = {
+      key: String(item[mapping.key] ?? "Unknown"),
+      ...(defaultStyle && { style: defaultStyle }),
+    };
+
+    // Handle scatter plot data (x, y coordinates)
+    if (mapping.x && mapping.y) {
+      return {
+        ...baseData,
+        value: [Number(item[mapping.x]), Number(item[mapping.y])] as [number, number],
+      };
+    }
+
+    // Handle regular chart data (single value)
+    return {
+      ...baseData,
+      value: Number(item[mapping.value]),
+    };
+  });
+};
+
 export {
-  PAD,
-  EOL,
   bg,
-  fg,
-  padMid,
-  verifyData,
-  maxKeyLen,
-  getOriginLen,
+  curBack,
+  curDown,
   curForward,
   curUp,
-  curDown,
-  curBack,
+  EOL,
+  fg,
+  getOriginLen,
+  maxKeyLen,
+  PAD,
+  padMid,
+  transformChartData,
+  transformCustomData,
+  transformObjectData,
+  transformScatterData,
+  transformSimpleData,
+  verifyData,
 };
 

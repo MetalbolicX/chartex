@@ -1,4 +1,12 @@
-import { bg, fg } from "./utils/utils.ts";
+import {
+  bg,
+  fg,
+  transformChartData,
+  transformObjectData,
+  transformCustomData,
+  transformScatterData,
+  transformSimpleData,
+} from "./utils/utils.ts";
 import bar from "./charts/bar.ts";
 import bullet from "./charts/bullet.ts";
 import donut from "./charts/donut.ts";
@@ -32,6 +40,11 @@ export {
   gauge,
   pie,
   scatter,
+  transformChartData,
+  transformObjectData,
+  transformCustomData,
+  transformScatterData,
+  transformSimpleData,
   type BackgroundColor,
   type BarChartDatum,
   type BarChartOptions,
@@ -46,4 +59,4 @@ export {
   type PieChartOptions,
   type ScatterPlotDatum,
   type ScatterPlotOptions,
-}
+};
