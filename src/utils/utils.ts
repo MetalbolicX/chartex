@@ -1,14 +1,10 @@
 import { EOL } from "node:os";
+import type { BackgroundColor, ChartDatum } from "../types/types.ts";
 
 /**
  * Padding character used throughout the utility functions
  */
 const PAD = " ";
-
-/**
- * Background color options for terminal styling
- */
-type BackgroundColor = "black" | "red" | "green" | "yellow" | "blue" | "magenta" | "cyan" | "white";
 
 /**
  * Background color codes for terminal styling
@@ -23,14 +19,6 @@ const bgColors: Record<BackgroundColor, string> = {
   cyan: "46",
   white: "47",
 };
-
-/**
- * Chart data point structure
- */
-interface ChartDatum {
-  key: string;
-  value: number | [number, number];
-}
 
 /**
  * Creates a background colored block
@@ -173,4 +161,3 @@ export {
   curBack,
 };
 
-export type { BackgroundColor, ChartDatum };

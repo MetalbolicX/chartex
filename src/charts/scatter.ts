@@ -7,55 +7,8 @@ import {
   curDown,
   curBack,
   getOriginLen,
-} from "./utils.ts";
-
-import type { ChartDatum } from "./utils.ts";
-
-/**
- * Configuration options for scatter plot
- */
-interface ScatterPlotOptions {
-  /** Width of the scatter plot */
-  width?: number;
-  /** Left offset position */
-  left?: number;
-  /** Height of the scatter plot */
-  height?: number;
-  /** Default style character for data points */
-  style?: string;
-  /** Default size of data points [width, height] */
-  sides?: [number, number];
-  /** Horizontal axis characters [mark, line, arrow] */
-  hAxis?: [string, string, string];
-  /** Vertical axis characters [line, arrow] */
-  vAxis?: [string, string];
-  /** Horizontal axis name */
-  hName?: string;
-  /** Vertical axis name */
-  vName?: string;
-  /** Character for origin point */
-  zero?: string;
-  /** Scale ratio for [x, y] axes */
-  ratio?: [number, number];
-  /** Gap between horizontal axis marks */
-  hGap?: number;
-  /** Gap between vertical axis marks */
-  vGap?: number;
-  /** Gap between axis name and legend */
-  legendGap?: number;
-}
-
-/**
- * Scatter plot data point structure
- */
-interface ScatterPlotDatum extends Omit<ChartDatum, "value"> {
-  /** The x,y coordinates for the data point */
-  value: [number, number];
-  /** Custom style character for this data point */
-  style?: string;
-  /** Custom size for this data point [width, height] */
-  sides?: [number, number];
-}
+} from "../utils/utils.ts";
+import type { ScatterPlotDatum, ScatterPlotOptions } from "../types/types.ts";
 
 /**
  * Box type for positioning
@@ -224,4 +177,3 @@ const scatter = (
 };
 
 export default scatter;
-export type { ScatterPlotOptions, ScatterPlotDatum };
