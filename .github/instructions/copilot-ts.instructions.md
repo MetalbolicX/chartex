@@ -72,6 +72,17 @@ const [first, second, ...rest] = numbers;
 
 const person = { name: "Alice", age: 30, city: "Wonderland", phone: "123-456-7890" };
 const { name, age, ...rest } = person;
+
+// Functions with destructured parameters
+const printPerson = ({ name, age, city }): void =>
+  console.log(`Name: ${name}, Age: ${age}, City: ${city}`);
+
+const printCoordinates = ([x, y]: [number, number]): void =>
+  console.log(`X: ${x}, Y: ${y}`);
+
+// USe spread operator for variadic arguments
+const sum = (...numbers: number[]): number =>
+  numbers.reduce((total, num) => total + num, 0);
 ```
 
 - When it is necessary to get the last value of an array, always use the `at` method instead of the index. For example: `const lastItem = items.at(-1);`
