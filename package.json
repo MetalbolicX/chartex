@@ -17,7 +17,7 @@
   "scripts": {
     "docs": "docsify serve docs",
     "start": "echo \"Hello world\"",
-    "build": "tsup index.js --format esm,cjs --dts --minify"
+    "build": "tsup src/index.ts --format esm,cjs --dts --minify"
   },
   "author": {
     "name": "José Martínez Santana"
