@@ -12,6 +12,7 @@ description: This document provides guidelines and best practices for writing Ty
 - In JavaScript files always use JsDoc when a variable is declared, and for functions and methods of the classes.
 - Always use `===` and `!==` for comparisons instead of `==` and `!=` to avoid type coercion issues.
 - Use `async/await` for asynchronous code instead of callbacks or `.then()` chaining.
+- In TypeScript files, for primitive types, never add the types annotation, because TypeScript will infer the type. For example, use `const name = "Alice";` instead of `const name: string = "Alice";`.
 
 ## Naming Conventions
 
