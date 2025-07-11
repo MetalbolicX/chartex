@@ -3,7 +3,21 @@ applyTo: "**"
 description: General guidelines and best practices for writing code.
 ---
 
-# Apply clean code principles and best practices
+# Genral Guidelines for Writing Code
+
+## General Guidelines
+
+- Always verify information before presenting it. Do not make assumptions or speculate without clear evidence.
+- Make changes file by file and allow for review of mistakes.
+- Never use apologies or give feedback about understanding in comments or documentation.
+- Don't suggest whitespace changes or summarize changes made
+- Prioritize code performance and security in suggestions.
+- Implement robust error handling and logging where necessary.
+- Encourage modular design for maintainability and reusability.
+- Replace hardcoded values with named constants.
+- Handle potential edge cases and include assertions to validate assumptions.
+
+## Apply clean code principles and best practices
 
 - For boolean data types, use names that simulate a question such as `hasOne`, `isAtLeastOne`, `isValid`, `isEmpty`, etc.
 - For functions, use names that simulate an action such as `validateUser`, etc.
