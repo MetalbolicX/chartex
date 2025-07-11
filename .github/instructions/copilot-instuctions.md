@@ -1,5 +1,6 @@
 ---
 applyTo: "**"
+description: General guidelines and best practices for writing code.
 ---
 
 # Apply clean code principles and best practices
@@ -9,7 +10,7 @@ applyTo: "**"
 - Avoid using abbreviations or acronyms in names unless they are widely recognized (e.g., `HTML`, `URL`, `API`) or they are part of a convention by a given context. For example:
 
 ```js
-// In d3.js a callback uses d, i, ns for data, index, and values if the array
+// In d3.js a callback uses d, i, ns to refer to data, index, and elements in an array respectively.
 d3.select("body")
   .selectAll("p")
   .data(data)
@@ -25,6 +26,19 @@ const display = {
 ```
 
 - Avoid the use of nested `if` statements and take advantage of early return.
+
+```ts
+// Recommended
+function processData(data: DataType): ResultType {
+  if (!data) {
+    return null; // Early return for invalid data
+  }
+
+  // Process data here
+  return result;
+}
+```
+
 - Use meaningful names that describe the purpose of the variable, function, or class.
 
 ```ts

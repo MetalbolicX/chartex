@@ -9,7 +9,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "allowImportingTsExtensions": true,
-    "emitDeclarationOnly": false
+    "noEmit": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
