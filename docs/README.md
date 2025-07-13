@@ -9,7 +9,7 @@
 - **Text-Based Charts**: Create bar charts, line charts, and more using ASCII text characters.
 - **Terminal Compatibility**: Works in any terminal or console, making it ideal for command-line applications.
 - **Customizable Styles**: Easily customize the appearance of charts with different characters and styles.
-- **Lightweight**: No dependencies.
+- **Lightweight**: No dependencies ensure fast performance and easy integration.
 - **For any JavaScript runtime**: Execute in any moder JavaScript runtime.
 - **TypeScript Support**: Fully typed with TypeScript for better development experience.
 - **Easy to Use**: Simple API for quick chart rendering.
