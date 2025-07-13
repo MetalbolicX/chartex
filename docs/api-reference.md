@@ -301,6 +301,118 @@ console.log(donut(budgetData, options));
 
 ### `gauge`
 
+Creates a gauge chart to display a single value as a semi-circular meter. The chart shows a value as a filled arc within a semi-circle, with percentage display and customizable styling, ideal for showing progress, performance metrics, or completion status.
+
+#### Signature
+
+```ts
+gauge(data: GaugeChartDatum[], opts?: GaugeChartOptions): string
+```
+
+#### Parameters
+
+- `data` (GaugeChartDatum[]): An array containing a single data point for the gauge chart.
+- `opts` (GaugeChartOptions, optional): Configuration options for customizing the gauge appearance.
+
+#### Types
+
+```ts
+interface GaugeChartDatum {
+  key: string;           // The label for the gauge
+  value: number;         // The numeric value (0-1 representing 0-100%)
+  style?: string;        // Optional custom style character for the filled portion
+}
+
+interface GaugeChartOptions {
+  radius?: number;       // Radius of the gauge (default: 5)
+  left?: number;         // Left offset position (default: 2)
+  style?: string;        // Default style character for filled portion (default: "# ")
+  bgStyle?: string;      // Background style character for unfilled portion (default: "+ ")
+}
+```
+
+#### Returns
+
+A string representation of the gauge chart, which can be printed to the terminal.
+
+#### Examples
+
+##### Basic Gauge Chart
+
+```ts
+import { gauge } from "chartex";
+
+const performanceData = [
+  { key: "CPU Usage", value: 0.75 }
+];
+
+console.log(gauge(performanceData));
+```
+
+**Output:**
+
+```sh
+  + + + + + + + + + +
++ + + + + + + + + + + +
++ + # # # # # # + + + +
++ + # # 75 # # + + + +
++ + # # # # # # + + + +
+  0     CPU Usage     100
+```
+
+##### Custom Gauge Chart with Options
+
+```ts
+import { gauge } from "chartex";
+
+const batteryData = [
+  { key: "Battery Level", value: 0.42, style: "█ " }
+];
+
+const options = {
+  radius: 7,
+  left: 3,
+  bgStyle: "░ ",
+  style: "▓ "
+};
+
+console.log(gauge(batteryData, options));
+```
+
+##### Multiple Gauge Examples
+
+```ts
+import { gauge } from "chartex";
+
+// Low value example
+const lowValueData = [{ key: "Progress", value: 0.25 }];
+console.log(gauge(lowValueData));
+
+// High value example
+const highValueData = [{ key: "Completion", value: 0.90 }];
+console.log(gauge(highValueData));
+
+// Custom styling
+const customData = [{ key: "Score", value: 0.68, style: "●●" }];
+const customOptions = {
+  radius: 6,
+  bgStyle: "○○",
+  left: 4
+};
+console.log(gauge(customData, customOptions));
+```
+
+**Note:**
+
+- The gauge accepts only a single data item (the first item in the array is used).
+- Values should be between 0 and 1, representing 0% to 100%.
+- The percentage value is automatically calculated and displayed in the center of the gauge.
+- The gauge displays a semi-circular arc with the filled portion representing the current value.
+- Individual gauges can have custom styling by providing a style property in the data.
+- The chart includes scale labels (0 and 100) and the key label at the bottom.
+- The function validates input data and throws a TypeError for invalid data formats.
+- The gauge uses ASCII characters to approximate a semi-circular meter in the terminal.
+
 ### `pie`
 
 ### `scatter`

@@ -8,7 +8,7 @@
 
 **Supported Versions:**
 
-![npm](https://img.shields.io/badge/npm->=20.0.0-blue)
+![npm](https://img.shields.io/badge/npm->=22.x.x-blue)
 
 ## 🚀 Quick Installation
 
