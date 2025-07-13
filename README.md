@@ -1,7 +1,7 @@
 # chartex
 
 <div align="center">
-  <img src="./images/chartex-logo.png" alt="chartex Logo" width="900" height="200" />
+  <img src="./images/logo.svg" alt="chartex Logo" width="100" height="100" />
 </div>
 
 > `chartex` Making sense of data, one character at a time, on any screen.
