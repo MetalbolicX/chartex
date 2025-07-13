@@ -356,7 +356,237 @@ console.log(gauge(customData, customOptions));
 
 ### `pie`
 
+Creates a pie chart representing data as segments of a circle. The chart displays each data value as a proportional slice of the pie, with a legend showing labels, values, and percentages for each segment.
+
+#### Signature
+
+```ts
+pie(data: PieChartDatum[], opts?: PieChartOptions): string
+```
+
+#### Parameters
+
+- `data` (PieChartDatum[]): An array of data points for the pie chart.
+- `opts` (PieChartOptions, optional): Configuration options for customizing the chart appearance.
+
+#### Types
+
+```ts
+interface PieChartDatum {
+  key: string;           // The label for the pie segment
+  value: number;         // The numeric value for the segment
+  style?: string;        // Optional custom style character for this segment
+}
+
+interface PieChartOptions {
+  radius?: number;       // Radius of the pie chart (default: 4)
+  left?: number;         // Left offset position (default: 0)
+  innerRadius?: number;  // Inner radius (used for donut charts, default: 1)
+}
+```
+
+#### Returns
+
+A string representation of the pie chart, which can be printed to the terminal.
+
+#### Examples
+
+##### Basic Pie Chart
+
+```ts
+import { pie } from "chartex";
+
+const expenseData = [
+  { key: "Housing", value: 1200, style: "██" },
+  { key: "Food", value: 800, style: "▓▓" },
+  { key: "Transport", value: 400, style: "▒▒" },
+  { key: "Entertainment", value: 300, style: "░░" }
+];
+
+console.log(pie(expenseData));
+```
+
+##### Custom Pie Chart with Options
+
+```ts
+import { pie } from "chartex";
+
+const surveyData = [
+  { key: "Very Satisfied", value: 45, style: "██" },
+  { key: "Satisfied", value: 35, style: "▓▓" },
+  { key: "Neutral", value: 15, style: "▒▒" },
+  { key: "Dissatisfied", value: 5, style: "░░" }
+];
+
+const options = {
+  radius: 6,
+  left: 2
+};
+
+console.log(pie(surveyData, options));
+```
+
+##### Multiple Pie Chart Examples
+
+```ts
+import { pie } from "chartex";
+
+// Market share data
+const marketData = [
+  { key: "Chrome", value: 65, style: "██" },
+  { key: "Firefox", value: 18, style: "▓▓" },
+  { key: "Safari", value: 12, style: "▒▒" },
+  { key: "Edge", value: 5, style: "░░" }
+];
+
+console.log(pie(marketData));
+
+// Small pie chart
+const smallData = [
+  { key: "Yes", value: 70, style: "██" },
+  { key: "No", value: 30, style: "▒▒" }
+];
+
+const smallOptions = { radius: 3, left: 1 };
+console.log(pie(smallData, smallOptions));
+```
+
+> [!Note]
+> - The chart automatically calculates percentages based on the total sum of all values.
+> - Each segment is proportionally sized according to its value relative to the total.
+> - The legend displays the style character, label, value, and percentage for each segment.
+> - Individual segments require custom styling through the style property in the data.
+> - The chart uses ASCII characters to approximate circular shapes in the terminal.
+> - Legend entries are automatically formatted with consistent spacing and alignment.
+
 ### `scatter`
+
+Creates a scatter plot chart to display data points as coordinates on a two-dimensional plane. The chart shows individual data points with customizable styling and includes labeled axes with scales, making it ideal for visualizing correlations and distributions.
+
+#### Signature
+
+```ts
+scatter(data: ScatterPlotDatum[], opts?: ScatterPlotOptions): string
+```
+
+#### Parameters
+
+- `data` (ScatterPlotDatum[]): An array of data points for the scatter plot.
+- `opts` (ScatterPlotOptions, optional): Configuration options for customizing the chart appearance.
+
+#### Types
+
+```ts
+interface ScatterPlotDatum {
+  key: string;           // The label/category for the data point
+  value: [number, number]; // The [x, y] coordinates for the point
+  style?: string;        // Optional custom style character for this point
+  sides?: [number, number]; // Optional custom size [width, height] for this point
+}
+
+interface ScatterPlotOptions {
+  width?: number;        // Width of the plot area (default: 10)
+  height?: number;       // Height of the plot area (default: 10)
+  left?: number;         // Left offset position (default: 2)
+  style?: string;        // Default style character for points (default: "# ")
+  sides?: [number, number]; // Default size for points (default: [1, 1])
+  hAxis?: [string, string, string]; // Horizontal axis characters [tick, line, arrow] (default: ["+", "-", ">"])
+  vAxis?: [string, string]; // Vertical axis characters [line, arrow] (default: ["|", "A"])
+  hName?: string;        // Horizontal axis label (default: "X Axis")
+  vName?: string;        // Vertical axis label (default: "Y Axis")
+  zero?: string;         // Origin point character (default: "+")
+  ratio?: [number, number]; // Scale ratio for [x, y] axes (default: [1, 1])
+  hGap?: number;         // Gap between horizontal scale marks (default: 2)
+  vGap?: number;         // Gap between vertical scale marks (default: 2)
+  legendGap?: number;    // Gap between axis label and legend (default: 0)
+}
+```
+
+#### Returns
+
+A string representation of the scatter plot chart, which can be printed to the terminal.
+
+#### Examples
+
+##### Basic Scatter Plot
+
+```ts
+import { scatter } from "chartex";
+
+const temperatureData = [
+  { key: "Jan", value: [1, 2] },
+  { key: "Feb", value: [2, 3] },
+  { key: "Mar", value: [3, 5] },
+  { key: "Apr", value: [4, 7] },
+  { key: "May", value: [5, 8] }
+];
+
+console.log(scatter(temperatureData));
+```
+
+##### Custom Scatter Plot with Options
+
+```ts
+import { scatter } from "chartex";
+
+const performanceData = [
+  { key: "Team A", value: [3, 4], style: "██", sides: [1, 1] },
+  { key: "Team B", value: [5, 6], style: "▓▓", sides: [1, 1] },
+  { key: "Team C", value: [2, 8], style: "▒▒", sides: [1, 1] },
+  { key: "Team D", value: [7, 5], style: "░░", sides: [1, 1] }
+];
+
+const options = {
+  width: 12,
+  height: 8,
+  left: 3,
+  hName: "Experience (years)",
+  vName: "Performance Score",
+  ratio: [1, 10],
+  hGap: 3,
+  vGap: 2,
+  legendGap: 2
+};
+
+console.log(scatter(performanceData, options));
+```
+
+##### Multiple Data Series Example
+
+```ts
+import { scatter } from "chartex";
+
+const salesData = [
+  { key: "Q1", value: [1, 120], style: "●●" },
+  { key: "Q1", value: [2, 150], style: "●●" },
+  { key: "Q2", value: [3, 180], style: "▲▲" },
+  { key: "Q2", value: [4, 160], style: "▲▲" },
+  { key: "Q3", value: [5, 200], style: "■■" },
+  { key: "Q3", value: [6, 190], style: "■■" }
+];
+
+const salesOptions = {
+  width: 15,
+  height: 10,
+  hName: "Month",
+  vName: "Sales ($k)",
+  ratio: [1, 20],
+  hGap: 2,
+  vGap: 3,
+  left: 4
+};
+
+console.log(scatter(salesData, salesOptions));
+```
+
+> [!Note]
+> - Each data point is positioned using [x, y] coordinates in the value array.
+> - The chart automatically scales based on the specified ratio for both axes.
+> - Individual points can have custom styling and size through style and sides properties.
+> - The legend displays all unique keys with their corresponding styles.
+> - Axes include scale markers based on the specified gap values and ratios.
+> - The chart supports multiple data series by using the same key with different coordinates.
+> - The coordinate system uses the bottom-left as the origin (0, 0).
 
 ## Data Transformation Functions
 
