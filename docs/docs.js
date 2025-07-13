@@ -1,3 +1,5 @@
+"use strict";
+
 window.$docsify = {
   name: "chartex",
   repo: "https://github.com/MetalbolicX/chartex.git",
@@ -18,4 +20,7 @@ window.$docsify = {
     depth: 2,
     maxAge: 86400000, // 1 day
   },
+  "flexible-alerts": {
+    style: "flat"
+  }
 };

@@ -95,13 +95,15 @@ const options = {
 console.log(bar(customData, options));
 ```
 
-**Note:**
 
-- The chart automatically scales bars proportionally to the maximum value in the dataset.
-- Values are displayed at the top of each bar when space permits.
-- Labels are shown at the bottom of each bar, truncated if they exceed the bar width.
-- Individual bars can have custom styling by providing a style property in the data.
-- The function validates input data and throws a TypeError for invalid data formats.
+> [!Note]
+> - The chart automatically adjusts the height based on the maximum value in the dataset.
+> - Value labels are displayed at the top of each bar when space permits.
+> - Labels are shown at the bottom of each bar, truncated if they exceed the bar width.
+> - Individual bars can have custom styling by providing a style property in the data.
+
+> [!Warning]
+> - The function validates input data and throws a TypeError for invalid data formats.
 
 ### `bullet`
 
