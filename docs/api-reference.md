@@ -58,20 +58,6 @@ const salesData = [
 console.log(bar(salesData));
 ```
 
-**Output:**
-
-```sh
-                  180
-                  ***
-        150       ***
-        ***       ***
-        ***       ***
- 120    ***       ***
- ***    ***       ***    90
- ***    ***       ***    ***
- Q1     Q2        Q3     Q4
-```
-
 ##### Custom Bar Chart with Options
 
 ```ts
@@ -95,15 +81,11 @@ const options = {
 console.log(bar(customData, options));
 ```
 
-
 > [!Note]
 > - The chart automatically adjusts the height based on the maximum value in the dataset.
 > - Value labels are displayed at the top of each bar when space permits.
 > - Labels are shown at the bottom of each bar, truncated if they exceed the bar width.
 > - Individual bars can have custom styling by providing a style property in the data.
-
-> [!Warning]
-> - The function validates input data and throws a TypeError for invalid data formats.
 
 ### `bullet`
 
@@ -159,15 +141,6 @@ const performanceData = [
 console.log(bullet(performanceData));
 ```
 
-**Output:**
-
-```ts
-Development [96] **********
-    Support [78] ********
-  Marketing [92] *********
-      Sales [85] *********
-```
-
 ##### Custom Bullet Chart with Options
 
 ```ts
@@ -190,13 +163,11 @@ const options = {
 console.log(bullet(projectProgress, options));
 ```
 
-**Note:**
-
-- The chart automatically scales bars proportionally to the maximum value in the dataset.
-- Labels and values are displayed on the left side with consistent alignment.
-- Individual bars can have custom styling and width by providing style and barWidth properties.
-- The chart supports multiple lines per bar when barWidth is greater than 1.
-- The function validates input data and throws a TypeError for invalid data formats.
+> [!Note]
+> - The chart automatically scales bars proportionally to the maximum value in the dataset.
+> - Labels and values are displayed on the left side with consistent alignment.
+> - Individual bars can have custom styling and width by providing style and barWidth properties.
+> - The chart supports multiple lines per bar when barWidth is greater than 1.
 
 ### `donut`
 
@@ -253,21 +224,6 @@ const marketShareData = [
 console.log(donut(marketShareData));
 ```
 
-**Output:**
-
-```sh
-    ***
-  ******* ****
- ***   ***   ***
- **** **** ****
-  ******* ****
-    ***   ***
-
-Desktop: 45%
-Mobile: 35%
-Tablet: 20%
-```
-
 ##### Custom Donut Chart with Options
 
 ```ts
@@ -291,15 +247,13 @@ const options = {
 console.log(donut(budgetData, options));
 ```
 
-**Note:**
-
-- The chart automatically calculates percentages based on the total sum of all values.
-- Segments are proportionally sized according to their values relative to the total.
-- The hollow center creates the characteristic donut appearance.
-- Individual segments can have custom styling by providing a style property in the data.
-- Labels and percentages are displayed below the chart when enabled.
-- The function validates input data and throws a TypeError for invalid data formats.
-- The chart uses ASCII characters to approximate circular shapes in the terminal.
+> [!Note]
+> - The chart automatically calculates percentages based on the total sum of all values.
+> - Segments are proportionally sized according to their values relative to the total.
+> - The hollow center creates the characteristic donut appearance.
+> - Individual segments can have custom styling by providing a style property in the data.
+> - Labels and percentages are displayed below the chart when enabled.
+> - The chart uses ASCII characters to approximate circular shapes in the terminal.
 
 ### `gauge`
 
@@ -351,17 +305,6 @@ const performanceData = [
 console.log(gauge(performanceData));
 ```
 
-**Output:**
-
-```sh
-  + + + + + + + + + +
-+ + + + + + + + + + + +
-+ + # # # # # # + + + +
-+ + # # 75 # # + + + +
-+ + # # # # # # + + + +
-  0     CPU Usage     100
-```
-
 ##### Custom Gauge Chart with Options
 
 ```ts
@@ -404,16 +347,12 @@ const customOptions = {
 console.log(gauge(customData, customOptions));
 ```
 
-**Note:**
-
-- The gauge accepts only a single data item (the first item in the array is used).
-- Values should be between 0 and 1, representing 0% to 100%.
-- The percentage value is automatically calculated and displayed in the center of the gauge.
-- The gauge displays a semi-circular arc with the filled portion representing the current value.
-- Individual gauges can have custom styling by providing a style property in the data.
-- The chart includes scale labels (0 and 100) and the key label at the bottom.
-- The function validates input data and throws a TypeError for invalid data formats.
-- The gauge uses ASCII characters to approximate a semi-circular meter in the terminal.
+> [!Note]
+> - Values should be between 0 and 1, representing 0% to 100%.
+> - The percentage value is automatically calculated and displayed in the center of the gauge.
+> - The gauge displays a semi-circular arc with the filled portion representing the current value.
+> - Individual gauges can have custom styling by providing a style property in the data.
+> - The chart includes scale labels (0 and 100) and the key label at the bottom.
 
 ### `pie`
 
