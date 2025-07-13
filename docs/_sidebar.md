@@ -1,4 +1,3 @@
 - [Home](/)
 - [Getting Started](/getting-started)
 - [API Reference](/api-reference)
-- [Tutorials](/tutorials)
