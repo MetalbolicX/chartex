@@ -4,6 +4,6 @@
 
 ![ReScript version](https://img.shields.io/badge/ReScript-%3E%3D11.0.0-blue)
 
-[Getting Started](/pages/getting-started)
-[API Reference](/pages/api-reference)
+[Getting Started](/getting-started)
+[API Reference](/api-reference)
 [GitHub](https://github.com/MetalbolicX/chartex)
