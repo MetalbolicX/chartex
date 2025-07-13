@@ -198,6 +198,107 @@ console.log(bullet(projectProgress, options));
 
 ### `donut`
 
+Creates a donut chart with a hollow center, representing data as segments around a circle. The chart displays percentages and labels for each data segment, with customizable styling and positioning.
+
+#### Signature
+
+```ts
+donut(data: DonutChartDatum[], opts?: DonutChartOptions): string
+```
+
+#### Parameters
+
+- `data` (DonutChartDatum[]): An array of data points for the donut chart.
+- `opts` (DonutChartOptions, optional): Configuration options for customizing the chart appearance.
+
+#### Types
+
+```ts
+interface DonutChartDatum {
+  key: string;           // The label for the segment
+  value: number;         // The numeric value for the segment
+  style?: string;        // Optional custom style character for this segment
+}
+
+interface DonutChartOptions {
+  radius?: number;       // Radius of the donut (default: 5)
+  innerRadius?: number;  // Inner radius for the hollow center (default: 2)
+  left?: number;         // Left offset position (default: 1)
+  padding?: number;      // Padding around the chart (default: 1)
+  style?: string;        // Default style character for segments (default: "*")
+  showPercentage?: boolean; // Whether to show percentage values (default: true)
+  showLabels?: boolean;  // Whether to show labels (default: true)
+}
+```
+
+#### Returns
+
+A string representation of the donut chart, which can be printed to the terminal.
+
+#### Examples
+
+##### Basic Donut Chart
+
+```ts
+import { donut } from "chartex";
+
+const marketShareData = [
+  { key: "Desktop", value: 45 },
+  { key: "Mobile", value: 35 },
+  { key: "Tablet", value: 20 }
+];
+
+console.log(donut(marketShareData));
+```
+
+**Output:**
+
+```sh
+    ***
+  ******* ****
+ ***   ***   ***
+ **** **** ****
+  ******* ****
+    ***   ***
+
+Desktop: 45%
+Mobile: 35%
+Tablet: 20%
+```
+
+##### Custom Donut Chart with Options
+
+```ts
+import { donut } from "chartex";
+
+const budgetData = [
+  { key: "Salaries", value: 60, style: "█" },
+  { key: "Marketing", value: 25, style: "▓" },
+  { key: "Operations", value: 15, style: "▒" }
+];
+
+const options = {
+  radius: 7,
+  innerRadius: 3,
+  left: 3,
+  padding: 2,
+  showPercentage: true,
+  showLabels: true
+};
+
+console.log(donut(budgetData, options));
+```
+
+**Note:**
+
+- The chart automatically calculates percentages based on the total sum of all values.
+- Segments are proportionally sized according to their values relative to the total.
+- The hollow center creates the characteristic donut appearance.
+- Individual segments can have custom styling by providing a style property in the data.
+- Labels and percentages are displayed below the chart when enabled.
+- The function validates input data and throws a TypeError for invalid data formats.
+- The chart uses ASCII characters to approximate circular shapes in the terminal.
+
 ### `gauge`
 
 ### `pie`
