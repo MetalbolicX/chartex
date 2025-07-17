@@ -40,16 +40,6 @@ console.log(chart);
 3. Run the application:
 
 ```sh
-node main.mjs
-```
-
-## 📚 Documentation
-
-<div align="center">
-
-  [![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](https://metalbolicx.github.io/chartex)
-
-```sh
 node main.js
 ```
 
