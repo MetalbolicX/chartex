@@ -198,6 +198,8 @@ interface SparklineOptions {
   tolerance?: number;
   /** Style character for the sparkline */
   style?: string;
+  /** Character for the y-axis */
+  yAxisChar?: string;
 }
 
 export type {
