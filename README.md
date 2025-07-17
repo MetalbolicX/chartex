@@ -47,7 +47,7 @@ node main.js
 
 <div align="center">
 
-  [![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](https://metalbolicx.github.io/chartex/#/api-reference)
+  [![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](https://metalbolicx.github.io/chartex)
 
 </div>
 

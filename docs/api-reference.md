@@ -588,6 +588,60 @@ console.log(scatter(salesData, salesOptions));
 > - The chart supports multiple data series by using the same key with different coordinates.
 > - The coordinate system uses the bottom-left as the origin (0, 0).
 
+### `sparkline`
+
+Creates a compact, inline sparkline chart representing a series of numeric values as a sequence of Unicode bar characters. Sparklines are ideal for visualizing trends or patterns in small spaces, such as tables or dashboards.
+
+#### Signature
+
+```ts
+sparkline(values: number[], opts?: SparklineOptions): string
+```
+
+#### Parameters
+
+- `data` (number[]): An array of numeric values for the sparkline.
+- `opts` (SparklineOptions, optional): Configuration options for customizing the sparkline appearance.
+
+#### Types
+
+```ts
+interface SparklineOptions {
+  /** Width of the sparkline */
+  width?: number;
+  /** Height of the sparkline */
+  height?: number;
+  /** Tolerance for the sparkline */
+  tolerance?: number;
+  /** Style character for the sparkline */
+  style?: string;
+  /** Character for the y-axis */
+  yAxisChar?: string;
+}
+```
+
+#### Returns
+
+A string representation of the sparkline, which can be printed inline in the terminal.
+
+#### Examples
+
+##### Basic Sparkline
+
+```ts
+import { sparkline } from "chartex";
+
+const trendData = [
+  { value: 5 },
+  { value: 9 },
+  { value: 7 },
+  { value: 12 },
+  { value: 6 }
+];
+
+console.log(sparkline(trendData));
+```
+
 ## Data Transformation Functions
 
 ### `transformChartData`
