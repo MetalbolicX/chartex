@@ -57,8 +57,18 @@ const sparkline = (
   const last = points.at(-1);
   if (last) grid[last.y][last.x] = style;
 
-  // Convert grid to string
-  return grid.map(row => row.join("")).join("\n");
+  // Prepare y-axis labels
+  const yAxisWidth = Math.max(String(max).length, String(min).length);
+  const axisChar = options?.yAxisChar ?? "|";
+  const labelStep = height > 1 ? (max - min) / (height - 1) : 1;
+
+  // Build lines with y-axis
+  const lines = grid.map((row, i) => {
+    const yValue = max - i * labelStep;
+    const label = yValue.toFixed(1).padStart(yAxisWidth);
+    return `${label} ${axisChar} ${row.join("")}`;
+  });
+  return lines.join("\n");
 };
 
 export default sparkline;
