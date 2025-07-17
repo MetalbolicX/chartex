@@ -13,6 +13,7 @@ import donut from "./charts/donut.ts";
 import gauge from "./charts/gauge.ts";
 import pie from "./charts/pie.ts";
 import scatter from "./charts/scatter.ts";
+import sparkline from "./charts/sparkline.ts";
 
 import type {
   BackgroundColor,
@@ -40,6 +41,7 @@ export {
   gauge,
   pie,
   scatter,
+  sparkline,
   transformChartData,
   transformCustomData,
   transformObjectData,

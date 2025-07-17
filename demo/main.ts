@@ -6,6 +6,7 @@ import {
   bullet,
   gauge,
   pie,
+  sparkline,
   type ScatterPlotDatum,
 } from "../src/index.ts";
 
@@ -87,3 +88,6 @@ const pieData2 = [
 
 console.log(pie(pieData1, { left: 1 }));
 console.log(pie(pieData2, { left: 1 }));
+
+const simpleValues = [10, 20, 15, 25, 30, 50];
+console.log(sparkline(simpleValues, { width: 20, height: 5, style: "*" }));

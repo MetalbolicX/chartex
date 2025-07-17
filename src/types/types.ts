@@ -1,7 +1,15 @@
 /**
  * Background color options for terminal styling
  */
-type BackgroundColor = "black" | "red" | "green" | "yellow" | "blue" | "magenta" | "cyan" | "white";
+type BackgroundColor =
+  | "black"
+  | "red"
+  | "green"
+  | "yellow"
+  | "blue"
+  | "magenta"
+  | "cyan"
+  | "white";
 
 /**
  * Chart data point structure
@@ -181,6 +189,17 @@ interface DonutChartDatum {
   style: string;
 }
 
+interface SparklineOptions {
+  /** Width of the sparkline */
+  width?: number;
+  /** Height of the sparkline */
+  height?: number;
+  /** Tolerance for the sparkline */
+  tolerance?: number;
+  /** Style character for the sparkline */
+  style?: string;
+}
+
 export type {
   BackgroundColor,
   BarChartDatum,
@@ -196,4 +215,5 @@ export type {
   PieChartOptions,
   ScatterPlotDatum,
   ScatterPlotOptions,
+  SparklineOptions,
 };
