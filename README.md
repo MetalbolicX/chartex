@@ -22,22 +22,32 @@ npm i chartex
 
 Here's a simple example of how to use `chartex`:
 
-1. Create a file named `main.js`.
-2. Add the following code to `main.js`:
+1. Create a file named `main.mjs`.
+2. Add the following code to `main.mjs`:
 
 ```ts
-import { renderBarChart } from "chartex";
+import { bar } from "chartex";
 const data = [
   { key: "A", value: 10, style: "#" },
   { key: "B", value: 20, style: "#" },
   { key: "C", value: 30, style: "#" },
 ];
 const options = { width: 50, height: 10, style: "# " };
-const chart = renderBarChart(data, options);
+const chart = bar(data, options);
 console.log(chart);
 ```
 
 3. Run the application:
+
+```sh
+node main.mjs
+```
+
+## 📚 Documentation
+
+<div align="center">
+
+  [![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](https://metalbolicx.github.io/chartex)
 
 ```sh
 node main.js
