@@ -632,11 +632,7 @@ A string representation of the sparkline, which can be printed inline in the ter
 import { sparkline } from "chartex";
 
 const trendData = [
-  { value: 5 },
-  { value: 9 },
-  { value: 7 },
-  { value: 12 },
-  { value: 6 }
+  10, 20, 15, 30, 25, 35, 40, 30, 20, 25
 ];
 
 console.log(sparkline(trendData));
