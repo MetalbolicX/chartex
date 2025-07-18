@@ -89,5 +89,21 @@ const pieData2 = [
 console.log(pie(pieData1, { left: 1 }));
 console.log(pie(pieData2, { left: 1 }));
 
-const simpleValues = [10, 20, 15, 25, 30, 50];
-console.log(sparkline(simpleValues, { width: 20, height: 5, style: "*" }));
+// Sparkline data
+const sparklineData = [
+  { key: "A", value: 10, style: "*" },
+  { key: "B", value: 20, style: "*" },
+  { key: "C", value: 15, style: "*" },
+  { key: "D", value: 25, style: "*" },
+  { key: "E", value: 30, style: "*" },
+  { key: "F", value: 50, style: "*" },
+];
+
+console.log(
+  sparkline(sparklineData, {
+    width: 30,
+    height: 10,
+    tolerance: 1,
+    style: "*",
+  })
+);

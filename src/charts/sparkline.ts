@@ -1,19 +1,23 @@
-import { type SparklineOptions } from "../types/types.ts";
+import { type SparklineOptions, type SparklineDatum } from "../types/types.ts";
 
 /**
  * Generates a sparkline chart as a string using linear interpolation between points.
- * @param values - Array of y-values to plot
+ * @param data - Array of SparklineDatum to plot
  * @param options - Optional configuration (width, height, tolerance, style)
  * @returns Sparkline as a string
  */
 const sparkline = (
-  values: number[],
+  data: SparklineDatum[],
   options?: SparklineOptions
 ): string => {
-  const width = options?.width ?? values.length;
+  const width = options?.width ?? data.length;
   const height = options?.height ?? 8;
   const tolerance = options?.tolerance ?? 1;
-  const style = options?.style ?? "*";
+  const globalStyle = options?.style ?? "*";
+
+  // Extract values and styles from data
+  const values = data.map((d) => d.value);
+  const styles = data.map((d) => d.style ?? globalStyle);
 
   // Normalize y-values to fit in height
   const min = Math.min(...values);
@@ -22,13 +26,17 @@ const sparkline = (
   const points = values.map((v, i) => ({
     x: Math.round((i / (values.length - 1)) * (width - 1)),
     y: height - 1 - Math.round((v - min) * scale),
+    style: styles[i],
   }));
 
   // Fill grid with spaces
   const grid = Array.from({ length: height }, () => Array(width).fill(" "));
 
   // Helper: interpolate between two points
-  const interpolate = (a: { x: number; y: number }, b: { x: number; y: number }) => {
+  const interpolate = (
+    a: { x: number; y: number },
+    b: { x: number; y: number }
+  ) => {
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     const steps = Math.max(Math.abs(dx), Math.abs(dy));
@@ -44,18 +52,18 @@ const sparkline = (
   for (let i = 0; i < points.length - 1; i++) {
     const a = points[i];
     const b = points[i + 1];
-    grid[a.y][a.x] = style;
+    grid[a.y][a.x] = a.style;
     const gap = Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
     if (gap > tolerance) {
       const fillers = interpolate(a, b);
       fillers.forEach(({ x, y }) => {
-        grid[y][x] = style;
+        grid[y][x] = a.style;
       });
     }
   }
   // Plot last point
   const last = points.at(-1);
-  if (last) grid[last.y][last.x] = style;
+  if (last) grid[last.y][last.x] = last.style;
 
   // Prepare y-axis labels
   const yAxisWidth = Math.max(String(max).length, String(min).length);
