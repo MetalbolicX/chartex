@@ -692,12 +692,12 @@ Transforms an array of chart data objects into the standard chart datum format. 
 #### Signature
 
 ```ts
-transformChartData(data: ChartData[]): ChartDatum[]
+transformChartData(data: ChartDatum[]): ChartDatum[]
 ```
 
 #### Parameters
 
-- `data` (ChartData[]): An array of chart data objects with key and value properties.
+- `data` (ChartDatum[]): An array of chart data objects with key and value properties.
 
 #### Returns
 
@@ -718,23 +718,6 @@ const rawData = [
 
 const chartData = transformChartData(rawData);
 console.log(bar(chartData));
-```
-
-##### Processing External Data
-
-```ts
-import { transformChartData, pie } from "chartex";
-
-// Data from an API or database
-const salesData = [
-  { key: "North", value: 45000 },
-  { key: "South", value: 32000 },
-  { key: "East", value: 38000 },
-  { key: "West", value: 41000 }
-];
-
-const transformedData = transformChartData(salesData);
-console.log(pie(transformedData));
 ```
 
 > [!Note]
@@ -1081,6 +1064,23 @@ const pieData = transformSimpleData(values);
 console.log(pie(pieData));
 ```
 
+##### Processing Calculated Data
+
+```ts
+import { transformSimpleData, donut } from "chartex";
+
+const dailySales = [1200, 1450, 1100, 1680, 1520];
+const averages = dailySales.map(sale => sale / 100); // Convert to hundreds
+
+const chartData = transformSimpleData(averages);
+console.log(donut(chartData));
+```
+
+> [!Note]
+> - This function automatically generates keys in the format "Item 1", "Item 2", etc.
+> - Use this for quick visualizations when you don't need specific labels.
+> - The function is ideal for prototyping and simple data visualization.
+> - Consider using other transformation functions if you need meaningful labels.
 ##### Processing Calculated Data
 
 ```ts
