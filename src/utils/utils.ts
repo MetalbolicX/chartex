@@ -1,5 +1,4 @@
 import { EOL } from "node:os";
-import { stdout } from "node:process";
 import type { BackgroundColor, ChartDatum, ScatterPlotDatum } from "../types/types.ts";
 
 /**
