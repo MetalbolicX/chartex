@@ -189,6 +189,13 @@ interface DonutChartDatum {
   style: string;
 }
 
+interface SparklineDatum extends Omit<ChartDatum, "value"> {
+  /** The numeric value for the sparkline */
+  value: number;
+  /** Custom style character for this sparkline */
+  style?: string;
+}
+
 interface SparklineOptions {
   /** Width of the sparkline */
   width?: number;
@@ -217,5 +224,6 @@ export type {
   PieChartOptions,
   ScatterPlotDatum,
   ScatterPlotOptions,
+  SparklineDatum,
   SparklineOptions,
 };
