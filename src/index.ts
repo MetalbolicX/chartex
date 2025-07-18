@@ -30,6 +30,8 @@ import type {
   PieChartOptions,
   ScatterPlotDatum,
   ScatterPlotOptions,
+  SparklineDatum,
+  SparklineOptions,
 } from "./types/types.ts";
 
 export {
@@ -61,4 +63,6 @@ export {
   type PieChartOptions,
   type ScatterPlotDatum,
   type ScatterPlotOptions,
+  type SparklineDatum,
+  type SparklineOptions,
 };
