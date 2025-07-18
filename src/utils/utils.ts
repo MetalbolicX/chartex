@@ -148,13 +148,14 @@ const curDown = (step: number = 1): string => `\x1b[${step}B`;
 const curBack = (step: number = 1): string => `\x1b[${step}D`;
 
 /**
- * Transforms data with x/y coordinates into ScatterPlotDatum format
+ * Transforms data with x/y coordinates into ScatterPlotDatum format with error handling
  * @param data - Array of objects with x, y coordinates and optional category
  * @param categoryKey - Key name for the category field (default: "category")
  * @param xKey - Key name for the x coordinate field (default: "x")
  * @param yKey - Key name for the y coordinate field (default: "y")
  * @param defaultStyle - Default style to apply if none provided
  * @returns Array of ScatterPlotDatum objects
+ * @throws TypeError if any item is missing required keys or has invalid coordinates
  */
 const transformScatterData = <T extends Record<string, any>>(
   data: T[],
@@ -163,11 +164,31 @@ const transformScatterData = <T extends Record<string, any>>(
   yKey: keyof T = "y" as keyof T,
   defaultStyle?: string
 ): ScatterPlotDatum[] => {
-  return data.map((item) => ({
-    key: String(item[categoryKey] ?? "Unknown"),
-    value: [Number(item[xKey]), Number(item[yKey])] as [number, number],
-    ...(defaultStyle && { style: defaultStyle }),
-  }));
+  return data.map((item, idx) => {
+    const key = item[categoryKey];
+    const x = item[xKey];
+    const y = item[yKey];
+    if (key == null) {
+      throw new TypeError(
+        `Missing key '${String(categoryKey)}' at index ${idx}: ${JSON.stringify(item)}`
+      );
+    }
+    if (x == null || y == null) {
+      throw new TypeError(
+        `Missing coordinate '${String(xKey)}' or '${String(yKey)}' at index ${idx}: ${JSON.stringify(item)}`
+      );
+    }
+    if (Number.isNaN(Number(x)) || Number.isNaN(Number(y))) {
+      throw new TypeError(
+        `Invalid number for '${String(xKey)}' or '${String(yKey)}' at index ${idx}: ${JSON.stringify(item)}`
+      );
+    }
+    return {
+      key: String(key),
+      value: [Number(x), Number(y)] as [number, number],
+      ...(defaultStyle && { style: defaultStyle }),
+    };
+  });
 };
 
 /**
