@@ -595,28 +595,29 @@ Creates a compact, inline sparkline chart representing a series of numeric value
 #### Signature
 
 ```ts
-sparkline(values: number[], opts?: SparklineOptions): string
+sparkline(data: SparklineDatum[], opts?: SparklineOptions): string
 ```
 
 #### Parameters
 
-- `data` (number[]): An array of numeric values for the sparkline.
+- `data` (SparklineDatum[]): An array of data points for the sparkline.
 - `opts` (SparklineOptions, optional): Configuration options for customizing the sparkline appearance.
 
 #### Types
 
 ```ts
+interface SparklineDatum {
+  key: string;           // The label for the sparkline point (optional, not used for rendering)
+  value: number;         // The numeric value for the sparkline point
+  style?: string;        // Optional custom style character for this point
+}
+
 interface SparklineOptions {
-  /** Width of the sparkline */
-  width?: number;
-  /** Height of the sparkline */
-  height?: number;
-  /** Tolerance for the sparkline */
-  tolerance?: number;
-  /** Style character for the sparkline */
-  style?: string;
-  /** Character for the y-axis */
-  yAxisChar?: string;
+  width?: number;        // Width of the sparkline (default: data.length)
+  height?: number;       // Height of the sparkline (default: 8)
+  tolerance?: number;    // Tolerance for interpolation (default: 1)
+  style?: string;        // Default style character for points (default: "*")
+  yAxisChar?: string;    // Character for the y-axis (default: "|")
 }
 ```
 
@@ -632,11 +633,55 @@ A string representation of the sparkline, which can be printed inline in the ter
 import { sparkline } from "chartex";
 
 const trendData = [
-  10, 20, 15, 30, 25, 35, 40, 30, 20, 25
+  { value: 10 },
+  { value: 20 },
+  { value: 15 },
+  { value: 30 },
+  { value: 25 },
+  { value: 35 },
+  { value: 40 },
+  { value: 30 },
+  { value: 20 },
+  { value: 25 }
 ];
 
 console.log(sparkline(trendData));
 ```
+
+##### Custom Sparkline with Styles
+
+```ts
+import { sparkline } from "chartex";
+
+const customTrend = [
+  { value: 10, style: "░" },
+  { value: 20, style: "▒" },
+  { value: 15, style: "▓" },
+  { value: 30, style: "█" },
+  { value: 25 },
+  { value: 35 },
+  { value: 40, style: "█" },
+  { value: 30 },
+  { value: 20 },
+  { value: 25 }
+];
+
+const options = {
+  width: 12,
+  height: 6,
+  style: "*",
+  yAxisChar: "|"
+};
+
+console.log(sparkline(customTrend, options));
+```
+
+> [!Note]
+> - The chart automatically scales the y-values to fit the specified height.
+> - Each point can have a custom style character via the `style` property.
+> - The y-axis is labeled with numeric values and uses the specified axis character.
+> - The function supports linear interpolation between points for smoother lines.
+> - The `key` property in `SparklineDatum` is optional and not used for rendering.
 
 ## Data Transformation Functions
 
