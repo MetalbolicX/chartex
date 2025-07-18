@@ -274,6 +274,7 @@ const transformObjectData = (
  * @param mapping - Object defining field mappings
  * @param defaultStyle - Default style to apply if none provided
  * @returns Array of chart datum objects
+ * @throws TypeError if any item is missing required keys or has invalid value(s)
  */
 const transformCustomData = <T extends Record<string, any>>(
   data: T[],
@@ -285,24 +286,51 @@ const transformCustomData = <T extends Record<string, any>>(
   },
   defaultStyle?: string
 ): Array<{ key: string; value: number | [number, number]; style?: string }> => {
-  return data.map((item) => {
-    const baseData = {
-      key: String(item[mapping.key] ?? "Unknown"),
-      ...(defaultStyle && { style: defaultStyle }),
-    };
+  return data.map((item, idx) => {
+    const key = item[mapping.key];
+    if (key == null) {
+      throw new TypeError(
+        `Missing key '${String(mapping.key)}' at index ${idx}: ${JSON.stringify(item)}`
+      );
+    }
 
     // Handle scatter plot data (x, y coordinates)
     if (mapping.x && mapping.y) {
+      const x = item[mapping.x];
+      const y = item[mapping.y];
+      if (x == null || y == null) {
+        throw new TypeError(
+          `Missing coordinate '${String(mapping.x)}' or '${String(mapping.y)}' at index ${idx}: ${JSON.stringify(item)}`
+        );
+      }
+      if (Number.isNaN(Number(x)) || Number.isNaN(Number(y))) {
+        throw new TypeError(
+          `Invalid number for '${String(mapping.x)}' or '${String(mapping.y)}' at index ${idx}: ${JSON.stringify(item)}`
+        );
+      }
       return {
-        ...baseData,
-        value: [Number(item[mapping.x]), Number(item[mapping.y])] as [number, number],
+        key: String(key),
+        value: [Number(x), Number(y)] as [number, number],
+        ...(defaultStyle && { style: defaultStyle }),
       };
     }
 
     // Handle regular chart data (single value)
+    const value = item[mapping.value];
+    if (value == null) {
+      throw new TypeError(
+        `Missing value '${String(mapping.value)}' at index ${idx}: ${JSON.stringify(item)}`
+      );
+    }
+    if (Number.isNaN(Number(value))) {
+      throw new TypeError(
+        `Invalid number for '${String(mapping.value)}' at index ${idx}: ${JSON.stringify(item)}`
+      );
+    }
     return {
-      ...baseData,
-      value: Number(item[mapping.value]),
+      key: String(key),
+      value: Number(value),
+      ...(defaultStyle && { style: defaultStyle }),
     };
   });
 };
