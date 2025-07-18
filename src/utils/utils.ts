@@ -171,12 +171,13 @@ const transformScatterData = <T extends Record<string, any>>(
 };
 
 /**
- * Transforms data with value field into chart datum format
+ * Transforms data with value field into chart datum format with error handling
  * @param data - Array of objects with value and optional category
  * @param categoryKey - Key name for the category field (default: "category")
  * @param valueKey - Key name for the value field (default: "value")
  * @param defaultStyle - Default style to apply if none provided
  * @returns Array of chart datum objects
+ * @throws TypeError if any item is missing required keys or has invalid value
  */
 const transformChartData = <T extends Record<string, any>>(
   data: T[],
@@ -184,11 +185,30 @@ const transformChartData = <T extends Record<string, any>>(
   valueKey: keyof T = "value" as keyof T,
   defaultStyle?: string
 ): Array<{ key: string; value: number; style?: string }> => {
-  return data.map((item) => ({
-    key: String(item[categoryKey] ?? "Unknown"),
-    value: Number(item[valueKey]),
-    ...(defaultStyle && { style: defaultStyle }),
-  }));
+  return data.map((item, idx) => {
+    const key = item[categoryKey];
+    const value = item[valueKey];
+    if (key == null) {
+      throw new TypeError(
+        `Missing key '${String(categoryKey)}' at index ${idx}: ${JSON.stringify(item)}`
+      );
+    }
+    if (value == null) {
+      throw new TypeError(
+        `Missing value '${String(valueKey)}' at index ${idx}: ${JSON.stringify(item)}`
+      );
+    }
+    if (Number.isNaN(Number(value))) {
+      throw new TypeError(
+        `Invalid number for '${String(valueKey)}' at index ${idx}: ${JSON.stringify(item)}`
+      );
+    }
+    return {
+      key: String(key),
+      value: Number(value),
+      ...(defaultStyle && { style: defaultStyle }),
+    };
+  });
 };
 
 /**
