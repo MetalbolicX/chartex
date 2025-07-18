@@ -23,7 +23,7 @@
   "scripts": {
     "docs": "docsify serve docs",
     "start": "echo \"Hello world\"",
-    "build": "tsup src/index.ts --format esm,cjs --dts --minify"
+    "build": "tsdown"
   },
   "author": {
     "name": "José Martínez Santana"
@@ -49,6 +49,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "tsup": "^8.5.0"
+    "tsdown": "^0.12.9"
   }
 }
