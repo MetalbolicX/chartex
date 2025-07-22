@@ -21,11 +21,23 @@ const scatterData: ScatterPlotDatum[] = [
     value: [i + 6, 6] as [number, number],
     style: fg("red", "*"),
   })),
-  { key: "B", value: [2, 6], style: fg("blue", "# "), sides: [2, 2] },
+  // { key: "B", value: [2, 6], style: fg("blue", "# "), sides: [2, 2] },
+  { key: "B", value: [2, 6], style: fg("blue", "# ") },
   { key: "C", value: [6, 9], style: bg("cyan", 2) },
 ];
 
-console.log(`${scatter(scatterData, { legendGap: 18 })}\n`);
+console.log(`${scatter(scatterData)}\n`);
+
+const squareData: ScatterPlotDatum[] = [
+  { key: "A", value: [-2, 4], style: fg("red", "*") },
+  { key: "A", value: [-1, 1], style: fg("red", "* ") },
+  { key: "A", value: [0, 0], style: fg("red", "* ") },
+  { key: "A", value: [1, 1], style: fg("red", "* ") },
+  { key: "A", value: [2, 4], style: fg("red", "* ") },
+];
+
+console.log(`${scatter(squareData, { width: 20, height: 10 })}\n`);
+// console.log(`${scatter(squareData)}\n`);
 
 const barData = [
   { key: "A", value: 5, style: "*" },
