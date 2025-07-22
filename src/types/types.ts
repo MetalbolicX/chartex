@@ -76,47 +76,31 @@ interface BarChartDatum extends Omit<ChartDatum, "value"> {
 /**
  * Configuration options for scatter plot
  */
+/**
+ * Configuration options for scatter plot (refactored for simplicity)
+ */
 interface ScatterPlotOptions {
   /** Width of the scatter plot */
   width?: number;
-  /** Left offset position */
-  left?: number;
   /** Height of the scatter plot */
   height?: number;
   /** Default style character for data points */
   style?: string;
-  /** Default size of data points [width, height] */
-  sides?: [number, number];
-  /** Horizontal axis characters [mark, line, arrow] */
-  hAxis?: [string, string, string];
-  /** Vertical axis characters [line, arrow] */
-  vAxis?: [string, string];
-  /** Horizontal axis name */
-  hName?: string;
-  /** Vertical axis name */
-  vName?: string;
-  /** Character for origin point */
-  zero?: string;
-  /** Scale ratio for [x, y] axes */
-  ratio?: [number, number];
-  /** Gap between horizontal axis marks */
-  hGap?: number;
-  /** Gap between vertical axis marks */
-  vGap?: number;
-  /** Gap between axis name and legend */
-  legendGap?: number;
+  /** Left offset position (for future use) */
+  // left?: number;
 }
 
 /**
  * Scatter plot data point structure
+ */
+/**
+ * Scatter plot data point structure (refactored)
  */
 interface ScatterPlotDatum extends Omit<ChartDatum, "value"> {
   /** The x,y coordinates for the data point */
   value: [number, number];
   /** Custom style character for this data point */
   style?: string;
-  /** Custom size for this data point [width, height] */
-  sides?: [number, number];
 }
 
 /**

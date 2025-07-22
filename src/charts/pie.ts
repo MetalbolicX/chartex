@@ -21,8 +21,20 @@ const getPadChar = (styles: string[], values: number[], param: number, gapChar: 
  * Creates a pie chart or donut chart
  * @param data - The data array for the chart
  * @param opts - Configuration options for the chart
- * @param isDonut - Whether to create a donut chart
+ * @param opts.radius - Radius of the pie chart (default: 4)
+ * @param opts.left - Left offset position (default: 0)
+ * @param opts.innerRadius - Inner radius for donut charts (default: 1)
  * @returns The formatted pie/donut chart string
+ * @example
+ * ```typescript
+ * const pieData = [
+ *   { key: "A", value: 30, style: "A" },
+ *   { key: "B", value: 70, style: "B" },
+ * ];
+ * const chart = pie(pieData, { radius: 5 });
+ * console.log(chart);
+ * // Outputs a pie chart with the specified data and options
+ * ```
  */
 const pie = (data: PieChartDatum[], opts?: PieChartOptions, isDonut: boolean = false): string => {
   verifyData(data);

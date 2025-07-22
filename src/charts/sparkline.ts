@@ -4,8 +4,24 @@ import { getShellWidth, getShellHeight } from "../utils/utils.ts";
 /**
  * Generates a sparkline chart as a string using linear interpolation between points.
  * @param data - Array of SparklineDatum to plot
- * @param options - Optional configuration (width, height, tolerance, style)
+ * @param options - Configuration options for the sparkline
+ * @param options.width - Width of the sparkline (default: 60% of terminal width)
+ * @param options.height - Height of the sparkline (default: 30% of terminal height)
+ * @param options.tolerance - Tolerance for point interpolation (default: 1)
+ * @param options.style - Default style character for the sparkline (default: "*")
+ * @param options.yAxisChar - Character for the y-axis (default: "|")
  * @returns Sparkline as a string
+ * @example
+ * ```typescript
+ * const sparklineData = [
+ *   { key: "A", value: 10, style: "*" },
+ *   { key: "B", value: 20, style: "*" },
+ *   { key: "C", value: 15, style: "*" },
+ * ];
+ * const chart = sparkline(sparklineData, { width: 30, height: 10, style: "#" });
+ * console.log(chart);
+ * // Outputs a sparkline chart with the specified data and options
+ * ```
  */
 const sparkline = (
   data: SparklineDatum[],
@@ -77,7 +93,7 @@ const sparkline = (
   // Build lines with y-axis
   const lines = grid.map((row, i) => {
     const yValue = max - i * labelStep;
-    const label = yValue.toFixed(1).padStart(yAxisWidth);
+    const label = yValue.toFixed(0).padStart(yAxisWidth);
     return `${label} ${axisChar} ${row.join("")}`;
   });
   return lines.join("\n");

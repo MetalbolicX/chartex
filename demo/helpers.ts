@@ -19,7 +19,6 @@ const commonScatterData = [
 // Transform and use directly
 const scatterChart = scatter(transformScatterData(commonScatterData), {
   width: 15,
-  legendGap: 18,
 });
 console.log(scatterChart);
 
