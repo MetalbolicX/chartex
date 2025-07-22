@@ -77,7 +77,7 @@ const sparkline = (
   // Build lines with y-axis
   const lines = grid.map((row, i) => {
     const yValue = max - i * labelStep;
-    const label = yValue.toFixed(1).padStart(yAxisWidth);
+    const label = yValue.toFixed(0).padStart(yAxisWidth);
     return `${label} ${axisChar} ${row.join("")}`;
   });
   return lines.join("\n");

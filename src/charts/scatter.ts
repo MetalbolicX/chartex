@@ -62,27 +62,19 @@ const scatter = (
   // Build lines with y-axis
   const lines = grid.map((row, i) => {
     const yValue = maxY - i * yLabelStep;
-    const label = yValue.toFixed(1).padStart(yAxisWidth);
+    const label = yValue.toFixed(0).padStart(yAxisWidth);
     return `${label} ${yAxisChar} ${row.join("")}`;
   });
 
   // Build x axis (continuous line of '_')
   const xAxisLine = "_".repeat(colCount);
 
-
-  // Build x value labels centered at their scaled columns
+  // Build x value labels spaced at their scaled columns
   const xLabelRowArr = Array(colCount).fill(" ");
   const uniqueX = Array.from(new Set(xVals));
   uniqueX.forEach((x) => {
     const col = xScale(x);
-    const label = String(x);
-    const half = Math.floor(label.length / 2);
-    for (let i = 0; i < label.length; i++) {
-      const pos = col - half + i;
-      if (pos >= 0 && pos < colCount) {
-        xLabelRowArr[pos] = label[i];
-      }
-    }
+    xLabelRowArr[col] = String(x).padStart(0);
   });
   const xLabelRow = xLabelRowArr.join("");
 
