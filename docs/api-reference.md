@@ -81,12 +81,6 @@ const options = {
 console.log(bar(customData, options));
 ```
 
-> [!Note]
-> - The chart automatically adjusts the height based on the maximum value in the dataset.
-> - Value labels are displayed at the top of each bar when space permits.
-> - Labels are shown at the bottom of each bar, truncated if they exceed the bar width.
-> - Individual bars can have custom styling by providing a style property in the data.
-
 ### `bullet`
 
 Creates a horizontal bullet chart with bars representing data values. The chart displays horizontal bars with labels and values on the left side, making it ideal for comparing performance metrics or progress indicators.
@@ -162,12 +156,6 @@ const options = {
 
 console.log(bullet(projectProgress, options));
 ```
-
-> [!Note]
-> - The chart automatically scales bars proportionally to the maximum value in the dataset.
-> - Labels and values are displayed on the left side with consistent alignment.
-> - Individual bars can have custom styling and width by providing style and barWidth properties.
-> - The chart supports multiple lines per bar when barWidth is greater than 1.
 
 ### `donut`
 
@@ -246,14 +234,6 @@ const options = {
 
 console.log(donut(budgetData, options));
 ```
-
-> [!Note]
-> - The chart automatically calculates percentages based on the total sum of all values.
-> - Segments are proportionally sized according to their values relative to the total.
-> - The hollow center creates the characteristic donut appearance.
-> - Individual segments can have custom styling by providing a style property in the data.
-> - Labels and percentages are displayed below the chart when enabled.
-> - The chart uses ASCII characters to approximate circular shapes in the terminal.
 
 ### `gauge`
 
@@ -346,13 +326,6 @@ const customOptions = {
 };
 console.log(gauge(customData, customOptions));
 ```
-
-> [!Note]
-> - Values should be between 0 and 1, representing 0% to 100%.
-> - The percentage value is automatically calculated and displayed in the center of the gauge.
-> - The gauge displays a semi-circular arc with the filled portion representing the current value.
-> - Individual gauges can have custom styling by providing a style property in the data.
-> - The chart includes scale labels (0 and 100) and the key label at the bottom.
 
 ### `pie`
 
@@ -450,14 +423,6 @@ const smallData = [
 const smallOptions = { radius: 3, left: 1 };
 console.log(pie(smallData, smallOptions));
 ```
-
-> [!Note]
-> - The chart automatically calculates percentages based on the total sum of all values.
-> - Each segment is proportionally sized according to its value relative to the total.
-> - The legend displays the style character, label, value, and percentage for each segment.
-> - Individual segments require custom styling through the style property in the data.
-> - The chart uses ASCII characters to approximate circular shapes in the terminal.
-> - Legend entries are automatically formatted with consistent spacing and alignment.
 
 ### `scatter`
 
@@ -579,15 +544,6 @@ const salesOptions = {
 console.log(scatter(salesData, salesOptions));
 ```
 
-> [!Note]
-> - Each data point is positioned using [x, y] coordinates in the value array.
-> - The chart automatically scales based on the specified ratio for both axes.
-> - Individual points can have custom styling and size through style and sides properties.
-> - The legend displays all unique keys with their corresponding styles.
-> - Axes include scale markers based on the specified gap values and ratios.
-> - The chart supports multiple data series by using the same key with different coordinates.
-> - The coordinate system uses the bottom-left as the origin (0, 0).
-
 ### `sparkline`
 
 Creates a compact, inline sparkline chart representing a series of numeric values as a sequence of Unicode bar characters. Sparklines are ideal for visualizing trends or patterns in small spaces, such as tables or dashboards.
@@ -675,13 +631,6 @@ const options = {
 
 console.log(sparkline(customTrend, options));
 ```
-
-> [!Note]
-> - The chart automatically scales the y-values to fit the specified height.
-> - Each point can have a custom style character via the `style` property.
-> - The y-axis is labeled with numeric values and uses the specified axis character.
-> - The function supports linear interpolation between points for smoother lines.
-> - The `key` property in `SparklineDatum` is optional and not used for rendering.
 
 ## Data Transformation Functions
 
