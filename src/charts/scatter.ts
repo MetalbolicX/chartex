@@ -7,6 +7,8 @@ import {
   curDown,
   curBack,
   getOriginLen,
+  getShellWidth,
+  getShellHeight,
 } from "../utils/utils.ts";
 import type { ScatterPlotDatum, ScatterPlotOptions } from "../types/types.ts";
 
@@ -148,10 +150,14 @@ const scatter = (
 ): string => {
   verifyData(data);
 
+  // Dynamically calculate width and height if not provided
+  const shellWidth = getShellWidth();
+  const shellHeight = getShellHeight();
+
   const newOpts: Required<ScatterPlotOptions> = {
-    width: 10,
+    width: Math.max(10, Math.floor(shellWidth * 0.4)),
     left: 2,
-    height: 10,
+    height: Math.max(10, Math.floor(shellHeight * 0.4)),
     style: "# ",
     sides: [1, 1],
     hAxis: ["+", "-", ">"],

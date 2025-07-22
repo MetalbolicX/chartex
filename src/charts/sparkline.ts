@@ -1,4 +1,5 @@
 import { type SparklineOptions, type SparklineDatum } from "../types/types.ts";
+import { getShellWidth, getShellHeight } from "../utils/utils.ts";
 
 /**
  * Generates a sparkline chart as a string using linear interpolation between points.
@@ -10,8 +11,11 @@ const sparkline = (
   data: SparklineDatum[],
   options?: SparklineOptions
 ): string => {
-  const width = options?.width ?? data.length;
-  const height = options?.height ?? 8;
+  // Dynamically calculate width and height if not provided
+  const shellWidth = getShellWidth();
+  const shellHeight = getShellHeight();
+  const width = options?.width ?? Math.max(data.length, Math.floor(shellWidth * 0.6));
+  const height = options?.height ?? Math.max(8, Math.floor(shellHeight * 0.3));
   const tolerance = options?.tolerance ?? 1;
   const globalStyle = options?.style ?? "*";
 

@@ -1,4 +1,10 @@
-import { PAD, padMid, verifyData, EOL } from "../utils/utils.ts";
+import {
+  EOL,
+  getShellHeight,
+  PAD,
+  padMid,
+  verifyData,
+} from "../utils/utils.ts";
 import type { BarChartDatum, BarChartOptions } from "../types/types.ts";
 
 /**
@@ -7,13 +13,17 @@ import type { BarChartDatum, BarChartOptions } from "../types/types.ts";
  * @param opts - Configuration options for the chart
  * @returns The formatted bar chart string
  */
+
 const bar = (data: BarChartDatum[], opts?: BarChartOptions): string => {
   verifyData(data);
+
+  // Dynamically calculate width and height if not provided
+  const shellHeight = getShellHeight();
 
   const newOpts: Required<BarChartOptions> = {
     barWidth: 3,
     left: 1,
-    height: 6,
+    height: Math.max(6, Math.floor(shellHeight * 0.4)),
     padding: 3,
     style: "*",
     ...opts,

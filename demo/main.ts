@@ -25,7 +25,7 @@ const scatterData: ScatterPlotDatum[] = [
   { key: "C", value: [6, 9], style: bg("cyan", 2) },
 ];
 
-console.log(`${scatter(scatterData, { legendGap: 18, width: 15 })}\n`);
+console.log(`${scatter(scatterData, { legendGap: 18 })}\n`);
 
 const barData = [
   { key: "A", value: 5, style: "*" },
@@ -41,7 +41,7 @@ console.log(
   bar(barData, {
     barWidth: 3,
     left: 1,
-    height: 6,
+    // height: 6,
     padding: 3,
     style: "*",
   })
@@ -55,7 +55,7 @@ const bulletData = [
   { key: "Now", value: 15, style: bg("cyan"), barWidth: 1 },
 ];
 
-console.log(bullet(bulletData, { style: "+", width: 30, barWidth: 2 }));
+console.log(bullet(bulletData, { style: "+", barWidth: 2 }));
 
 // Gauge chart data
 const gaugeData1 = [{ key: "A", value: 0.5 }];
@@ -102,7 +102,7 @@ const sparklineData = [
 console.log(
   sparkline(sparklineData, {
     width: 30,
-    height: 10,
+    // height: 10,
     tolerance: 1,
     style: "*",
   })

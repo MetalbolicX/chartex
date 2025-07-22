@@ -1,5 +1,24 @@
+import { stdout } from "node:process";
 import { EOL } from "node:os";
 import type { BackgroundColor, ChartDatum, ScatterPlotDatum } from "../types/types.ts";
+
+/**
+ * Gets the current terminal width (columns)
+ * @returns number of columns or default (80)
+ */
+const getShellWidth = (): number =>
+  typeof stdout !== "undefined" && stdout.columns
+    ? stdout.columns
+    : 80;
+
+/**
+ * Gets the current terminal height (rows)
+ * @returns number of rows or default (24)
+ */
+const getShellHeight = (): number =>
+  typeof stdout !== "undefined" && stdout.rows
+    ? stdout.rows
+    : 24;
 
 /**
  * Padding character used throughout the utility functions
@@ -352,5 +371,7 @@ export {
   transformScatterData,
   transformSimpleData,
   verifyData,
+  getShellWidth,
+  getShellHeight
 };
 

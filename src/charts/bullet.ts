@@ -1,4 +1,4 @@
-import { PAD, verifyData, EOL } from "../utils/utils.ts";
+import { PAD, verifyData, EOL, getShellWidth } from "../utils/utils.ts";
 import type { BulletChartDatum, BulletChartOptions } from "../types/types.ts";
 
 /**
@@ -7,14 +7,20 @@ import type { BulletChartDatum, BulletChartOptions } from "../types/types.ts";
  * @param opts - Configuration options for the chart
  * @returns The formatted bullet chart string
  */
-const bullet = (data: BulletChartDatum[], opts?: BulletChartOptions): string => {
+const bullet = (
+  data: BulletChartDatum[],
+  opts?: BulletChartOptions
+): string => {
   verifyData(data);
+
+  // Dynamically calculate width and height if not provided
+  const shellWidth = getShellWidth();
 
   const newOpts: Required<BulletChartOptions> = {
     barWidth: 1,
     style: "*",
     left: 1,
-    width: 10,
+    width: Math.max(10, Math.floor(shellWidth * 0.6)),
     padding: 1,
     ...opts,
   };
@@ -23,9 +29,11 @@ const bullet = (data: BulletChartDatum[], opts?: BulletChartOptions): string => 
 
   let result = PAD.repeat(left);
 
-  const values = data.map(item => item.value);
+  const values = data.map((item) => item.value);
   const max = Math.max(...values);
-  const maxKeyLength = Math.max(...data.map(item => `${item.key} [${item.value}]`.length));
+  const maxKeyLength = Math.max(
+    ...data.map((item) => `${item.key} [${item.value}]`.length)
+  );
 
   // Generate bullet chart bars
   data.forEach((item, index) => {
@@ -39,9 +47,7 @@ const bullet = (data: BulletChartDatum[], opts?: BulletChartOptions): string => 
     // Generate multiple bar lines based on barWidth
     const currentBarWidth = item.barWidth ?? barWidth;
     for (let j = 0; j < currentBarWidth; j++) {
-      result += j > 0
-        ? `${PAD.repeat(maxKeyLength + 1)}${line}`
-        : line;
+      result += j > 0 ? `${PAD.repeat(maxKeyLength + 1)}${line}` : line;
     }
 
     // Add padding between items (except for the last item)
