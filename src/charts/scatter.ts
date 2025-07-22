@@ -70,16 +70,16 @@ const scatter = (
   const xAxisLine = "_".repeat(colCount);
 
   // Build x value labels: min at left, mid at center, max at right
-  const xLabelRowArr = Array(colCount).fill(" ");
+  const xLabelList = Array(colCount).fill(" ");
   const minLabel = String(minX);
   const maxLabel = String(maxX);
   const midX = minX + (maxX - minX) / 2;
   const midLabel = String(Number.isInteger(midX) ? midX : midX.toFixed(1));
   // Place min at col 0, max at last col, mid at center
-  xLabelRowArr[0] = minLabel;
-  xLabelRowArr[Math.floor(colCount / 2) - Math.floor(midLabel.length / 2)] = midLabel;
-  xLabelRowArr[colCount - maxLabel.length] = maxLabel;
-  const xLabelRow = xLabelRowArr.join("");
+  xLabelList[0] = minLabel;
+  xLabelList[Math.floor(colCount / 2) - Math.floor(midLabel.length / 2)] = midLabel;
+  xLabelList[colCount - maxLabel.length] = maxLabel;
+  const xLabelRow = xLabelList.join("");
 
   // Compose final output: grid, x axis, then x labels
   return `${lines.join("\n")}`
