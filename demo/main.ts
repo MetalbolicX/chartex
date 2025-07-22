@@ -36,8 +36,8 @@ const squareData: ScatterPlotDatum[] = [
   { key: "A", value: [2, 4], style: fg("red", "* ") },
 ];
 
-console.log(`${scatter(squareData, { width: 20, height: 10 })}\n`);
-// console.log(`${scatter(squareData)}\n`);
+// console.log(`${scatter(squareData, { width: 20, height: 10 })}\n`);
+console.log(`${scatter(squareData)}\n`);
 
 const barData = [
   { key: "A", value: 5, style: "*" },
