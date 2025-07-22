@@ -87,7 +87,7 @@ interface ScatterPlotOptions {
   /** Default style character for data points */
   style?: string;
   /** Left offset position (for future use) */
-  left?: number;
+  // left?: number;
 }
 
 /**

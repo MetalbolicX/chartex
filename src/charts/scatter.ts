@@ -6,7 +6,21 @@ import type { ScatterPlotDatum, ScatterPlotOptions } from "../types/types.ts";
  * Creates a scatter plot chart (grid-based, sparkline style)
  * @param data - The data array for the scatter plot
  * @param options - Configuration options for the chart
+ * @param options.width - Width of the chart (default: 60% of terminal width)
+ * @param options.height - Height of the chart (default: 30% of terminal height)
+ * @param options.style - Default style for points (default: "*")
  * @returns The formatted scatter plot string
+ * @example
+ * ```typescript
+ * const scatterData = [
+ *   { key: "A", value: [1, 2], style: "*" },
+ *   { key: "B", value: [2, 3], style: "*" },
+ *   { key: "C", value: [3, 1], style: "*" },
+ * ];
+ * const chart = scatter(scatterData, { width: 20, height: 10 });
+ * console.log(chart);
+ * // Outputs a grid-based scatter plot with the specified data and options
+ * ```
  */
 const scatter = (
   data: ScatterPlotDatum[],
