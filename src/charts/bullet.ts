@@ -5,7 +5,23 @@ import type { BulletChartDatum, BulletChartOptions } from "../types/types.ts";
  * Creates a bullet chart with horizontal bars representing data values
  * @param data - The data array for the bullet chart
  * @param opts - Configuration options for the chart
+ * @param opts.barWidth - Width of each bar (default: 1)
+ * @param opts.style - Default style for bars (default: "*")
+ * @param opts.left - Left offset position (default: 1)
+ * @param opts.width - Width of the chart (default: 60% of terminal width)
+ * @param opts.padding - Padding between bars (default: 1)
  * @returns The formatted bullet chart string
+ * @example
+ * ```typescript
+ * const bulletData = [
+ *   { key: "A", value: 10, style: "*", barWidth: 2 },
+ *   { key: "B", value: 20, style: "#", barWidth: 1 },
+ *   { key: "C", value: 15, style: "-", barWidth: 3 },
+ * ];
+ * const chart = bullet(bulletData, { width: 30, padding: 2 });
+ * console.log(chart);
+ * // Outputs a bullet chart with the specified data and options
+ * ```
  */
 const bullet = (
   data: BulletChartDatum[],

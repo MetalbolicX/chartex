@@ -11,9 +11,24 @@ import type { BarChartDatum, BarChartOptions } from "../types/types.ts";
  * Creates a vertical bar chart with bars representing data values
  * @param data - The data array for the bar chart
  * @param opts - Configuration options for the chart
+ * @param opts.barWidth - Width of each bar (default: 3)
+ * @param opts.left - Left offset position (default: 1)
+ * @param opts.height - Height of the chart (default: 40% of terminal height)
+ * @param opts.padding - Padding between bars (default: 3)
+ * @param opts.style - Default style for bars (default: "*")
  * @returns The formatted bar chart string
+ * @example
+ * ```typescript
+ * const barData = [
+ *   { key: "A", value: 10, style: "*" },
+ *   { key: "B", value: 20, style: "#" },
+ *   { key: "C", value: 15, style: "+" },
+ * ];
+ * const chart = bar(barData, { height: 10 });
+ * console.log(chart);
+ * // Outputs a vertical bar chart with the specified data and options
+ * ```
  */
-
 const bar = (data: BarChartDatum[], opts?: BarChartOptions): string => {
   verifyData(data);
 

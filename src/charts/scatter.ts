@@ -1,7 +1,6 @@
 import { getShellWidth, getShellHeight, verifyData } from "../utils/utils.ts";
 import type { ScatterPlotDatum, ScatterPlotOptions } from "../types/types.ts";
 
-
 /**
  * Creates a scatter plot chart (grid-based, sparkline style)
  * @param data - The data array for the scatter plot

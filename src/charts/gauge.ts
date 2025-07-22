@@ -5,7 +5,20 @@ import type { GaugeChartDatum, GaugeChartOptions } from "../types/types.ts";
  * Creates a gauge chart to display a single value as a semi-circular meter
  * @param data - The data array containing one item with key and value
  * @param opts - Configuration options for the gauge
+ * @param opts.radius - Radius of the gauge circle (default: 5)
+ * @param opts.left - Left offset position (default: 2)
+ * @param opts.style - Default style character for filled gauge segments (default: "# ")
+ * @param opts.bgStyle - Style character for unfilled gauge segments (default: "+ ")
  * @returns The formatted gauge chart string
+ * @example
+ * ```typescript
+ * const gaugeData = [
+ *   { key: "A", value: 0.7, style: "#" },
+ * ];
+ * const chart = gauge(gaugeData, { radius: 5 });
+ * console.log(chart);
+ * // Outputs a gauge chart with the specified data and options
+ * ```
  */
 const gauge = (data: GaugeChartDatum[], opts?: GaugeChartOptions): string => {
   verifyData(data);
