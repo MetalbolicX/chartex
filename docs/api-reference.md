@@ -1,8 +1,8 @@
 # API Reference
 
-This page documents the core functions and types of the chartex module, which you can use to plot in the terminal.
+This page documents the core functions and types of the chartex module to build various types of ASCII charts in the terminal and their configuration.
 
-## Creational Chart Functions
+## Categorical Chart
 
 ### `bar`
 
@@ -16,8 +16,8 @@ bar(data: BarChartDatum[], opts?: BarChartOptions): string
 
 #### Parameters
 
-- `data` (BarChartDatum[]): An array of data points for the bar chart.
-- `opts` (BarChartOptions, optional): Configuration options for customizing the chart appearance.
+- `data` (`BarChartDatum[]`): An array of data points for the bar chart.
+- `opts` (`BarChartOptions`, optional): Configuration options for customizing the chart appearance.
 
 #### Types
 
@@ -31,7 +31,7 @@ interface BarChartDatum {
 interface BarChartOptions {
   barWidth?: number;     // Width of each bar (default: 3)
   left?: number;         // Left offset position (default: 1)
-  height?: number;       // Height of the chart (default: 6)
+  height?: number;       // Height of the chart (default: 40% of terminal height, min 6)
   padding?: number;      // Padding between bars (default: 3)
   style?: string;        // Default style character for bars (default: "*")
 }
@@ -48,14 +48,15 @@ A string representation of the bar chart, which can be printed to the terminal.
 ```ts
 import { bar } from "chartex";
 
-const salesData = [
-  { key: "Q1", value: 120 },
-  { key: "Q2", value: 150 },
-  { key: "Q3", value: 180 },
-  { key: "Q4", value: 90 }
+const barData = [
+  { key: "A", value: 10, style: "*" },
+  { key: "B", value: 20, style: "#" },
+  { key: "C", value: 15, style: "+" }
 ];
 
-console.log(bar(salesData));
+const chart = bar(barData, { height: 10 });
+console.log(chart);
+// Outputs a vertical bar chart with the specified data and options
 ```
 
 ##### Custom Bar Chart with Options
@@ -424,46 +425,37 @@ const smallOptions = { radius: 3, left: 1 };
 console.log(pie(smallData, smallOptions));
 ```
 
+## Numerical Chart
+
 ### `scatter`
 
-Creates a scatter plot chart to display data points as coordinates on a two-dimensional plane. The chart shows individual data points with customizable styling and includes labeled axes with scales, making it ideal for visualizing correlations and distributions.
+Creates a scatter plot chart to display data points as coordinates on a two-dimensional grid. The chart shows individual data points with customizable styling and includes labeled axes with scales.
 
 #### Signature
 
 ```ts
-scatter(data: ScatterPlotDatum[], opts?: ScatterPlotOptions): string
+scatter(data: ScatterPlotDatum[], options?: ScatterPlotOptions): string
 ```
 
 #### Parameters
 
-- `data` (ScatterPlotDatum[]): An array of data points for the scatter plot.
-- `opts` (ScatterPlotOptions, optional): Configuration options for customizing the chart appearance.
+- `data` (`ScatterPlotDatum[]`): An array of data points for the scatter plot.
+- `options` (`ScatterPlotOptions`, optional): Configuration options for customizing the chart appearance.
 
 #### Types
 
 ```ts
 interface ScatterPlotDatum {
-  key: string;           // The label/category for the data point
+  key: string;             // The label/category for the data point
   value: [number, number]; // The [x, y] coordinates for the point
-  style?: string;        // Optional custom style character for this point
-  sides?: [number, number]; // Optional custom size [width, height] for this point
+  style?: string;          // Optional custom style character for this point
 }
 
 interface ScatterPlotOptions {
-  width?: number;        // Width of the plot area (default: 10)
-  height?: number;       // Height of the plot area (default: 10)
-  left?: number;         // Left offset position (default: 2)
-  style?: string;        // Default style character for points (default: "# ")
-  sides?: [number, number]; // Default size for points (default: [1, 1])
-  hAxis?: [string, string, string]; // Horizontal axis characters [tick, line, arrow] (default: ["+", "-", ">"])
-  vAxis?: [string, string]; // Vertical axis characters [line, arrow] (default: ["|", "A"])
-  hName?: string;        // Horizontal axis label (default: "X Axis")
-  vName?: string;        // Vertical axis label (default: "Y Axis")
-  zero?: string;         // Origin point character (default: "+")
-  ratio?: [number, number]; // Scale ratio for [x, y] axes (default: [1, 1])
-  hGap?: number;         // Gap between horizontal scale marks (default: 2)
-  vGap?: number;         // Gap between vertical scale marks (default: 2)
-  legendGap?: number;    // Gap between axis label and legend (default: 0)
+  width?: number;          // Width of the plot area (default: 60% of terminal width, min 10)
+  height?: number;         // Height of the plot area (default: 30% of terminal height, min 8)
+  style?: string;          // Default style character for points (default: "*")
+  // left?: number;        // (reserved for future use)
 }
 ```
 
@@ -478,70 +470,36 @@ A string representation of the scatter plot chart, which can be printed to the t
 ```ts
 import { scatter } from "chartex";
 
-const temperatureData = [
-  { key: "Jan", value: [1, 2] },
-  { key: "Feb", value: [2, 3] },
-  { key: "Mar", value: [3, 5] },
-  { key: "Apr", value: [4, 7] },
-  { key: "May", value: [5, 8] }
+const scatterData = [
+  { key: "A", value: [1, 2], style: "*" },
+  { key: "B", value: [2, 3], style: "*" },
+  { key: "C", value: [3, 1], style: "*" }
 ];
 
-console.log(scatter(temperatureData));
+const chart = scatter(scatterData, { width: 20, height: 10 });
+console.log(chart);
+// Outputs a grid-based scatter plot with the specified data and options
 ```
 
-##### Custom Scatter Plot with Options
+##### Custom Scatter Plot
 
 ```ts
 import { scatter } from "chartex";
 
 const performanceData = [
-  { key: "Team A", value: [3, 4], style: "██", sides: [1, 1] },
-  { key: "Team B", value: [5, 6], style: "▓▓", sides: [1, 1] },
-  { key: "Team C", value: [2, 8], style: "▒▒", sides: [1, 1] },
-  { key: "Team D", value: [7, 5], style: "░░", sides: [1, 1] }
+  { key: "Team A", value: [3, 4], style: "██" },
+  { key: "Team B", value: [5, 6], style: "▓▓" },
+  { key: "Team C", value: [2, 8], style: "▒▒" },
+  { key: "Team D", value: [7, 5], style: "░░" }
 ];
 
 const options = {
   width: 12,
   height: 8,
-  left: 3,
-  hName: "Experience (years)",
-  vName: "Performance Score",
-  ratio: [1, 10],
-  hGap: 3,
-  vGap: 2,
-  legendGap: 2
+  style: "●"
 };
 
 console.log(scatter(performanceData, options));
-```
-
-##### Multiple Data Series Example
-
-```ts
-import { scatter } from "chartex";
-
-const salesData = [
-  { key: "Q1", value: [1, 120], style: "●●" },
-  { key: "Q1", value: [2, 150], style: "●●" },
-  { key: "Q2", value: [3, 180], style: "▲▲" },
-  { key: "Q2", value: [4, 160], style: "▲▲" },
-  { key: "Q3", value: [5, 200], style: "■■" },
-  { key: "Q3", value: [6, 190], style: "■■" }
-];
-
-const salesOptions = {
-  width: 15,
-  height: 10,
-  hName: "Month",
-  vName: "Sales ($k)",
-  ratio: [1, 20],
-  hGap: 2,
-  vGap: 3,
-  left: 4
-};
-
-console.log(scatter(salesData, salesOptions));
 ```
 
 ### `sparkline`
@@ -631,15 +589,3 @@ const options = {
 
 console.log(sparkline(customTrend, options));
 ```
-
-## Data Transformation Functions
-
-### `transformChartData`
-
-### `transformCustomData`
-
-### `transformObjectData`
-
-### `transformScatterData`
-
-### `transformSimpleData`
