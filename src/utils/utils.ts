@@ -218,7 +218,7 @@ const transformScatterData = <T extends Record<string, any>>(
  * @returns Array of chart datum objects
  * @throws TypeError if any item is missing required keys or has invalid value
  */
-const transformChartData = <T extends Record<string, any>>(
+const parseCategoricalData = <T extends Record<string, any>>(
   data: T[],
   categoryKey: keyof T = "category" as keyof T,
   valueKey: keyof T = "value" as keyof T,
@@ -294,7 +294,7 @@ const transformObjectData = (
  * @returns Array of chart datum objects
  * @throws TypeError if any item is missing required keys or has invalid value(s)
  */
-const transformCustomData = <T extends Record<string, any>>(
+const parseCustomData = <T extends Record<string, any>>(
   data: T[],
   mapping: {
     key: keyof T;
@@ -365,8 +365,8 @@ export {
   maxKeyLen,
   PAD,
   padMid,
-  transformChartData,
-  transformCustomData,
+  parseCategoricalData,
+  parseCustomData,
   transformObjectData,
   transformScatterData,
   transformSimpleData,

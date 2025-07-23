@@ -3,10 +3,10 @@ import {
   bar,
   pie,
   transformScatterData,
-  transformChartData,
+  parseCategoricalData,
   transformSimpleData,
   transformObjectData,
-  transformCustomData,
+  parseCustomData,
 } from "../src/index.ts";
 
 // Example 1: Common JSON structure with x/y coordinates
@@ -31,7 +31,7 @@ const salesData = [
 
 // Transform using custom field names
 const barChart = bar(
-  transformChartData(salesData, "product", "sales"),
+  parseCategoricalData(salesData, "product", "sales"),
   { barWidth: 3, height: 6 }
 );
 console.log(barChart);
@@ -69,7 +69,7 @@ const customData = [
 ];
 
 const customChart = bar(
-  transformCustomData(customData, { key: "name", value: "load" }) as Array<{
+  parseCustomData(customData, { key: "name", value: "load" }) as Array<{
     key: string;
     value: number;
     style?: string;

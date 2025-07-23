@@ -1,9 +1,9 @@
 import {
   bg,
   fg,
-  transformChartData,
+  parseCategoricalData,
   transformObjectData,
-  transformCustomData,
+  parseCustomData,
   transformScatterData,
   transformSimpleData,
 } from "./utils/utils.ts";
@@ -44,8 +44,8 @@ export {
   pie,
   scatter,
   sparkline,
-  transformChartData,
-  transformCustomData,
+  parseCategoricalData,
+  parseCustomData,
   transformObjectData,
   transformScatterData,
   transformSimpleData,

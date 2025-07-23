@@ -6,14 +6,14 @@ This is a helper function that can help you to increase the development experien
 
 This function is used to transform any json data set into the proper  format of chart functions to visualize.
 
-### `transformChartData`
+### `parseCategoricalData`
 
 Transforms an array of objects with category and value fields into an array of chart data objects suitable for chart functions. It allows you to specify which keys to use for the category and value, and optionally apply a default style.
 
 #### Signature
 
 ```ts
-transformChartData<T extends Record<string, any>>(
+parseCategoricalData<T extends Record<string, any>>(
   data: T[],
   categoryKey?: keyof T,
   valueKey?: keyof T,
@@ -31,7 +31,7 @@ transformChartData<T extends Record<string, any>>(
 #### Example
 
 ```ts
-import { transformChartData } from "chartex";
+import { parseCategoricalData } from "chartex";
 
 const rawData = [
   { section: "A", sales: 10 },
@@ -39,7 +39,7 @@ const rawData = [
   { section: "C", sales: 15 }
 ];
 
-const chartData = transformChartData(rawData, "section", "sales");
+const chartData = parseCategoricalData(rawData, "section", "sales");
 // Proper format to use in chart functions
 // Result: [
 //   { key: "A", value: 10 },
@@ -48,14 +48,14 @@ const chartData = transformChartData(rawData, "section", "sales");
 // ]
 ```
 
-### `transformCustomData`
+### `parseCustomData`
 
 Transforms an array of objects into chart data using custom field mappings for key, value, and optionally x/y coordinates. This is useful for adapting data with arbitrary field names or for scatter plots.
 
 #### Signature
 
 ```ts
-transformCustomData<T extends Record<string, any>>(
+parseCustomData<T extends Record<string, any>>(
   data: T[],
   mapping: {
     key: keyof T;
@@ -76,7 +76,7 @@ transformCustomData<T extends Record<string, any>>(
 #### Example
 
 ```ts
-import { transformCustomData } from "chartex";
+import { parseCustomData } from "chartex";
 
 // For regular chart data
 const rawData = [
@@ -84,7 +84,7 @@ const rawData = [
   { label: "Beta", amount: 20 }
 ];
 
-const chartData = transformCustomData(rawData, { key: "label", value: "amount" });
+const chartData = parseCustomData(rawData, { key: "label", value: "amount" });
 // Result: [
 //   { key: "Alpha", value: 10 },
 //   { key: "Beta", value: 20 }
@@ -96,7 +96,7 @@ const scatterRaw = [
   { name: "B", xCoord: 3, yCoord: 4 }
 ];
 
-const scatterData = transformCustomData(
+const scatterData = parseCustomData(
   scatterRaw,
   { key: "name", x: "xCoord", y: "yCoord", value: "xCoord" }
 );
