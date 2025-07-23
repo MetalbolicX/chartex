@@ -143,14 +143,14 @@ const chartData = parseFromObject(rawData);
 // ]
 ```
 
-### `transformScatterData`
+### `parseScatterData`
 
 Transforms an array of objects with x and y coordinate fields into scatter plot data objects suitable for chart functions. Each object must have a category (label), x, and y fields. Optionally, a default style can be applied to all data points.
 
 #### Signature
 
 ```ts
-transformScatterData<T extends Record<string, any>>(
+parseScatterData<T extends Record<string, any>>(
   data: T[],
   categoryKey?: keyof T,
   xKey?: keyof T,
@@ -170,14 +170,14 @@ transformScatterData<T extends Record<string, any>>(
 #### Example
 
 ```ts
-import { transformScatterData } from "chartex";
+import { parseScatterData } from "chartex";
 
 const rawData = [
   { group: "A", x: 1, y: 2 },
   { group: "B", x: 3, y: 4 }
 ];
 
-const scatterData = transformScatterData(rawData, "group", "x", "y");
+const scatterData = parseScatterData(rawData, "group", "x", "y");
 // Result: [
 //   { key: "A", value: [1, 2] },
 //   { key: "B", value: [3, 4] }

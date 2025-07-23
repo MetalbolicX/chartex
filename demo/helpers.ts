@@ -2,7 +2,7 @@ import {
   scatter,
   bar,
   pie,
-  transformScatterData,
+  parseScatterData,
   parseCategoricalData,
   transformSimpleData,
   parseFromObject,
@@ -17,7 +17,7 @@ const commonScatterData = [
 ];
 
 // Transform and use directly
-const scatterChart = scatter(transformScatterData(commonScatterData), {
+const scatterChart = scatter(parseScatterData(commonScatterData), {
   width: 15,
 });
 console.log(scatterChart);

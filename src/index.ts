@@ -4,7 +4,7 @@ import {
   parseCategoricalData,
   parseFromObject,
   parseCustomData,
-  transformScatterData,
+  parseScatterData,
   transformSimpleData,
 } from "./utils/utils.ts";
 import bar from "./charts/bar.ts";
@@ -47,7 +47,7 @@ export {
   parseCategoricalData,
   parseCustomData,
   parseFromObject,
-  transformScatterData,
+  parseScatterData,
   transformSimpleData,
   type BackgroundColor,
   type BarChartDatum,

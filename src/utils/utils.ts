@@ -175,7 +175,7 @@ const curBack = (step: number = 1): string => `\x1b[${step}D`;
  * @returns Array of ScatterPlotDatum objects
  * @throws TypeError if any item is missing required keys or has invalid coordinates
  */
-const transformScatterData = <T extends Record<string, any>>(
+const parseScatterData = <T extends Record<string, any>>(
   data: T[],
   categoryKey: keyof T = "category" as keyof T,
   xKey: keyof T = "x" as keyof T,
@@ -368,7 +368,7 @@ export {
   parseCategoricalData,
   parseCustomData,
   parseFromObject,
-  transformScatterData,
+  parseScatterData,
   transformSimpleData,
   verifyData,
   getShellWidth,
