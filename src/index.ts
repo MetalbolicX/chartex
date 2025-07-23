@@ -2,10 +2,11 @@ import {
   bg,
   fg,
   parseCategoricalData,
-  parseFromObject,
   parseCustomData,
-  parseScatterData,
+  parseFromObject,
   parseList,
+  parseRow,
+  parseScatterData,
 } from "./utils/utils.ts";
 import bar from "./charts/bar.ts";
 import bullet from "./charts/bullet.ts";
@@ -47,8 +48,9 @@ export {
   parseCategoricalData,
   parseCustomData,
   parseFromObject,
-  parseScatterData,
   parseList,
+  parseRow,
+  parseScatterData,
   type BackgroundColor,
   type BarChartDatum,
   type BarChartOptions,

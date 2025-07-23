@@ -353,6 +353,79 @@ const parseCustomData = <T extends Record<string, any>>(
   });
 };
 
+/**
+ * Transforms data into chart datum format using callback functions for key and value extraction.
+ *
+ * @example
+ * // For categorical data:
+ * const data = [
+ *   { country: "Mexico", hour: 1, gasoline: 5 },
+ *   { country: "USA", hour: 2, gasoline: 7 }
+ * ];
+ * const keyFn = (item) => String(item.country);
+ * const valueFn = (item) => Number(item.gasoline);
+ * const result = parseRow(data, keyFn, valueFn);
+ * // result: [ { key: "Mexico", value: 5 }, { key: "USA", value: 7 } ]
+ *
+ * @example
+ * // For scatter plot data:
+ * const data = [
+ *   { country: "Mexico", hour: 1, gasoline: 5 },
+ *   { country: "USA", hour: 2, gasoline: 7 }
+ * ];
+ * const keyFn = (item) => String(item.country);
+ * const valueFn = (item) => ({ x: Number(item.hour), y: Number(item.gasoline) });
+ * const result = parseRow(data, keyFn, valueFn);
+ * // result: [ { key: "Mexico", value: [1, 5] }, { key: "USA", value: [2, 7] } ]
+ *
+ * @param data - Array of objects to transform
+ * @param keyFn - Callback to extract the key (string) from each item
+ * @param valueFn - Callback to extract the value (number or {x, y}) from each item
+ * @param defaultStyle - Optional style string to apply to each datum
+ * @returns Array of chart datum objects
+ * @throws TypeError if key or value is missing or invalid
+ */
+const parseRow = (
+  data: Array<any>,
+  keyFn: (item: any, idx: number) => string,
+  valueFn: (item: any, idx: number) => number | { x: number; y: number },
+  defaultStyle?: string
+): Array<{ key: string; value: number | [number, number]; style?: string }> => {
+  return data.map((item, idx) => {
+    const key = keyFn(item, idx);
+    if (typeof key !== "string" || !key) {
+      throw new TypeError(`Invalid key at index ${idx}: ${JSON.stringify(key)}`);
+    }
+    const value = valueFn(item, idx);
+    if (typeof value === "number") {
+      if (Number.isNaN(value)) {
+        throw new TypeError(`Invalid number value at index ${idx}: ${JSON.stringify(item)}`);
+      }
+      return {
+        key,
+        value,
+        ...(defaultStyle && { style: defaultStyle })
+      };
+    }
+    if (
+      value &&
+      typeof value === "object" &&
+      typeof value.x === "number" &&
+      typeof value.y === "number"
+    ) {
+      if (Number.isNaN(value.x) || Number.isNaN(value.y)) {
+        throw new TypeError(`Invalid x/y value at index ${idx}: ${JSON.stringify(item)}`);
+      }
+      return {
+        key,
+        value: [value.x, value.y] as [number, number],
+        ...(defaultStyle && { style: defaultStyle })
+      };
+    }
+    throw new TypeError(`Invalid value at index ${idx}: ${JSON.stringify(item)}`);
+  });
+};
+
 export {
   bg,
   curBack,
@@ -362,16 +435,18 @@ export {
   EOL,
   fg,
   getOriginLen,
+  getShellHeight,
+  getShellWidth,
   maxKeyLen,
   PAD,
   padMid,
   parseCategoricalData,
   parseCustomData,
   parseFromObject,
-  parseScatterData,
   parseList,
+  parseRow,
+  parseScatterData,
   verifyData,
-  getShellWidth,
-  getShellHeight
 };
+
 

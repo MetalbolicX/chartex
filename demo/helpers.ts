@@ -7,6 +7,7 @@ import {
   parseList,
   parseFromObject,
   parseCustomData,
+  parseRow,
 } from "../src/index.ts";
 
 // Example 1: Common JSON structure with x/y coordinates
@@ -77,3 +78,27 @@ const customChart = bar(
   { barWidth: 3, height: 6 }
 );
 console.log(customChart);
+
+
+// Example 6: Using parseRow for categorical and scatter plot data
+const countryData = [
+  { country: "Mexico", hour: 1, gasoline: 5 },
+  { country: "USA", hour: 2, gasoline: 7 },
+  { country: "Canada", hour: 3, gasoline: 4 }
+];
+
+// Categorical: key = country, value = gasoline
+const rowCategorical = parseRow(
+  countryData,
+  (item) => String(item.country),
+  (item) => Number(item.gasoline)
+);
+console.log("parseRow (categorical):", rowCategorical);
+
+// Scatter: key = country, value = [hour, gasoline]
+const rowScatter = parseRow(
+  countryData,
+  (item) => String(item.country),
+  (item) => ({ x: Number(item.hour), y: Number(item.gasoline) })
+);
+console.log("parseRow (scatter):", rowScatter);
