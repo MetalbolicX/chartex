@@ -218,3 +218,51 @@ const chartData = parseList(values, "Value");
 //   { key: "Value 3", value: 15 }
 // ]
 ```
+
+### `parseRow`
+
+Transforms an array of objects into chart data using callback functions for key and value extraction. This is a flexible utility for mapping any data structure to the chart data format, including both categorical and scatter data.
+
+#### Signature
+
+```ts
+parseRow(
+  data: Array<any>,
+  keyFn: (item: any, idx: number) => string,
+  valueFn: (item: any, idx: number) => number | { x: number; y: number },
+  defaultStyle?: string
+): Array<{ key: string; value: number | [number, number]; style?: string }>
+```
+
+#### Types
+
+- `data`: Array of objects to transform.
+- `keyFn`: Callback to extract the key (string) from each item.
+- `valueFn`: Callback to extract the value (number or `{ x, y }`) from each item.
+- `defaultStyle`: Optional style string to apply to all data points.
+
+#### Example
+
+```ts
+import { parseRow } from "chartex";
+
+// For categorical data
+const data = [
+  { country: "Mexico", hour: 1, gasoline: 5 },
+  { country: "USA", hour: 2, gasoline: 7 }
+];
+const keyFn = (item) => String(item.country);
+const valueFn = (item) => Number(item.gasoline);
+const result = parseRow(data, keyFn, valueFn);
+// result: [ { key: "Mexico", value: 5 }, { key: "USA", value: 7 } ]
+
+// For scatter plot data
+const scatterData = [
+  { country: "Mexico", hour: 1, gasoline: 5 },
+  { country: "USA", hour: 2, gasoline: 7 }
+];
+const scatterKeyFn = (item) => String(item.country);
+const scatterValueFn = (item) => ({ x: Number(item.hour), y: Number(item.gasoline) });
+const scatterResult = parseRow(scatterData, scatterKeyFn, scatterValueFn);
+// result: [ { key: "Mexico", value: [1, 5] }, { key: "USA", value: [2, 7] } ]
+```
