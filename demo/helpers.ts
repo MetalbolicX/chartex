@@ -5,7 +5,7 @@ import {
   transformScatterData,
   parseCategoricalData,
   transformSimpleData,
-  transformObjectData,
+  parseFromObject,
   parseCustomData,
 } from "../src/index.ts";
 
@@ -53,7 +53,7 @@ const monthlyData = {
 };
 
 const pieChart = pie(
-  transformObjectData(monthlyData).map((item, index) => ({
+  parseFromObject(monthlyData).map((item, index) => ({
     ...item,
     style: ["* ", "+ ", "# ", "O "][index % 4],
   })),

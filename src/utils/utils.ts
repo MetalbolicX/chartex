@@ -275,7 +275,7 @@ const transformSimpleData = (
  * @param defaultStyle - Default style to apply if none provided
  * @returns Array of chart datum objects
  */
-const transformObjectData = (
+const parseFromObject = (
   data: Record<string, number>,
   defaultStyle?: string
 ): Array<{ key: string; value: number; style?: string }> => {
@@ -367,7 +367,7 @@ export {
   padMid,
   parseCategoricalData,
   parseCustomData,
-  transformObjectData,
+  parseFromObject,
   transformScatterData,
   transformSimpleData,
   verifyData,

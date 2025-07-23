@@ -106,14 +106,14 @@ const scatterData = parseCustomData(
 // ]
 ```
 
-### `transformObjectData`
+### `parseFromObject`
 
 Transforms an object of key-value pairs into chart data objects suitable for chart functions. Each key becomes the label and each value becomes the numeric value for the chart data. Optionally, a default style can be applied to all data points.
 
 #### Signature
 
 ```ts
-transformObjectData(
+parseFromObject(
   data: Record<string, number>,
   defaultStyle?: string
 ): Array<{ key: string; value: number; style?: string }>
@@ -127,7 +127,7 @@ transformObjectData(
 #### Example
 
 ```ts
-import { transformObjectData } from "chartex";
+import { parseFromObject } from "chartex";
 
 const rawData = {
   Alpha: 10,
@@ -135,7 +135,7 @@ const rawData = {
   Gamma: 15
 };
 
-const chartData = transformObjectData(rawData);
+const chartData = parseFromObject(rawData);
 // Result: [
 //   { key: "Alpha", value: 10 },
 //   { key: "Beta", value: 20 },
