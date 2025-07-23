@@ -4,7 +4,7 @@ import {
   pie,
   parseScatterData,
   parseCategoricalData,
-  transformSimpleData,
+  parseList,
   parseFromObject,
   parseCustomData,
 } from "../src/index.ts";
@@ -38,7 +38,7 @@ console.log(barChart);
 
 // Example 3: Simple array of values
 const simpleValues = [10, 20, 15, 25, 30];
-const simpleChart = bar(transformSimpleData(simpleValues, "Month"), {
+const simpleChart = bar(parseList(simpleValues, "Month"), {
   barWidth: 2,
   height: 8,
 });

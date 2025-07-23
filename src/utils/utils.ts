@@ -257,7 +257,7 @@ const parseCategoricalData = <T extends Record<string, any>>(
  * @param defaultStyle - Default style to apply if none provided
  * @returns Array of chart datum objects
  */
-const transformSimpleData = (
+const parseList = (
   values: number[],
   keyPrefix: string = "Item",
   defaultStyle?: string
@@ -369,7 +369,7 @@ export {
   parseCustomData,
   parseFromObject,
   parseScatterData,
-  transformSimpleData,
+  parseList,
   verifyData,
   getShellWidth,
   getShellHeight

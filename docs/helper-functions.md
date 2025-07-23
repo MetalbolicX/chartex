@@ -184,14 +184,14 @@ const scatterData = parseScatterData(rawData, "group", "x", "y");
 // ]
 ```
 
-### `transformSimpleData`
+### `parseList`
 
 Transforms an array of numbers into chart data objects with auto-generated keys. Each value is assigned a key using a prefix and its index. Optionally, a default style can be applied to all data points.
 
 #### Signature
 
 ```ts
-transformSimpleData(
+parseList(
   values: number[],
   keyPrefix?: string,
   defaultStyle?: string
@@ -207,11 +207,11 @@ transformSimpleData(
 #### Example
 
 ```ts
-import { transformSimpleData } from "chartex";
+import { parseList } from "chartex";
 
 const values = [10, 20, 15];
 
-const chartData = transformSimpleData(values, "Value");
+const chartData = parseList(values, "Value");
 // Result: [
 //   { key: "Value 1", value: 10 },
 //   { key: "Value 2", value: 20 },
