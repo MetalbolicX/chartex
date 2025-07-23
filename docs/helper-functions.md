@@ -1,4 +1,4 @@
-# Utilities Functions
+# Utility Functions
 
 This is a helper function that can help you to increase the development experience.
 
