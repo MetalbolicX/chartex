@@ -2,26 +2,72 @@
 applyTo: "**"
 description: General guidelines and best practices for writing code.
 ---
+# General Guidelines for Writing Code
 
-# Genral Guidelines for Writing Code
+<general_guidelines>
 
-## General Guidelines
-
-- Always verify information before presenting it. Do not make assumptions or speculate without clear evidence.
-- Make changes file by file and allow for review of mistakes.
+- Do not make assumptions or speculate without clear evidence. Verify or clarify requirements before proceeding.
+- Make changes file by file.
 - Never use apologies or give feedback about understanding in comments or documentation.
-- Don't suggest whitespace changes or summarize changes made
+- Do not suggest whitespace changes or summarize the changes made.
 - Prioritize code performance and security in suggestions.
-- Implement robust error handling and logging where necessary.
+- Analyze potential error scenarios and implement robust error handling and user-friendly messages.
 - Encourage modular design for maintainability and reusability.
 - Replace hardcoded values with named constants.
-- Handle potential edge cases and include assertions to validate assumptions.
 
-## Apply clean code principles and best practices
+<example>
+
+```ts
+const TAX_RATE = 0.2;
+
+function calculateTotal(price: number): number {
+  return price + price * TAX_RATE;
+}
+```
+
+</example>
+
+</general_guidelines>
+
+<clean_code>
+<naming_conventions>
 
 - For boolean data types, use names that simulate a question such as `hasOne`, `isAtLeastOne`, `isValid`, `isEmpty`, etc.
+- Use meaningful names that describe the purpose of the variable, function, or class.
+
+<example>
+
+```ts
+// Bad naming
+const x = true; // Not descriptive
+const a = 5; // Not descriptive
+const fruits = ["apple", "banana"]; // Not descriptive
+
+
+  // Good naming
+const isUserLoggedIn = true;
+const maxRetryAttempts = 5;
+function fetchUserData(userId: string): UserData {
+  // Fetch user data logic
+}
+const fruitNames = ["apple", "banana"]; // More descriptive
+const userProfile = {
+  name: "John Doe",
+  age: 30,
+  isActive: true
+};
+const fruits = [
+  { name: "apple", color: "red" },
+  { name: "banana", color: "yellow" }
+]; // Context provides more data
+```
+
+</example>
+
 - For functions, use names that simulate an action such as `validateUser`, etc.
-- Avoid using abbreviations or acronyms in names unless they are widely recognized (e.g., `HTML`, `URL`, `API`) or they are part of a convention by a given context. For example:
+- Avoid using acronyms in names unless they are widely recognized (e.g., `HTML`, `URL`, `API`) or they are part of a convention by a given context.
+
+<example>
 
 ```js
 // In d3.js a callback uses d, i, ns to refer to data, index, and elements in an array respectively.
@@ -39,7 +85,13 @@ const display = {
 };
 ```
 
+</example>
+
+</naming_conventions>
+
 - Avoid the use of nested `if` statements and take advantage of early return.
+
+<example>
 
 ```ts
 // Recommended
@@ -53,20 +105,6 @@ function processData(data: DataType): ResultType {
 }
 ```
 
-- Use meaningful names that describe the purpose of the variable, function, or class.
+</example>
 
-```ts
-// Example of a meaningful function name
-function calculateTotalPrice(items: Item[]): number {
-  return items.reduce((total, item) => total + item.price, 0);
-}
-
-// Name related to the context
-// It's a incorrect name, because the elements are
-// names of fruits. It would be better to use `fruitNames` as name.
-// The name `fruits` would be better for an array of
-// object with fruit data
-const fruits = ["apple", "banana", "cherry"];
-```
-
-Apply my recommendations for [javascript and typescript](./copilot-ts.instructions.md).
+</clean_code>
