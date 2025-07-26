@@ -28,20 +28,18 @@ const scatterData: ScatterPlotDatum[] = [
 
 console.log(`${scatter(scatterData)}\n`);
 
-const squareData: ScatterPlotDatum[] = [
-  { key: "A", value: [-4, 16], style: fg("red", "*") },
-  { key: "A", value: [-3, 9], style: fg("red", "*") },
-  { key: "A", value: [-2, 4], style: fg("red", "*") },
-  { key: "A", value: [-1, 1], style: fg("red", "* ") },
-  { key: "A", value: [0, 0], style: fg("red", "* ") },
-  { key: "A", value: [1, 1], style: fg("red", "* ") },
-  { key: "A", value: [2, 4], style: fg("red", "* ") },
-  { key: "A", value: [3, 9], style: fg("red", "* ") },
-  { key: "A", value: [4, 16], style: fg("red", "* ") },
+const scatterData3: ScatterPlotDatum[] = [
+  { key: "A", value: [0, -0.9], style: fg("red", "*") },
+  { key: "A", value: [1, -0.8], style: fg("red", "*") },
+  { key: "B", value: [2, -0.7], style: fg("blue", "#") },
+  { key: "B", value: [3, -0.6], style: fg("blue", "#") },
+  { key: "C", value: [6, -0.5], style: fg("green", "@") },
+  { key: "C", value: [7, -0.4], style: fg("green", "@") },
+  { key: "D", value: [8, 0.5], style: fg("yellow", "$") },
+  { key: "D", value: [9, 0.6], style: fg("yellow", "$") },
 ];
 
-// console.log(`${scatter(squareData, { width: 20, height: 10 })}\n`);
-console.log(`${scatter(squareData)}\n`);
+console.log(scatter(scatterData3));
 
 const salesData: ScatterPlotDatum[] = [
   { key: "Q1", value: [1, 12], style: "●●" },

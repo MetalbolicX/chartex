@@ -66,16 +66,33 @@ const scatter = (
     if (grid[y] && grid[y][x]) grid[y][x] = style;
   });
 
-  // Prepare y-axis labels
-  const yAxisWidth = Math.max(String(maxY).length, String(minY).length);
-  const yAxisChar = "|";
-  const yLabelStep = height > 1 ? (maxY - minY) / (height - 1) : 1;
 
+  // Dynamic decimal precision for y axis
+  let yDecimals = 0;
+  const yRange = Math.abs(maxY - minY);
+  if (yRange < 1) yDecimals = 2;
+  else if (yRange < 10) yDecimals = 1;
+  else yDecimals = 0;
+
+  // Helper to remove unnecessary trailing zeros
+  const formatY = (val: number, decimals: number) => {
+    let s = val.toFixed(decimals);
+    if (decimals > 0) s = s.replace(/\.0+$/, '').replace(/(\.[1-9]*)0+$/, '$1');
+    return s;
+  };
+
+  // Compute y axis width for alignment
+  const yLabels = Array.from({ length: height }, (_, i) => {
+    const yValue = maxY - i * (height > 1 ? (maxY - minY) / (height - 1) : 1);
+    return formatY(yValue, yDecimals);
+  });
+  const yAxisWidth = Math.max(...yLabels.map(l => l.length));
+  const yAxisChar = "|";
+  // const yLabelStep = height > 1 ? (maxY - minY) / (height - 1) : 1;
 
   // Build lines with y-axis
   const lines = grid.map((row, i) => {
-    const yValue = maxY - i * yLabelStep;
-    const label = yValue.toFixed(0).padStart(yAxisWidth);
+    const label = yLabels[i].padStart(yAxisWidth);
     return `${label} ${yAxisChar} ${row.join("")}`;
   });
 
