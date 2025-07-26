@@ -85,15 +85,32 @@ const sparkline = (
   const last = points.at(-1);
   if (last) grid[last.y][last.x] = last.style;
 
-  // Prepare y-axis labels
-  const yAxisWidth = Math.max(String(max).length, String(min).length);
+  // Dynamic decimal precision for y axis
+  let yDecimals = 0;
+  const yRange = Math.abs(max - min);
+  if (yRange < 1) yDecimals = 2;
+  else if (yRange < 10) yDecimals = 1;
+  else yDecimals = 0;
+
+  // Helper to remove unnecessary trailing zeros
+  const formatY = (val: number, decimals: number): string => {
+    let s = val.toFixed(decimals);
+    if (decimals > 0) s = s.replace(/\.0+$/, '').replace(/(\.[1-9]*)0+$/, '$1');
+    return s;
+  };
+
+  // Compute y axis width for alignment
+  const yLabels = Array.from({ length: height }, (_, i) => {
+    const yValue = max - i * (height > 1 ? (max - min) / (height - 1) : 1);
+    return formatY(yValue, yDecimals);
+  });
+  const yAxisWidth = Math.max(...yLabels.map(l => l.length));
   const axisChar = options?.yAxisChar ?? "|";
-  const labelStep = height > 1 ? (max - min) / (height - 1) : 1;
+  // const labelStep = height > 1 ? (max - min) / (height - 1) : 1;
 
   // Build lines with y-axis
   const lines = grid.map((row, i) => {
-    const yValue = max - i * labelStep;
-    const label = yValue.toFixed(0).padStart(yAxisWidth);
+    const label = yLabels[i].padStart(yAxisWidth);
     return `${label} ${axisChar} ${row.join("")}`;
   });
   return lines.join("\n");
