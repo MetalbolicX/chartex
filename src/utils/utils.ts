@@ -1,24 +1,24 @@
 import { stdout } from "node:process";
 import { EOL } from "node:os";
-import type { BackgroundColor, ChartDatum, ScatterPlotDatum } from "../types/types.ts";
+import type {
+  BackgroundColor,
+  ChartDatum,
+  ScatterPlotDatum,
+} from "../types/types.ts";
 
 /**
  * Gets the current terminal width (columns)
  * @returns number of columns or default (80)
  */
 const getShellWidth = (): number =>
-  typeof stdout !== "undefined" && stdout.columns
-    ? stdout.columns
-    : 80;
+  typeof stdout !== "undefined" && stdout.columns ? stdout.columns : 80;
 
 /**
  * Gets the current terminal height (rows)
  * @returns number of rows or default (24)
  */
 const getShellHeight = (): number =>
-  typeof stdout !== "undefined" && stdout.rows
-    ? stdout.rows
-    : 24;
+  typeof stdout !== "undefined" && stdout.rows ? stdout.rows : 24;
 
 /**
  * Padding character used throughout the utility functions
@@ -92,9 +92,7 @@ const padMid = (str: string, width: number): string => {
  * @throws TypeError if data format is invalid
  */
 const verifyData = (data: ChartDatum[]): void => {
-  const { length } = data;
-
-  if (!Array.isArray(data) || length === 0) {
+  if (!(Array.isArray(data) && data.length > 0)) {
     throw new TypeError(`Invalid data: ${JSON.stringify(data)}`);
   }
 
@@ -128,14 +126,16 @@ const verifyData = (data: ChartDatum[]): void => {
  * @param data - The data array
  * @returns The maximum key length
  */
-const maxKeyLen = (data: ChartDatum[]): number => Math.max(...data.map((item) => item.key.length));
+const maxKeyLen = (data: ChartDatum[]): number =>
+  Math.max(...data.map(({ key }) => key.length));
 
 /**
  * Gets the original length of a string without ANSI escape codes
  * @param str - The string to measure
  * @returns The length without ANSI codes
  */
-const getOriginLen = (str: string): number => str.replace(/\x1b\[[0-9;]*m/g, "").length;
+const getOriginLen = (str: string): number =>
+  str.replace(/\\x1b\[[0-9;]*m/g, "").length;
 
 /**
  * Creates cursor forward movement ANSI code
@@ -175,30 +175,36 @@ const curBack = (step: number = 1): string => `\x1b[${step}D`;
  * @returns Array of ScatterPlotDatum objects
  * @throws TypeError if any item is missing required keys or has invalid coordinates
  */
-const parseScatterData = <T extends Record<string, any>>(
+const parseScatterData = <T extends Record<string, unknown>>(
   data: T[],
   categoryKey: keyof T = "category" as keyof T,
   xKey: keyof T = "x" as keyof T,
   yKey: keyof T = "y" as keyof T,
   defaultStyle?: string
-): ScatterPlotDatum[] => {
-  return data.map((item, idx) => {
+): ScatterPlotDatum[] =>
+  data.map((item, idx) => {
     const key = item[categoryKey];
     const x = item[xKey];
     const y = item[yKey];
     if (key == null) {
       throw new TypeError(
-        `Missing key '${String(categoryKey)}' at index ${idx}: ${JSON.stringify(item)}`
+        `Missing key '${String(categoryKey)}' at index ${idx}: ${JSON.stringify(
+          item
+        )}`
       );
     }
     if (x == null || y == null) {
       throw new TypeError(
-        `Missing coordinate '${String(xKey)}' or '${String(yKey)}' at index ${idx}: ${JSON.stringify(item)}`
+        `Missing coordinate '${String(xKey)}' or '${String(
+          yKey
+        )}' at index ${idx}: ${JSON.stringify(item)}`
       );
     }
     if (Number.isNaN(Number(x)) || Number.isNaN(Number(y))) {
       throw new TypeError(
-        `Invalid number for '${String(xKey)}' or '${String(yKey)}' at index ${idx}: ${JSON.stringify(item)}`
+        `Invalid number for '${String(xKey)}' or '${String(
+          yKey
+        )}' at index ${idx}: ${JSON.stringify(item)}`
       );
     }
     return {
@@ -207,7 +213,6 @@ const parseScatterData = <T extends Record<string, any>>(
       ...(defaultStyle && { style: defaultStyle }),
     };
   });
-};
 
 /**
  * Transforms data with value field into chart datum format with error handling
@@ -218,28 +223,34 @@ const parseScatterData = <T extends Record<string, any>>(
  * @returns Array of chart datum objects
  * @throws TypeError if any item is missing required keys or has invalid value
  */
-const parseCategoricalData = <T extends Record<string, any>>(
+const parseCategoricalData = <T extends Record<string, unknown>>(
   data: T[],
   categoryKey: keyof T = "category" as keyof T,
   valueKey: keyof T = "value" as keyof T,
   defaultStyle?: string
-): Array<{ key: string; value: number; style?: string }> => {
-  return data.map((item, idx) => {
+): Array<{ key: string; value: number; style?: string }> =>
+  data.map((item, idx) => {
     const key = item[categoryKey];
     const value = item[valueKey];
     if (key == null) {
       throw new TypeError(
-        `Missing key '${String(categoryKey)}' at index ${idx}: ${JSON.stringify(item)}`
+        `Missing key '${String(categoryKey)}' at index ${idx}: ${JSON.stringify(
+          item
+        )}`
       );
     }
     if (value == null) {
       throw new TypeError(
-        `Missing value '${String(valueKey)}' at index ${idx}: ${JSON.stringify(item)}`
+        `Missing value '${String(valueKey)}' at index ${idx}: ${JSON.stringify(
+          item
+        )}`
       );
     }
     if (Number.isNaN(Number(value))) {
       throw new TypeError(
-        `Invalid number for '${String(valueKey)}' at index ${idx}: ${JSON.stringify(item)}`
+        `Invalid number for '${String(
+          valueKey
+        )}' at index ${idx}: ${JSON.stringify(item)}`
       );
     }
     return {
@@ -248,7 +259,6 @@ const parseCategoricalData = <T extends Record<string, any>>(
       ...(defaultStyle && { style: defaultStyle }),
     };
   });
-};
 
 /**
  * Transforms array of values into chart datum format with auto-generated keys
@@ -278,13 +288,12 @@ const parseList = (
 const parseFromObject = (
   data: Record<string, number>,
   defaultStyle?: string
-): Array<{ key: string; value: number; style?: string }> => {
-  return Object.entries(data).map(([key, value]) => ({
+): Array<{ key: string; value: number; style?: string }> =>
+  Object.entries(data).map(([key, value]) => ({
     key,
     value,
     ...(defaultStyle && { style: defaultStyle }),
   }));
-};
 
 /**
  * Transforms data with custom field mapping
@@ -294,7 +303,7 @@ const parseFromObject = (
  * @returns Array of chart datum objects
  * @throws TypeError if any item is missing required keys or has invalid value(s)
  */
-const parseCustomData = <T extends Record<string, any>>(
+const parseCustomData = <T extends Record<string, unknown>>(
   data: T[],
   mapping: {
     key: keyof T;
@@ -303,12 +312,14 @@ const parseCustomData = <T extends Record<string, any>>(
     y?: keyof T;
   },
   defaultStyle?: string
-): Array<{ key: string; value: number | [number, number]; style?: string }> => {
-  return data.map((item, idx) => {
+): Array<{ key: string; value: number | [number, number]; style?: string }> =>
+  data.map((item, idx) => {
     const key = item[mapping.key];
     if (key == null) {
       throw new TypeError(
-        `Missing key '${String(mapping.key)}' at index ${idx}: ${JSON.stringify(item)}`
+        `Missing key '${String(mapping.key)}' at index ${idx}: ${JSON.stringify(
+          item
+        )}`
       );
     }
 
@@ -318,12 +329,16 @@ const parseCustomData = <T extends Record<string, any>>(
       const y = item[mapping.y];
       if (x == null || y == null) {
         throw new TypeError(
-          `Missing coordinate '${String(mapping.x)}' or '${String(mapping.y)}' at index ${idx}: ${JSON.stringify(item)}`
+          `Missing coordinate '${String(mapping.x)}' or '${String(
+            mapping.y
+          )}' at index ${idx}: ${JSON.stringify(item)}`
         );
       }
       if (Number.isNaN(Number(x)) || Number.isNaN(Number(y))) {
         throw new TypeError(
-          `Invalid number for '${String(mapping.x)}' or '${String(mapping.y)}' at index ${idx}: ${JSON.stringify(item)}`
+          `Invalid number for '${String(mapping.x)}' or '${String(
+            mapping.y
+          )}' at index ${idx}: ${JSON.stringify(item)}`
         );
       }
       return {
@@ -337,12 +352,16 @@ const parseCustomData = <T extends Record<string, any>>(
     const value = item[mapping.value];
     if (value == null) {
       throw new TypeError(
-        `Missing value '${String(mapping.value)}' at index ${idx}: ${JSON.stringify(item)}`
+        `Missing value '${String(
+          mapping.value
+        )}' at index ${idx}: ${JSON.stringify(item)}`
       );
     }
     if (Number.isNaN(Number(value))) {
       throw new TypeError(
-        `Invalid number for '${String(mapping.value)}' at index ${idx}: ${JSON.stringify(item)}`
+        `Invalid number for '${String(
+          mapping.value
+        )}' at index ${idx}: ${JSON.stringify(item)}`
       );
     }
     return {
@@ -351,7 +370,6 @@ const parseCustomData = <T extends Record<string, any>>(
       ...(defaultStyle && { style: defaultStyle }),
     };
   });
-};
 
 /**
  * Transforms data into chart datum format using callback functions for key and value extraction.
@@ -386,25 +404,32 @@ const parseCustomData = <T extends Record<string, any>>(
  * @throws TypeError if key or value is missing or invalid
  */
 const parseRow = (
-  data: Array<any>,
-  keyFn: (item: any, idx: number) => string,
-  valueFn: (item: any, idx: number) => number | { x: number; y: number },
+  data: Record<string, unknown>[],
+  keyFn: (item: Record<string, unknown>, idx: number) => string,
+  valueFn: (
+    item: Record<string, unknown>,
+    idx: number
+  ) => number | { x: number; y: number },
   defaultStyle?: string
-): Array<{ key: string; value: number | [number, number]; style?: string }> => {
-  return data.map((item, idx) => {
+): Array<{ key: string; value: number | [number, number]; style?: string }> =>
+  data.map((item, idx) => {
     const key = keyFn(item, idx);
     if (typeof key !== "string" || !key) {
-      throw new TypeError(`Invalid key at index ${idx}: ${JSON.stringify(key)}`);
+      throw new TypeError(
+        `Invalid key at index ${idx}: ${JSON.stringify(key)}`
+      );
     }
     const value = valueFn(item, idx);
     if (typeof value === "number") {
       if (Number.isNaN(value)) {
-        throw new TypeError(`Invalid number value at index ${idx}: ${JSON.stringify(item)}`);
+        throw new TypeError(
+          `Invalid number value at index ${idx}: ${JSON.stringify(item)}`
+        );
       }
       return {
         key,
         value,
-        ...(defaultStyle && { style: defaultStyle })
+        ...(defaultStyle && { style: defaultStyle }),
       };
     }
     if (
@@ -414,17 +439,20 @@ const parseRow = (
       typeof value.y === "number"
     ) {
       if (Number.isNaN(value.x) || Number.isNaN(value.y)) {
-        throw new TypeError(`Invalid x/y value at index ${idx}: ${JSON.stringify(item)}`);
+        throw new TypeError(
+          `Invalid x/y value at index ${idx}: ${JSON.stringify(item)}`
+        );
       }
       return {
         key,
         value: [value.x, value.y] as [number, number],
-        ...(defaultStyle && { style: defaultStyle })
+        ...(defaultStyle && { style: defaultStyle }),
       };
     }
-    throw new TypeError(`Invalid value at index ${idx}: ${JSON.stringify(item)}`);
+    throw new TypeError(
+      `Invalid value at index ${idx}: ${JSON.stringify(item)}`
+    );
   });
-};
 
 export {
   bg,
@@ -448,5 +476,3 @@ export {
   parseScatterData,
   verifyData,
 };
-
-
