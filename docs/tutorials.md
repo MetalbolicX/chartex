@@ -47,6 +47,66 @@ No more manual mapping—just transform and visualize! 🔄
 
 ## Exploring Other Chart Types
 
+### Bullet Chart with parseFromObject
 
+You can quickly turn an object of values into a bullet chart using `parseFromObject`. This is great for comparing metrics side by side! 📏
+
+```ts
+import { parseFromObject, bullet } from "chartex";
+
+const metrics = {
+  Sales: 85,
+  Marketing: 92,
+  Support: 78,
+  Development: 96
+};
+
+const bulletData = parseFromObject(metrics, "▓");
+console.log(bullet(bulletData, { style: "▓" }));
+```
+
+### Donut Chart with parseList
+
+If you have a simple list of numbers, use `parseList` to create a donut chart. Add a custom style for extra flair! 🍩
+
+```ts
+import { parseList, donut } from "chartex";
+
+const expenses = [45, 35, 20];
+const donutData = parseList(expenses, "Segment", "█");
+console.log(donut(donutData, { style: "█" }));
+```
+
+### Scatter Plot with parseScatterData
+
+For visualizing coordinates, `parseScatterData` makes it easy to prepare your data for a scatter plot. Try using a unique style for each point! 🎯
+
+```ts
+import { parseScatterData, scatter } from "chartex";
+
+const points = [
+  { group: "A", x: 1, y: 2 },
+  { group: "B", x: 3, y: 4 },
+  { group: "C", x: 2, y: 5 }
+];
+const scatterData = parseScatterData(points, "group", "x", "y", "●");
+console.log(scatter(scatterData, { width: 16, height: 8, style: "●" }));
+```
+
+### Sparkline with parseRow
+
+You can use `parseRow` to flexibly map any data structure to a sparkline. This is perfect for showing trends! 📈
+
+```ts
+import { parseRow, sparkline } from "chartex";
+
+const trendData = [
+  { day: "Mon", value: 10 },
+  { day: "Tue", value: 25 },
+  { day: "Wed", value: 15 }
+];
+const sparkData = parseRow(trendData, item => item.day, item => item.value, "░");
+console.log(sparkline(sparkData, { width: 10 }));
+```
 
 With chartex, creating terminal charts is a breeze! 🌬️ From bar charts to sparklines, you can visualize your data in seconds. Explore the API, try out different chart types, and make your terminal come alive with data. Happy charting! 🥳
