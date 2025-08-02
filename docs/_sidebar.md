@@ -2,4 +2,4 @@
 - [Getting Started](/getting-started)
 - [API Reference](/api-reference)
 - [Helper Functions](/helper-functions)
-
+- [Tutorials](/tutorials)
