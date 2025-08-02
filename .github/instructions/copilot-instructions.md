@@ -16,7 +16,6 @@ description: General guidelines and best practices for writing code.
 - Replace hardcoded values with named constants.
 
 <example>
-
 ```ts
 const TAX_RATE = 0.2;
 
@@ -24,7 +23,6 @@ function calculateTotal(price: number): number {
   return price + price * TAX_RATE;
 }
 ```
-
 </example>
 
 </general_guidelines>
@@ -36,7 +34,6 @@ function calculateTotal(price: number): number {
 - Use meaningful names that describe the purpose of the variable, function, or class.
 
 <example>
-
 ```ts
 // Bad naming
 const x = true; // Not descriptive
@@ -61,14 +58,12 @@ const fruits = [
   { name: "banana", color: "yellow" }
 ]; // Context provides more data
 ```
-
 </example>
 
 - For functions, use names that simulate an action such as `validateUser`, etc.
 - Avoid using acronyms in names unless they are widely recognized (e.g., `HTML`, `URL`, `API`) or they are part of a convention by a given context.
 
 <example>
-
 ```js
 // In d3.js a callback uses d, i, ns to refer to data, index, and elements in an array respectively.
 d3.select("body")
@@ -84,7 +79,6 @@ const display = {
   fgColor: "black",
 };
 ```
-
 </example>
 
 </naming_conventions>
@@ -92,7 +86,6 @@ const display = {
 - Avoid the use of nested `if` statements and take advantage of early return.
 
 <example>
-
 ```ts
 // Recommended
 function processData(data: DataType): ResultType {
@@ -104,7 +97,6 @@ function processData(data: DataType): ResultType {
   return result;
 }
 ```
-
 </example>
 
 </clean_code>
