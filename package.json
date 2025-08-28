@@ -6,8 +6,8 @@
   "homepage": "https://metalbolicx.github.io/chartex/",
   "exports": {
     "import": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
     },
     "require": {
       "types": "./dist/index.d.cts",
@@ -17,9 +17,9 @@
   "engines": {
     "node": ">=22.0.0"
   },
-  "module": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "main": "dist/index.cjs",
-  "types": "dist/index.d.ts",
+  "types": "dist/index.d.mts",
   "scripts": {
     "docs": "docsify serve docs",
     "start": "echo \"Hello world\"",
@@ -38,7 +38,7 @@
     "shell"
   ],
   "repository": {
-    "type": "github",
+    "type": "git",
     "url": "https://github.com/MetalbolicX/chartex.git"
   },
   "bugs": {
