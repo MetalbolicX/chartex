@@ -19,8 +19,8 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
   | None => 1
   }
   let chartHeight = switch options {
-  | Some(o) => o.height->Option.getOr(max(6, height() * 4 / 10))
-  | None => max(6, height() * 4 / 10)
+  | Some(o) => o.height->Option.getOr(max(6, height()->Option.getOr(24) * 4 / 10))
+  | None => max(6, height()->Option.getOr(24) * 4 / 10)
   }
   let padding = switch options {
   | Some(o) => o.padding->Option.getOr(3)

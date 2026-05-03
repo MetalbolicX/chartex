@@ -11,8 +11,8 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
   let options: option<gaugeOptions> = opts
 
   let radius = switch options {
-  | Some(o) => o.radius->Option.getOr(max(4, width() / 10))
-  | None => max(4, width() / 10)
+  | Some(o) => o.radius->Option.getOr(max(4, width()->Option.getOr(80) / 10))
+  | None => max(4, width()->Option.getOr(80) / 10)
   }
   let left = switch options {
   | Some(o) => o.left->Option.getOr(0)

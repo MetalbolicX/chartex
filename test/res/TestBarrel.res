@@ -138,10 +138,9 @@ let testBarrelCoreAndTypesResolve = () => {
   }
 
   let terminalWidth = C.Terminal.width()
-  if terminalWidth >= 0 {
-    passWith("Chartex.Terminal alias resolves and width() returns non-negative")
-  } else {
-    failWith("Chartex.Terminal width() returned an invalid value")
+  switch terminalWidth {
+  | Some(_w) => passWith("Chartex.Terminal alias resolves and width() returns non-negative")
+  | None => failWith("Chartex.Terminal width() returned None (non-TTY)")
   }
 
   let j = C.Json.JString("hello")

@@ -161,16 +161,21 @@ let testTerminalDimensions = () => {
   let w = width()
   let h = height()
 
-  if w >= 0 {
-    passWith("Terminal.width returns non-negative integer")
-  } else {
-    failWith("Terminal.width returned negative value")
-  }
+  switch (w, h) {
+  | (Some(wVal), Some(hVal)) =>
+    if wVal >= 0 {
+      passWith("Terminal.width returns non-negative integer")
+    } else {
+      failWith("Terminal.width returned negative value")
+    }
 
-  if h >= 0 {
-    passWith("Terminal.height returns non-negative integer")
-  } else {
-    failWith("Terminal.height returned negative value")
+    if hVal >= 0 {
+      passWith("Terminal.height returns non-negative integer")
+    } else {
+      failWith("Terminal.height returned negative value")
+    }
+  | _ =>
+    failWith("Terminal.width/height returned None (non-TTY environment)")
   }
 }
 

@@ -11,8 +11,8 @@ let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, (
   let options: option<pieOptions> = opts
 
   let radius = switch options {
-  | Some(o) => o.radius->Option.getOr(max(4, height() * 4 / 10))
-  | None => max(4, height() * 4 / 10)
+  | Some(o) => o.radius->Option.getOr(max(4, height()->Option.getOr(24) * 4 / 10))
+  | None => max(4, height()->Option.getOr(24) * 4 / 10)
   }
   let left = switch options {
   | Some(o) => o.left->Option.getOr(0)

@@ -2,24 +2,17 @@
  * F002-core — Terminal dimension detection
  *
  * Reads terminal dimensions from process.stdout when available in a TTY
- * context. Falls back to 80×24 for non-TTY environments (CI, piped output).
- * Uses %raw for direct Node.js interop with Js.Nullable wrapping for safety.
+ * context. Returns None for non-TTY environments (CI, piped output).
+ * Uses @val external bindings for type-safe Node.js interop.
  */
+
+@val @scope(("process", "stdout")) external stdoutColumns: option<int> = "columns"
+@val @scope(("process", "stdout")) external stdoutRows: option<int> = "rows"
 
 /**
  * Returns the terminal width in columns.
- * Reads process.stdout.columns in TTY mode; defaults to 80 otherwise.
+ * Returns None when not in a TTY context.
  */
-let width = (): int => {
-  let raw = %raw(`typeof process !== "undefined" && process.stdout && process.stdout.columns ? process.stdout.columns : 80`)
-  raw->Nullable.toOption->Option.getOr(80)
-}
+let width = (): option<int> => stdoutColumns
 
-/**
- * Returns the terminal height in rows.
- * Reads process.stdout.rows in TTY mode; defaults to 24 otherwise.
- */
-let height = (): int => {
-  let raw = %raw(`typeof process !== "undefined" && process.stdout && process.stdout.rows ? process.stdout.rows : 24`)
-  raw->Nullable.toOption->Option.getOr(24)
-}
+let height = (): option<int> => stdoutRows

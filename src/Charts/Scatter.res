@@ -11,12 +11,12 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   let options: option<scatterOptions> = opts
 
   let charWidth = switch options {
-  | Some(o) => o.width->Option.getOr(width())
-  | None => width()
+  | Some(o) => o.width->Option.getOr(width()->Option.getOr(80))
+  | None => width()->Option.getOr(80)
   }
   let charHeight = switch options {
-  | Some(o) => o.height->Option.getOr(height())
-  | None => height()
+  | Some(o) => o.height->Option.getOr(height()->Option.getOr(24))
+  | None => height()->Option.getOr(24)
   }
   let globalStyle = switch options {
   | Some(o) => o.style->Option.getOr("*")

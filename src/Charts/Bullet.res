@@ -23,8 +23,8 @@ let make = (data: array<'data>, ~config: bulletConfig<'data>, ~options as opts=?
   | None => 1
   }
   let charWidth = switch options {
-  | Some(o) => o.width->Option.getOr(max(10, width() * 6 / 10))
-  | None => max(10, width() * 6 / 10)
+  | Some(o) => o.width->Option.getOr(max(10, width()->Option.getOr(80) * 6 / 10))
+  | None => max(10, width()->Option.getOr(80) * 6 / 10)
   }
   let padding = switch options {
   | Some(o) => o.padding->Option.getOr(1)
