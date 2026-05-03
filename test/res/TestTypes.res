@@ -13,7 +13,7 @@ open Assertions
 
 type barData = {product: string, sales: float, region: string}
 type bulletData = {product: string, sales: float}
-type scatterData = {name: string, coordX: float, coordY: float}
+type scatterData = {seriesName: string, coordX: float, coordY: float}
 type gaugeData = {label: string, percentage: float}
 type pieData = {category: string, amount: float, styleChar: string}
 type sparklineData = {time: string, value: float}
@@ -122,23 +122,23 @@ let testBulletConfigWithOptionalBarWidth = () => {
 }
 
 /**
- * Test: scatterConfig requires x and y accessors (NOT value)
+ * Test: scatterConfig requires series, x and y accessors (no key, no value)
  * Verifies: FR-005 (separate x/y accessors)
- * Verifies: SC-003 (scatter x/y enforced at type level)
+ * Verifies: SC-003 (scatter series/x/y enforced at type level)
  */
 let testScatterConfigRequiresXY = () => {
   let cfg: Types.scatterConfig<scatterData> = {
-    key: d => d.name,
+    series: d => d.seriesName,
     x: d => d.coordX,
     y: d => d.coordY,
   }
 
-  let data = {name: "point-a", coordX: 10.5, coordY: 20.3}
-  isTextEqualTo("point-a", cfg.key(data), ~message="scatterConfig key accessor works")
+  let data = {seriesName: "temperature", coordX: 10.5, coordY: 20.3}
+  isTextEqualTo("temperature", cfg.series(data), ~message="scatterConfig series accessor works")
   isIntEqualTo(10, cfg.x(data)->Float.toInt, ~message="scatterConfig x accessor works")
   isIntEqualTo(20, cfg.y(data)->Float.toInt, ~message="scatterConfig y accessor works")
 
-  passWith("scatterConfig: x/y accessors enforced, value accessor not accepted")
+  passWith("scatterConfig: series/x/y accessors enforced, key removed")
 }
 
 /**
@@ -233,7 +233,7 @@ let testAllOptionsOptionals = () => {
   // All fields are optional in options records — verify construction succeeds
   let _barOpts: Types.barOptions = {barWidth: 2, left: 0, height: 20, padding: 1, style: "#"}
   let _bulletOpts: Types.bulletOptions = {barWidth: 2, style: "#", left: 0, width: 80, padding: 1}
-  let _scatterOpts: Types.scatterOptions = {width: 80, height: 24, style: "#"}
+  let _scatterOpts: Types.scatterOptions = {width: 80, height: 24, style: "#", showLegend: true}
   let _gaugeOpts: Types.gaugeOptions = {radius: 20, left: 0, style: "#", bgStyle: "."}
   let _pieOpts: Types.pieOptions = {radius: 20, left: 0, innerRadius: 10}
   let _donutOpts: Types.donutOptions = {radius: 20, left: 0, innerRadius: 10}
@@ -267,7 +267,7 @@ test("bulletConfig: barWidth optional", () =>
   testBulletConfigWithOptionalBarWidth()
 )
 
-test("scatterConfig: x/y accessors enforced", () =>
+test("scatterConfig: series/x/y accessors enforced", () =>
   testScatterConfigRequiresXY()
 )
 

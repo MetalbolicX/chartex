@@ -2,6 +2,7 @@
  * F003-charts — Scatter Plot Renderer
  *
  * 2D scatter chart using grid-based rendering with axes.
+ * Supports multiple series with auto-assigned styles and an optional legend.
  */
 open Types
 open Terminal
@@ -35,6 +36,75 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   | Some(o) => o.style->Option.getOr("*")
   | None => "*"
   }
+  let showLegend = switch options {
+  | Some(o) => o.showLegend->Option.getOr(true)
+  | None => true
+  }
+
+  // Collect unique series names in order of first occurrence.
+  // seriesIndexMap: series name → insertion index (used for round-robin style lookup).
+  // seriesNameArr: ordered series names (index → name).
+  let seriesCount = ref(0)
+  let seriesIndexMap: dict<int> = Dict.make()
+  let seriesNameArr: array<string> = Array.make(~length=Array.length(data), "")
+  data->Array.forEach(d => {
+    let name = config.series(d)
+    switch Dict.get(seriesIndexMap, name) {
+    | None =>
+      let idx = seriesCount.contents
+      Dict.set(seriesIndexMap, name, idx)
+      seriesNameArr[idx] = name
+      seriesCount := idx + 1
+    | Some(_) => ()
+    }
+  })
+  let numSeries = seriesCount.contents
+
+  // Round-robin default styles assigned by series insertion order.
+  let defaultStyles = ["*", "#", "+", "o", ".", "x", "@"]
+  let defaultStylesLen = Array.length(defaultStyles)
+
+  // Returns the round-robin style char for a series name.
+  let getSeriesStyle = (seriesName: string): string =>
+    switch Dict.get(seriesIndexMap, seriesName) {
+    | Some(idx) => {
+        let styleIdx = idx - defaultStylesLen * (idx / defaultStylesLen)
+        switch defaultStyles[styleIdx] {
+        | Some(s) => s
+        | None => globalStyle
+        }
+      }
+    | None => globalStyle
+    }
+
+  // Build legend style chars: first data point per series determines the legend char.
+  // If config.style is provided, its value for the first point wins.
+  // Otherwise, the round-robin series default is used.
+  let legendStyleArr: array<string> = Array.make(~length=numSeries, globalStyle)
+  let legendStyleSet: dict<bool> = Dict.make()
+  data->Array.forEach(d => {
+    let name = config.series(d)
+    switch Dict.get(legendStyleSet, name) {
+    | None =>
+      switch Dict.get(seriesIndexMap, name) {
+      | Some(idx) =>
+        let styleChar = switch config.style {
+        | Some(st) => st(d)
+        | None => {
+            let styleIdx = idx - defaultStylesLen * (idx / defaultStylesLen)
+            switch defaultStyles[styleIdx] {
+            | Some(s) => s
+            | None => globalStyle
+            }
+          }
+        }
+        legendStyleArr[idx] = styleChar
+        Dict.set(legendStyleSet, name, true)
+      | None => ()
+      }
+    | Some(_) => ()
+    }
+  })
 
   let linearScale = (value: float, min: float, max: float, outMin: float, outMax: float): float =>
     if min == max { outMin } else { outMin +. (value -. min) /. (max -. min) *. (outMax -. outMin) }
@@ -65,7 +135,8 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   data->Array.forEach(d => {
     let xCol = linearScale(d->config.x, minX, maxX, 0.0, (charWidth - 1)->Int.toFloat)->Math.round->Float.toInt
     let yRow = charHeight - 1 - ((d->config.y -. minY) *. yScale)->Math.round->Float.toInt
-    let pStyle = switch config.style { | Some(st) => st(d) | None => globalStyle }
+    // Per-point style overrides series default when config.style is provided.
+    let pStyle = switch config.style { | Some(st) => st(d) | None => getSeriesStyle(config.series(d)) }
     if yRow >= 0 && yRow < charHeight && xCol >= 0 && xCol < charWidth {
       switch grid[yRow] { | Some(row) => row[xCol] = pStyle | None => () }
     }
@@ -175,6 +246,18 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   xRow[maxPos] = maxLabel
 
   result := result.contents ++ "\n" ++ Js.String.repeat(yAxisWidth.contents + 3, " ") ++ xAxisLine ++ "\n" ++ Js.String.repeat(yAxisWidth.contents + 3, " ") ++ Js.Array.joinWith("", xRow)
+
+  // Legend: one entry per series — "{seriesName}: {styleChar}", separated by 3 spaces.
+  if showLegend && numSeries > 0 {
+    let legendParts = Array.make(~length=numSeries, "")
+    for i in 0 to numSeries - 1 {
+      let name = switch seriesNameArr[i] { | Some(n) => n | None => "" }
+      let styleChar = switch legendStyleArr[i] { | Some(s) => s | None => globalStyle }
+      legendParts[i] = `${name}: ${styleChar}`
+    }
+    let legendLine = Js.Array.joinWith("   ", legendParts)
+    result := result.contents ++ "\n" ++ Js.String.repeat(yAxisWidth.contents + 3, " ") ++ legendLine
+  }
 
   result.contents
 }

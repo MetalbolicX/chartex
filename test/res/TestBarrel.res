@@ -5,7 +5,7 @@ module C = Chartex
 
 type categoricalData = {label: string, value: float, style: string}
 type gaugeData = {label: string, percentage: float, style: string}
-type scatterData = {name: string, x: float, y: float, style: string}
+type scatterData = {seriesName: string, x: float, y: float, style: string}
 type sparklineData = {time: string, value: float, style: string}
 
 @module("../../src/Chartex.res.mjs")
@@ -94,11 +94,11 @@ let testBarrelChartsResolve = () => {
   }
 
   let scatterInput: array<scatterData> = [
-    {name: "p1", x: 1.0, y: 1.0, style: "*"},
-    {name: "p2", x: 2.0, y: 3.0, style: "#"},
+    {seriesName: "series1", x: 1.0, y: 1.0, style: "*"},
+    {seriesName: "series2", x: 2.0, y: 3.0, style: "#"},
   ]
   let scatterCfg: C.Types.scatterConfig<scatterData> = {
-    key: d => d.name,
+    series: d => d.seriesName,
     x: d => d.x,
     y: d => d.y,
     style: d => d.style,

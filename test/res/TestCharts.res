@@ -5,7 +5,7 @@ type barData = {product: string, sales: float, barStyle: string}
 type bulletData = {product: string, sales: float, bulletStyle: string}
 type pieData = {category: string, amount: float, pieStyle: string}
 type gaugeData = {label: string, percentage: float, gaugeStyle: string}
-type scatterData = {name: string, coordX: float, coordY: float, pointStyle: string}
+type scatterData = {seriesName: string, coordX: float, coordY: float, pointStyle: string}
 type sparklineData = {time: string, value: float, lineStyle: string}
 
 // ─── Bar Chart Tests ───
@@ -102,17 +102,33 @@ let testGaugeHappyPath = () => {
 
 let testScatterHappyPath = () => {
   let data: array<scatterData> = [
-    {name: "p1", coordX: 1.0, coordY: 2.0, pointStyle: "*"},
-    {name: "p2", coordX: 2.0, coordY: 4.0, pointStyle: "#"},
-    {name: "p3", coordX: 3.0, coordY: 1.0, pointStyle: "+"},
+    {seriesName: "alpha", coordX: 1.0, coordY: 2.0, pointStyle: "*"},
+    {seriesName: "alpha", coordX: 2.0, coordY: 4.0, pointStyle: "*"},
+    {seriesName: "beta", coordX: 3.0, coordY: 1.0, pointStyle: "#"},
   ]
-  let config: Types.scatterConfig<scatterData> = {key: d => d.name, x: d => d.coordX, y: d => d.coordY, style: d => d.pointStyle}
-  let opts: Types.scatterOptions = {width: 30, height: 10}
+  let config: Types.scatterConfig<scatterData> = {series: d => d.seriesName, x: d => d.coordX, y: d => d.coordY, style: d => d.pointStyle}
+  let opts: Types.scatterOptions = {width: 30, height: 10, showLegend: false}
   let result = Scatter.make(data, ~config, ~options=opts, ())
   if result->String.includes("|") { passWith("Scatter: contains Y-axis bar") }
   else { failWith("Scatter: missing Y-axis bar") }
   if result->String.includes("_") { passWith("Scatter: contains X-axis line") }
   else { failWith("Scatter: missing X-axis line") }
+}
+
+let testScatterLegend = () => {
+  let data: array<scatterData> = [
+    {seriesName: "temperature", coordX: 1.0, coordY: 22.5, pointStyle: "*"},
+    {seriesName: "temperature", coordX: 2.0, coordY: 23.1, pointStyle: "*"},
+    {seriesName: "CO2", coordX: 1.0, coordY: 400.0, pointStyle: "#"},
+    {seriesName: "CO2", coordX: 2.0, coordY: 405.0, pointStyle: "#"},
+  ]
+  let config: Types.scatterConfig<scatterData> = {series: d => d.seriesName, x: d => d.coordX, y: d => d.coordY, style: d => d.pointStyle}
+  let opts: Types.scatterOptions = {width: 30, height: 10, showLegend: true}
+  let result = Scatter.make(data, ~config, ~options=opts, ())
+  if result->String.includes("temperature") { passWith("Scatter legend: contains first series name") }
+  else { failWith("Scatter legend: missing first series name") }
+  if result->String.includes("CO2") { passWith("Scatter legend: contains second series name") }
+  else { failWith("Scatter legend: missing second series name") }
 }
 
 // ─── Sparkline Chart Tests ───
@@ -152,5 +168,6 @@ test("Pie: renders with 3 items, contains styles and legend", () => testPieHappy
 test("Donut: renders with 3 items, contains styles and legend", () => testDonutHappyPath())
 test("Gauge: renders percentage value and scale labels", () => testGaugeHappyPath())
 test("Scatter: renders with 3 points, contains axes", () => testScatterHappyPath())
+test("Scatter: legend shows series names", () => testScatterLegend())
 test("Sparkline: renders with 5 points with interpolation", () => testSparklineHappyPath())
 test("Sparkline: single point renders with style char", () => testSparklineSinglePoint())
