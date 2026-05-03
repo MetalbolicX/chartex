@@ -23,7 +23,11 @@
   "scripts": {
     "docs": "docsify serve docs",
     "start": "echo \"Hello world\"",
-    "build": "tsdown"
+    "build": "tsdown",
+    "res:build": "rescript",
+    "res:dev": "rescript watch",
+    "res:clean": "rescript clean",
+    "res:test": "retest ./test/res/*.res.mjs"
   },
   "author": {
     "name": "José Martínez Santana"
@@ -49,6 +53,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "rescript-test": "^8.0.0",
     "tsdown": "^0.13.0"
+  },
+  "dependencies": {
+    "@rescript/runtime": "^12.2.0",
+    "rescript": "^12.2.0"
   }
 }
