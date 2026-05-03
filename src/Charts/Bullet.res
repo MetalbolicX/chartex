@@ -36,13 +36,32 @@ let make = (data: array<'data>, ~config: bulletConfig<'data>, ~options as opts=?
   | None => 1
   }
 
-  let values = data->Array.map(config.value)
+let values = data->Array.map(config.value)
   let maxVal = values->Array.reduce(-1.0e308, (acc, v) => if v > acc { v } else { acc })
 
-  // Guard: all-negative or zero values
+  // Guard: NaN or Infinity in values
+  let hasNaN = values->Array.some(v => Float.isNaN(v))
+  let hasInf = values->Array.some(v => !Float.isFinite(v))
+  let _ = switch hasNaN {
+  | true => JsError.throwWithMessage("Error: Bullet chart data contains NaN values")
+  | false => ()
+  }
+  let _ = switch hasInf {
+  | true => JsError.throwWithMessage("Error: Bullet chart data contains infinite values")
+  | false => ()
+  }
+
+  // Guard: negative values are not supported (bullet charts require positive values)
+  let hasNegative = values->Array.some(v => v < 0.0)
+  let _ = switch hasNegative {
+  | true => JsError.throwWithMessage("Error: Bullet chart does not support negative values. Filter out negative values before rendering.")
+  | false => ()
+  }
+
+  // Guard: all-zero values
   let _ = switch maxVal <= 0.0 {
-    | true => JsError.throwWithMessage("Error: Bullet chart requires positive values")
-    | false => ()
+  | true => JsError.throwWithMessage("Error: Bullet chart requires at least one positive value to render")
+  | false => ()
   }
 
   let padStart = (str: string, len: int, ch: string): string => {

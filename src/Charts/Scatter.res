@@ -107,22 +107,31 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   })
 
   let linearScale = (value: float, min: float, max: float, outMin: float, outMax: float): float =>
-    if min == max { outMin } else { outMin +. (value -. min) /. (max -. min) *. (outMax -. outMin) }
+    if min == max { outMin } else {
+      // Guard: NaN/Infinity in input
+      if Float.isNaN(value) || Float.isNaN(min) || Float.isNaN(max) { outMin }
+      else if !Float.isFinite(value) || !Float.isFinite(min) || !Float.isFinite(max) { outMin }
+      else { outMin +. (value -. min) /. (max -. min) *. (outMax -. outMin) }
+    }
 
   let xVals = data->Array.map(config.x)
   let yVals = data->Array.map(config.y)
 
-  let rec findMin = (arr: array<float>, i: int, cur: float): float =>
-    switch arr[i] { | Some(v) => findMin(arr, i + 1, if v < cur { v } else { cur }) | None => cur }
-  let rec findMax = (arr: array<float>, i: int, cur: float): float =>
-    switch arr[i] { | Some(v) => findMax(arr, i + 1, if v > cur { v } else { cur }) | None => cur }
+  // Use Array.reduce instead of recursive functions for performance and stack safety
+  let minX = xVals->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
+  let maxX = xVals->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
+  let minY = yVals->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
+  let maxY = yVals->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
 
-  let firstVal = switch xVals[0] { | Some(v) => v | None => 0.0 }
-  let minX = findMin(xVals, 1, firstVal)
-  let maxX = findMax(xVals, 1, firstVal)
-  let firstYVal = switch yVals[0] { | Some(v) => v | None => 0.0 }
-  let minY = findMin(yVals, 1, firstYVal)
-  let maxY = findMax(yVals, 1, firstYVal)
+  // Guard: NaN or Infinity in computed ranges
+  let _ = switch Float.isNaN(minX) || Float.isNaN(maxX) || Float.isNaN(minY) || Float.isNaN(maxY) {
+  | true => JsError.throwWithMessage("Error: Scatter chart data contains NaN values")
+  | false => ()
+  }
+  let _ = switch !Float.isFinite(minX) || !Float.isFinite(maxX) || !Float.isFinite(minY) || !Float.isFinite(maxY) {
+  | true => JsError.throwWithMessage("Error: Scatter chart data contains infinite values")
+  | false => ()
+  }
 
   let yScale = switch maxY == minY {
   | true => 1.0

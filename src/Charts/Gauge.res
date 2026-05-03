@@ -38,12 +38,22 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
     | None => JsError.throwWithMessage("Error: Gauge chart requires at least one data point")
   }
 
-  let rawValue = firstItem->config.value
+let rawValue = firstItem->config.value
+
+  // Guard: NaN or Infinity in value
+  let _ = switch Float.isNaN(rawValue) {
+  | true => JsError.throwWithMessage("Error: Gauge chart data contains NaN values")
+  | false => ()
+  }
+  let _ = switch !Float.isFinite(rawValue) {
+  | true => JsError.throwWithMessage("Error: Gauge chart data contains infinite values")
+  | false => ()
+  }
 
   // Guard: value must be 0-100 range (gauge percentage)
   let _ = switch rawValue < 0.0 || rawValue > 100.0 {
-    | true => JsError.throwWithMessage("Error: Gauge value must be between 0 and 100")
-    | false => ()
+  | true => JsError.throwWithMessage("Error: Gauge value must be between 0 and 100")
+  | false => ()
   }
 
   let value = rawValue /. 100.0

@@ -167,14 +167,14 @@ type gaugeOptions = {
  * Configuration for pie chart data accessors.
  * - `key`: extracts the segment label
  * - `value`: extracts the numeric value
- * - `style`: REQUIRED — no default fallback (unlike other charts)
+ * - `style`: optional — defaults to round-robin assignment from ["●", "○", "◆", "◇", "■", "□"]
  *
  * Source: src/types/types.ts → PieChartDatum + PieChartOptions
  */
 type pieConfig<'data> = {
   key: accessor<'data, string>,
   value: accessor<'data, float>,
-  style: accessor<'data, string>,  // required — no default
+  style?: accessor<'data, string>,  // optional — default styles provided
 }
 
 /**
@@ -194,14 +194,14 @@ type pieOptions = {
  * Configuration for donut chart data accessors.
  * - `key`: extracts the segment label
  * - `value`: extracts the numeric value
- * - `style`: REQUIRED — no default fallback (unlike other charts)
+ * - `style`: optional — defaults to round-robin assignment from ["●", "○", "◆", "◇", "■", "□"]
  *
  * Source: src/types/types.ts → DonutChartDatum + DonutChartOptions
  */
 type donutConfig<'data> = {
   key: accessor<'data, string>,
   value: accessor<'data, float>,
-  style: accessor<'data, string>,  // required — no default
+  style?: accessor<'data, string>,  // optional — default styles provided
 }
 
 /**

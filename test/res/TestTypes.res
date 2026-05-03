@@ -157,18 +157,25 @@ let testPieAndDonutRequireStyle = () => {
   let pieData = {category: "Food", amount: 42.0, styleChar: "*"}
   isTextEqualTo("Food", pieCfg.key(pieData), ~message="pieConfig key accessor works")
   isIntEqualTo(42, pieCfg.value(pieData)->Float.toInt, ~message="pieConfig value accessor works")
-  isTextEqualTo("*", pieCfg.style(pieData), ~message="pieConfig style accessor works")
+  // style is now optional — handle the option wrapper
+  switch pieCfg.style {
+  | Some(styler) => isTextEqualTo("*", styler(pieData), ~message="pieConfig style accessor works")
+  | None => ()
+  }
 
-  // donutConfig — style is REQUIRED, no default
+  // donutConfig — style is now OPTIONAL (default round-robin provided)
   let donutCfg: Types.donutConfig<pieData> = {
     key: d => d.category,
     value: d => d.amount,
-    style: d => d.styleChar,
+    // style omitted — optional field
   }
 
   isTextEqualTo("Food", donutCfg.key(pieData), ~message="donutConfig key accessor works")
   isIntEqualTo(42, donutCfg.value(pieData)->Float.toInt, ~message="donutConfig value accessor works")
-  isTextEqualTo("*", donutCfg.style(pieData), ~message="donutConfig style accessor works")
+  switch donutCfg.style {
+  | Some(styler) => isTextEqualTo("*", styler(pieData), ~message="donutConfig style accessor works")
+  | None => ()
+  }
 }
 
 /**

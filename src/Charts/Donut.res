@@ -8,7 +8,11 @@
 open Types
 
 let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?, ()): string => {
-  assert(data->Array.length > 0)
+  // Guard: empty data (explicit check with message instead of assert)
+  let _ = switch data->Array.length == 0 {
+  | true => JsError.throwWithMessage("Error: Donut chart requires at least one data point")
+  | false => ()
+  }
 
   let defaultRadius = 10
   let defaultLeft = 0
@@ -36,7 +40,7 @@ let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?,
   let pieCfg: pieConfig<'data> = {
     key: config.key,
     value: config.value,
-    style: config.style,
+    style: ?config.style,
   }
 
   let pieOpts: pieOptions = {

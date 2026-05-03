@@ -44,9 +44,29 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
   let minVal = values->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
   let maxVal = values->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
 
+  // Guard: NaN or Infinity values
+  let _ = switch Float.isNaN(minVal) || Float.isNaN(maxVal) {
+  | true => JsError.throwWithMessage("Error: Sparkline chart data contains NaN values")
+  | false => ()
+  }
+  let _ = switch !Float.isFinite(minVal) || !Float.isFinite(maxVal) {
+  | true => JsError.throwWithMessage("Error: Sparkline chart data contains infinite values")
+  | false => ()
+  }
+
+  // Handle degenerate case: all values identical
+  let effectiveMin = switch maxVal == minVal {
+  | true => minVal -. 1.0  // Shift min down by 1 to create a usable range
+  | false => minVal
+  }
+  let effectiveMax = switch maxVal == minVal {
+  | true => maxVal +. 1.0  // Shift max up by 1
+  | false => maxVal
+  }
+
   let scale = switch maxVal == minVal {
   | true => 1.0
-  | false => (charHeight - 1)->Int.toFloat /. (maxVal -. minVal)
+  | false => (charHeight - 1)->Int.toFloat /. (effectiveMax -. effectiveMin)
   }
 
   // Build points list manually (avoid mapWithIndex)
@@ -58,7 +78,7 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
     let xPos = if len > 1 {
       (i->Int.toFloat /. (len - 1)->Int.toFloat *. (charWidth - 1)->Int.toFloat)->Math.round->Float.toInt
     } else { 0 }
-    let yPos = charHeight - 1 - ((d->config.value -. minVal) *. scale)->Math.round->Float.toInt
+    let yPos = charHeight - 1 - ((d->config.value -. effectiveMin) *. scale)->Math.round->Float.toInt
     let pStyle = switch config.style { | Some(st) => st(d) | None => globalStyle }
     points[i] = {x: xPos, y: yPos, style: pStyle}
   })
@@ -95,7 +115,7 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
   switch points[len - 1] { | Some(p) => setCell(p.y, p.x, p.style) | None => () }
 
   // Y-axis labels
-  let yRange = Math.abs(maxVal -. minVal)
+  let yRange = Math.abs(effectiveMax -. effectiveMin)
   let yDecimals = if yRange < 1.0 { 2 } else if yRange < 10.0 { 1 } else { 0 }
   let formatY = (val: float, dec: int): string =>
     if dec == 0 { Math.round(val)->Float.toInt->Int.toString }
@@ -105,8 +125,8 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
   let yLabels = Array.make(~length=charHeight, "")
   for i in 0 to charHeight - 1 {
     let yValue = if charHeight > 1 {
-      maxVal -. i->Int.toFloat *. (maxVal -. minVal) /. (charHeight - 1)->Int.toFloat
-    } else { minVal }
+      effectiveMax -. i->Int.toFloat *. (effectiveMax -. effectiveMin) /. (charHeight - 1)->Int.toFloat
+    } else { effectiveMin }
     yLabels[i] = formatY(yValue, yDecimals)
   }
 

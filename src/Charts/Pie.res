@@ -30,9 +30,38 @@ let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, (
 
   let dataLen = data->Array.length
   let values = data->Array.map(config.value)
-  let styles = data->Array.map(config.style)
+
+  // Handle optional style: use round-robin defaults if not provided
+  let defaultStyles = ["●", "○", "◆", "◇", "■", "□"]
+  let styles = switch config.style {
+  | Some(styleFn) => data->Array.map(styleFn)
+  | None =>
+    // Round-robin assignment from default styles
+    let defaultStylesLen = Array.length(defaultStyles)
+    let arr = Array.make(~length=dataLen, "●")
+    for i in 0 to dataLen - 1 {
+      let styleIdx = i % defaultStylesLen
+      switch defaultStyles[styleIdx] {
+      | Some(s) => arr[i] = s
+      | None => arr[i] = "●"
+      }
+    }
+    arr
+  }
   let keys = data->Array.map(config.key)
   let total = values->Array.reduce(0.0, (a, b) => a +. b)
+
+  // Guard: NaN or Infinity in values or total
+  let hasNaN = values->Array.some(v => Float.isNaN(v))
+  let hasInf = values->Array.some(v => !Float.isFinite(v))
+  let _ = switch hasNaN {
+  | true => JsError.throwWithMessage("Error: Pie chart data contains NaN values")
+  | false => ()
+  }
+  let _ = switch hasInf {
+  | true => JsError.throwWithMessage("Error: Pie chart data contains infinite values")
+  | false => ()
+  }
 
   let maxKeyLength = data->Array.reduce(0, (acc, item) => {
     let l = item->config.key->String.length
