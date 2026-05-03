@@ -7,7 +7,12 @@ open Types
 open Terminal
 
 let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, ()): string => {
-  assert(data->Array.length > 0)
+  // Guard: empty data
+  let _ = switch data->Array.length == 0 {
+    | true => Js.Exn.raiseError("Error: Pie chart requires at least one data point")
+    | false => ()
+  }
+
   let options: option<pieOptions> = opts
 
   let radius = switch options {
@@ -39,6 +44,7 @@ let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, (
     if sl >= len { str } else { Js.String.repeat(len - sl, ch) ++ str }
   }
 
+  // Guard: total == 0.0 means all-zero values, distribute evenly but still render
   let ratios = total == 0.0
     ? data->Array.map(_ => 1.0 /. dataLen->Int.toFloat)
     : data->Array.map(item => item->config.value /. total)

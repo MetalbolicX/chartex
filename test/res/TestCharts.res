@@ -31,7 +31,7 @@ let testBarEmptyRejected = () => {
     let _ = Bar.make([], ~config={key: _ => "", value: _ => 0.0}, ())
     failWith("Bar: should have thrown")
   } catch {
-  | Assert_failure(_) => passWith("Bar: empty data rejected")
+  | Js.Exn.Error(_) => passWith("Bar: empty data rejected")
   | _ => failWith("Bar: unexpected error")
   }
 }

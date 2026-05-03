@@ -7,7 +7,12 @@ open Types
 open Terminal
 
 let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?, ()): string => {
-  assert(data->Array.length > 0)
+  // Guard: empty data
+  let _ = switch data->Array.length == 0 {
+    | true => Js.Exn.raiseError("Error: Gauge chart requires at least one data point")
+    | false => ()
+  }
+
   let options: option<gaugeOptions> = opts
 
   let radius = switch options {
@@ -27,8 +32,21 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
   | None => "."
   }
 
-  let firstItem = switch data[0] { | Some(x) => x | None => assert(false) }
-  let value = firstItem->config.value /. 100.0
+  // Guard: data[0] exists
+  let firstItem = switch data[0] {
+    | Some(x) => x
+    | None => Js.Exn.raiseError("Error: Gauge chart requires at least one data point")
+  }
+
+  let rawValue = firstItem->config.value
+
+  // Guard: value must be 0-100 range (gauge percentage)
+  let _ = switch rawValue < 0.0 || rawValue > 100.0 {
+    | true => Js.Exn.raiseError("Error: Gauge value must be between 0 and 100")
+    | false => ()
+  }
+
+  let value = rawValue /. 100.0
   let key = firstItem->config.key
   let itemStyle = switch config.style {
   | Some(st) => st(firstItem)

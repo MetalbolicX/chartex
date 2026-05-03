@@ -7,7 +7,12 @@ open Types
 open Terminal
 
 let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=?, ()): string => {
-  assert(data->Array.length > 0)
+  // Guard: empty data
+  let _ = switch data->Array.length == 0 {
+    | true => Js.Exn.raiseError("Error: Scatter chart requires at least one data point")
+    | false => ()
+  }
+
   let options: option<scatterOptions> = opts
 
   let defaultWidth = switch width() {

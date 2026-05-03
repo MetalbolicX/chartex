@@ -18,10 +18,10 @@ const scatterData = [
 ];
 
 const scatterConfig = {
-  key: (d: { key: string }) => d.key,
-  x: (d: { value: [number, number] }) => d.value[0],
-  y: (d: { value: [number, number] }) => d.value[1],
-  style: (d: { style: string }) => d.style,
+  key: ({ key }: { key: string }) => key,
+  x: ({ value }: { value: [number, number] }) => value[0],
+  y: ({ value }: { value: [number, number] }) => value[1],
+  style: ({ style }: { style: string }) => style,
 };
 
 console.log(`${Chartex.Scatter.make(scatterData, scatterConfig, {})}\n`);

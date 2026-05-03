@@ -7,7 +7,12 @@ open Types
 open Terminal
 
 let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, ()): string => {
-  assert(data->Array.length > 0)
+  // Guard: empty data
+  let _ = switch data->Array.length == 0 {
+    | true => Js.Exn.raiseError("Error: Bar chart requires at least one data point")
+    | false => ()
+  }
+
   let options: option<barOptions> = opts
 
   let barWidth = switch options {
@@ -33,6 +38,12 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
 
   let values = data->Array.map(config.value)
   let maxVal = values->Array.reduce(-1.0e308, (acc, v) => if v > acc { v } else { acc })
+
+  // Guard: all-negative or zero values
+  let _ = switch maxVal <= 0.0 {
+    | true => Js.Exn.raiseError("Error: Bar chart requires positive values")
+    | false => ()
+  }
 
   let padMid = (str: string, width: int): string => {
     let sLen = str->String.length
