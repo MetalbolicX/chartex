@@ -1,104 +1,64 @@
-import {
-  scatter,
-  bar,
-  pie,
-  parseScatterData,
-  parseCategoricalData,
-  parseList,
-  parseFromObject,
-  parseCustomData,
-  parseRow,
-} from "../src/index.ts";
+import { bg, fg, scatter, bar, pie, type ScatterPlotDatum } from "../src/index.ts";
 
-// Example 1: Common JSON structure with x/y coordinates
-const commonScatterData = [
-  { x: 1, y: 2, category: "A" },
-  { x: 3, y: 4, category: "B" },
-  { x: 5, y: 6, category: "C" },
+const scatterData: ScatterPlotDatum[] = [
+  { key: "A", value: [1, 2], style: fg("red", "*") },
+  { key: "B", value: [3, 4], style: fg("blue", "#") },
+  { key: "C", value: [5, 6], style: fg("green", "+") },
 ];
 
-// Transform and use directly
-const scatterChart = scatter(parseScatterData(commonScatterData), {
-  width: 15,
-});
-console.log(scatterChart);
+console.log(scatter(scatterData, { width: 15 }));
+console.log("");
 
-// Example 2: Common JSON structure with value field
 const salesData = [
-  { product: "Laptop", sales: 150 },
-  { product: "Phone", sales: 300 },
-  { product: "Tablet", sales: 75 },
+  { key: "Laptop", value: 150, style: "*" },
+  { key: "Phone", value: 300, style: "+" },
+  { key: "Tablet", value: 75, style: "#" },
 ];
 
-// Transform using custom field names
-const barChart = bar(
-  parseCategoricalData(salesData, "product", "sales"),
-  { barWidth: 3, height: 6 }
-);
-console.log(barChart);
+console.log(bar(salesData, { barWidth: 3, height: 6 }));
+console.log("");
 
-// Example 3: Simple array of values
-const simpleValues = [10, 20, 15, 25, 30];
-const simpleChart = bar(parseList(simpleValues, "Month"), {
-  barWidth: 2,
-  height: 8,
-});
-console.log(simpleChart);
-
-// Example 4: Object with key-value pairs
-const monthlyData = {
-  "Jan": 100,
-  "Feb": 150,
-  "Mar": 120,
-  "Apr": 180,
-};
-
-const pieChart = pie(
-  parseFromObject(monthlyData).map((item, index) => ({
-    ...item,
-    style: ["* ", "+ ", "# ", "O "][index % 4],
-  })),
-  { left: 1 }
-);
-console.log(pieChart);
-
-// Example 5: Custom field mapping
-const customData = [
-  { name: "Server A", load: 0.8, region: "US" },
-  { name: "Server B", load: 0.6, region: "EU" },
-  { name: "Server C", load: 0.9, region: "Asia" },
+const simpleData = [
+  { key: "Jan", value: 10, style: "*" },
+  { key: "Feb", value: 20, style: "*" },
+  { key: "Mar", value: 15, style: "*" },
+  { key: "Apr", value: 25, style: "*" },
+  { key: "May", value: 30, style: "*" },
 ];
 
-const customChart = bar(
-  parseCustomData(customData, { key: "name", value: "load" }) as Array<{
-    key: string;
-    value: number;
-    style?: string;
-  }>,
-  { barWidth: 3, height: 6 }
-);
-console.log(customChart);
+console.log(bar(simpleData, { barWidth: 2, height: 8 }));
+console.log("");
 
-
-// Example 6: Using parseRow for categorical and scatter plot data
-const countryData = [
-  { country: "Mexico", hour: 1, gasoline: 5 },
-  { country: "USA", hour: 2, gasoline: 7 },
-  { country: "Canada", hour: 3, gasoline: 4 }
+const monthlyData = [
+  { key: "Jan", value: 100, style: "* " },
+  { key: "Feb", value: 150, style: "+ " },
+  { key: "Mar", value: 120, style: "# " },
+  { key: "Apr", value: 180, style: "O " },
 ];
 
-// Categorical: key = country, value = gasoline
-const rowCategorical = parseRow(
-  countryData,
-  (item) => String(item.country),
-  (item) => Number(item.gasoline)
-);
-console.log("parseRow (categorical):", rowCategorical);
+console.log(pie(monthlyData, { left: 1 }));
+console.log("");
 
-// Scatter: key = country, value = [hour, gasoline]
-const rowScatter = parseRow(
-  countryData,
-  (item) => String(item.country),
-  (item) => ({ x: Number(item.hour), y: Number(item.gasoline) })
-);
-console.log("parseRow (scatter):", rowScatter);
+const serverData = [
+  { key: "Server A", value: 80, style: bg("green", 2) },
+  { key: "Server B", value: 60, style: bg("yellow", 2) },
+  { key: "Server C", value: 90, style: bg("red", 2) },
+];
+
+console.log(bar(serverData, { barWidth: 3, height: 6 }));
+console.log("");
+
+const categorical = [
+  { key: "Mexico", value: 5, style: "*" },
+  { key: "USA", value: 7, style: "+" },
+  { key: "Canada", value: 4, style: "#" },
+];
+console.log("categorical:", bar(categorical, { height: 6 }));
+console.log("");
+
+const scatterRow: ScatterPlotDatum[] = [
+  { key: "Mexico", value: [1, 5], style: fg("red", "*") },
+  { key: "USA", value: [2, 7], style: fg("blue", "#") },
+  { key: "Canada", value: [3, 4], style: fg("green", "+") },
+];
+console.log("scatter:", scatter(scatterRow, { width: 15 }));
