@@ -1,3 +1,12 @@
+/**
+ * Chartex — Terminal Chart Rendering Library
+ *
+ * Provides a collection of functions to render various chart types
+ * (bar, bullet, donut, gauge, pie, scatter, sparkline) as ASCII/ANSI
+ * art in terminal environments.
+ *
+ * @module
+ */
 import {
   bg,
   fg,

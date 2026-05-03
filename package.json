@@ -18,16 +18,17 @@
     "node": ">=22.0.0"
   },
   "module": "./dist/index.mjs",
-  "main": "dist/index.cjs",
+  "main": "dist/main.mjs",
   "types": "dist/index.d.mts",
   "scripts": {
     "docs": "docsify serve docs",
-    "start": "echo \"Hello world\"",
+    "start": "node dist/main.mjs",
     "build": "tsdown",
     "res:build": "rescript",
     "res:dev": "rescript watch",
     "res:clean": "rescript clean",
-    "res:test": "retest ./test/res/*.res.mjs"
+    "res:test": "retest ./test/res/*.res.mjs",
+    "bundle": "rolldown -c"
   },
   "author": {
     "name": "José Martínez Santana"
@@ -54,6 +55,8 @@
   "license": "MIT",
   "devDependencies": {
     "rescript-test": "^8.0.0",
+    "rolldown": "1.0.0-rc.18",
+    "rollup-plugin-esbuild": "^6.2.1",
     "tsdown": "^0.13.0"
   },
   "dependencies": {
