@@ -10,13 +10,21 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   assert(data->Array.length > 0)
   let options: option<scatterOptions> = opts
 
+  let defaultWidth = switch width() {
+    | Some(w) => max(10, Float.toInt(Int.toFloat(w) *. 0.6))
+    | None => 48
+    }
+  let defaultHeight = switch height() {
+    | Some(h) => max(8, Float.toInt(Int.toFloat(h) *. 0.3))
+    | None => 8
+    }
   let charWidth = switch options {
-  | Some(o) => o.width->Option.getOr(width()->Option.getOr(80))
-  | None => width()->Option.getOr(80)
+  | Some(o) => o.width->Option.getOr(defaultWidth)
+  | None => defaultWidth
   }
   let charHeight = switch options {
-  | Some(o) => o.height->Option.getOr(height()->Option.getOr(24))
-  | None => height()->Option.getOr(24)
+  | Some(o) => o.height->Option.getOr(defaultHeight)
+  | None => defaultHeight
   }
   let globalStyle = switch options {
   | Some(o) => o.style->Option.getOr("*")
@@ -61,10 +69,61 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   // Format y axis
   let yRange = Math.abs(maxY -. minY)
   let yDecimals = if yRange < 1.0 { 2 } else if yRange < 10.0 { 1 } else { 0 }
-  let formatY = (val: float, dec: int): string =>
-    if dec == 0 { Math.round(val)->Float.toInt->Int.toString }
-    else if dec == 1 { (Math.round(val *. 10.0) /. 10.0)->Float.toString }
-    else { (Math.round(val *. 100.0) /. 100.0)->Float.toString }
+  // Mirrors TypeScript's toFixed-based rounding (round-half-away-from-zero):
+  // val.toFixed(dec) uses round-half-away-from-zero, then regex-strips trailing zeros.
+  // ReScript implementation: manual ceil/floor for half-away-from-zero, then strip
+  // trailing zeros the same way TS does using string ops instead of regex.
+  let formatY = (val: float, dec: int): string => {
+    let factor = switch dec {
+      | 0 => 1.0
+      | 1 => 10.0
+      | _ => 100.0
+    }
+    // Round-half-away-from-zero: floor for positive, ceil for negative (bias away from 0)
+    let rounded = if val < 0.0 {
+      Js.Math.ceil(val *. factor -. 0.5) -> Int.toFloat /. factor
+    } else {
+      Js.Math.floor(val *. factor +. 0.5) -> Int.toFloat /. factor
+    }
+    let s = dec == 0
+      ? Float.toInt(rounded)->Int.toString
+      : rounded->Float.toString
+    // Strip trailing zeros the same way TS scatter.ts does:
+    // /\.0+$/  → whole-number trailing .0 removed
+    // (\.[1-9]*)0+$ → fractional trailing zeros removed, mantissa kept
+    let s = if s->String.includes(".") {
+      let parts = s->String.split(".")
+      switch parts[0] {
+      | Some(intPart) => {
+          switch parts[1] {
+          | Some(fracPart) => {
+              // Strip trailing zeros from fractional part — reverse chars, drop leading '0's, re-reverse
+              let charArr = fracPart->String.split("")
+              let charLen = charArr->Array.length
+              let rec findFirstNonZero = (i: int): int =>
+                if i >= charLen { i }
+                else if charArr[i] == Some("0") { findFirstNonZero(i + 1) }
+                else { i }
+              let firstNZ = findFirstNonZero(0)
+              if firstNZ >= charLen { intPart } else {
+                let rec collect = (j: int, acc: string): string =>
+                  if j >= charLen { acc }
+                  else {
+                    let c = charArr[j]
+                    switch c { | Some(cv) => collect(j + 1, acc ++ cv) | None => acc }
+                  }
+                let kept = collect(firstNZ, "")
+                intPart ++ "." ++ kept
+              }
+            }
+          | None => s
+          }
+        }
+      | None => s
+      }
+    } else { s }
+    s
+  }
 
   let yLabels = Array.make(~length=charHeight, "")
   for i in 0 to charHeight - 1 {
