@@ -9,7 +9,7 @@ open Terminal
 let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
   let _ = switch data->Array.length == 0 {
-    | true => Js.Exn.raiseError("Error: Gauge chart requires at least one data point")
+    | true => JsError.throwWithMessage("Error: Gauge chart requires at least one data point")
     | false => ()
   }
 
@@ -35,14 +35,14 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
   // Guard: data[0] exists
   let firstItem = switch data[0] {
     | Some(x) => x
-    | None => Js.Exn.raiseError("Error: Gauge chart requires at least one data point")
+    | None => JsError.throwWithMessage("Error: Gauge chart requires at least one data point")
   }
 
   let rawValue = firstItem->config.value
 
   // Guard: value must be 0-100 range (gauge percentage)
   let _ = switch rawValue < 0.0 || rawValue > 100.0 {
-    | true => Js.Exn.raiseError("Error: Gauge value must be between 0 and 100")
+    | true => JsError.throwWithMessage("Error: Gauge value must be between 0 and 100")
     | false => ()
   }
 

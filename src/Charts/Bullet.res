@@ -9,7 +9,7 @@ open Terminal
 let make = (data: array<'data>, ~config: bulletConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
   let _ = switch data->Array.length == 0 {
-    | true => Js.Exn.raiseError("Error: Bullet chart requires at least one data point")
+    | true => JsError.throwWithMessage("Error: Bullet chart requires at least one data point")
     | false => ()
   }
 
@@ -41,7 +41,7 @@ let make = (data: array<'data>, ~config: bulletConfig<'data>, ~options as opts=?
 
   // Guard: all-negative or zero values
   let _ = switch maxVal <= 0.0 {
-    | true => Js.Exn.raiseError("Error: Bullet chart requires positive values")
+    | true => JsError.throwWithMessage("Error: Bullet chart requires positive values")
     | false => ()
   }
 

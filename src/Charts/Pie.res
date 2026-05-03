@@ -9,7 +9,7 @@ open Terminal
 let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
   let _ = switch data->Array.length == 0 {
-    | true => Js.Exn.raiseError("Error: Pie chart requires at least one data point")
+    | true => JsError.throwWithMessage("Error: Pie chart requires at least one data point")
     | false => ()
   }
 

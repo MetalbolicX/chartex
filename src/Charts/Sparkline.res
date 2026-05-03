@@ -11,7 +11,7 @@ type sparkPoint = {x: int, y: int, style: string}
 let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
   let _ = switch data->Array.length == 0 {
-    | true => Js.Exn.raiseError("Error: Sparkline chart requires at least one data point")
+    | true => JsError.throwWithMessage("Error: Sparkline chart requires at least one data point")
     | false => ()
   }
 
