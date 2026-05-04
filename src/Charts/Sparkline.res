@@ -5,6 +5,7 @@
  */
 open Types
 open Terminal
+open Options
 
 type sparkPoint = {x: int, y: int, style: string}
 
@@ -17,26 +18,11 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
 
   let options: option<sparklineOptions> = opts
 
-  let charWidth = switch options {
-  | Some(o) => o.width->Option.getOr(width()->Option.getOr(80))
-  | None => width()->Option.getOr(80)
-  }
-  let charHeight = switch options {
-  | Some(o) => o.height->Option.getOr(height()->Option.getOr(24))
-  | None => height()->Option.getOr(24)
-  }
-  let tolerance = switch options {
-  | Some(o) => o.tolerance->Option.getOr(2)
-  | None => 2
-  }
-  let globalStyle = switch options {
-  | Some(o) => o.style->Option.getOr("*")
-  | None => "*"
-  }
-  let yAxisChar = switch options {
-  | Some(o) => o.yAxisChar->Option.getOr("|")
-  | None => "|"
-  }
+  let charWidth = options->getOpt(o => o.width, width()->Option.getOr(80))
+  let charHeight = options->getOpt(o => o.height, height()->Option.getOr(24))
+  let tolerance = options->getOpt(o => o.tolerance, 2)
+  let globalStyle = options->getOpt(o => o.style, "*")
+  let yAxisChar = options->getOpt(o => o.yAxisChar, "|")
 
   let values = data->Array.map(config.value)
   let len = data->Array.length

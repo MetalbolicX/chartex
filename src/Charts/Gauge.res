@@ -5,6 +5,7 @@
  */
 open Types
 open Terminal
+open Options
 
 let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -15,22 +16,10 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
 
   let options: option<gaugeOptions> = opts
 
-  let radius = switch options {
-  | Some(o) => o.radius->Option.getOr(max(4, width()->Option.getOr(80) / 10))
-  | None => max(4, width()->Option.getOr(80) / 10)
-  }
-  let left = switch options {
-  | Some(o) => o.left->Option.getOr(0)
-  | None => 0
-  }
-  let style = switch options {
-  | Some(o) => o.style->Option.getOr("*")
-  | None => "*"
-  }
-  let bgStyle = switch options {
-  | Some(o) => o.bgStyle->Option.getOr(".")
-  | None => "."
-  }
+  let radius = options->getOpt(o => o.radius, max(4, width()->Option.getOr(80) / 10))
+  let left = options->getOpt(o => o.left, 0)
+  let style = options->getOpt(o => o.style, "*")
+  let bgStyle = options->getOpt(o => o.bgStyle, ".")
 
   // Guard: data[0] exists
   let firstItem = switch data[0] {

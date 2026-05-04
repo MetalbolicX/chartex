@@ -6,6 +6,7 @@
  */
 open Types
 open Terminal
+open Options
 
 let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -24,22 +25,10 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
     | Some(h) => max(8, Float.toInt(Int.toFloat(h) *. 0.3))
     | None => 8
     }
-  let charWidth = switch options {
-  | Some(o) => o.width->Option.getOr(defaultWidth)
-  | None => defaultWidth
-  }
-  let charHeight = switch options {
-  | Some(o) => o.height->Option.getOr(defaultHeight)
-  | None => defaultHeight
-  }
-  let globalStyle = switch options {
-  | Some(o) => o.style->Option.getOr("*")
-  | None => "*"
-  }
-  let showLegend = switch options {
-  | Some(o) => o.showLegend->Option.getOr(true)
-  | None => true
-  }
+  let charWidth = options->getOpt(o => o.width, defaultWidth)
+  let charHeight = options->getOpt(o => o.height, defaultHeight)
+  let globalStyle = options->getOpt(o => o.style, "*")
+  let showLegend = options->getOpt(o => o.showLegend, true)
 
   // Collect unique series names in order of first occurrence.
   // seriesIndexMap: series name → insertion index (used for round-robin style lookup).

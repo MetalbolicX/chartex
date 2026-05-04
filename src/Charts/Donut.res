@@ -6,6 +6,7 @@
  * to radius/2 if not specified or zero.
  */
 open Types
+open Options
 
 let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data (explicit check with message instead of assert)
@@ -14,24 +15,11 @@ let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?,
   | false => ()
   }
 
-  let defaultRadius = 10
-  let defaultLeft = 0
-  let defaultInnerRadius = 4
-
   let options: option<donutOptions> = opts
 
-  let radius = switch options {
-  | Some(o) => o.radius->Option.getOr(defaultRadius)
-  | None => defaultRadius
-  }
-  let left = switch options {
-  | Some(o) => o.left->Option.getOr(defaultLeft)
-  | None => defaultLeft
-  }
-  let innerRadius = switch options {
-  | Some(o) => o.innerRadius->Option.getOr(defaultInnerRadius)
-  | None => defaultInnerRadius
-  }
+  let radius = options->getOpt(o => o.radius, 10)
+  let left = options->getOpt(o => o.left, 0)
+  let innerRadius = options->getOpt(o => o.innerRadius, 4)
 
   // If innerRadius is 0, default to radius / 2
   let effectiveInnerRadius = if innerRadius == 0 { radius / 2 } else { innerRadius }

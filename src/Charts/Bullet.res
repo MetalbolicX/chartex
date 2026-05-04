@@ -5,6 +5,7 @@
  */
 open Types
 open Terminal
+open Options
 
 let make = (data: array<'data>, ~config: bulletConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -15,26 +16,11 @@ let make = (data: array<'data>, ~config: bulletConfig<'data>, ~options as opts=?
 
   let options: option<bulletOptions> = opts
 
-  let barWidth = switch options {
-  | Some(o) => o.barWidth->Option.getOr(1)
-  | None => 1
-  }
-  let style = switch options {
-  | Some(o) => o.style->Option.getOr("*")
-  | None => "*"
-  }
-  let left = switch options {
-  | Some(o) => o.left->Option.getOr(1)
-  | None => 1
-  }
-  let charWidth = switch options {
-  | Some(o) => o.width->Option.getOr(max(10, width()->Option.getOr(80) * 6 / 10))
-  | None => max(10, width()->Option.getOr(80) * 6 / 10)
-  }
-  let padding = switch options {
-  | Some(o) => o.padding->Option.getOr(1)
-  | None => 1
-  }
+  let barWidth = options->getOpt(o => o.barWidth, 1)
+  let style = options->getOpt(o => o.style, "*")
+  let left = options->getOpt(o => o.left, 1)
+  let charWidth = options->getOpt(o => o.width, max(10, width()->Option.getOr(80) * 6 / 10))
+  let padding = options->getOpt(o => o.padding, 1)
 
 let values = data->Array.map(config.value)
   let maxVal = values->Array.reduce(-1.0e308, (acc, v) => if v > acc { v } else { acc })

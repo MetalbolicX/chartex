@@ -5,6 +5,7 @@
  */
 open Types
 open Terminal
+open Options
 
 let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -15,28 +16,13 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
 
   let options: option<barOptions> = opts
 
-  let barWidth = switch options {
-  | Some(o) => o.barWidth->Option.getOr(3)
-  | None => 3
-  }
-  let left = switch options {
-  | Some(o) => o.left->Option.getOr(1)
-  | None => 1
-  }
-  let chartHeight = switch options {
-  | Some(o) => o.height->Option.getOr(max(6, height()->Option.getOr(24) * 4 / 10))
-  | None => max(6, height()->Option.getOr(24) * 4 / 10)
-  }
-  let padding = switch options {
-  | Some(o) => o.padding->Option.getOr(3)
-  | None => 3
-  }
-  let style = switch options {
-  | Some(o) => o.style->Option.getOr("*")
-  | None => "*"
-  }
+  let barWidth = options->getOpt(o => o.barWidth, 3)
+  let left = options->getOpt(o => o.left, 1)
+  let chartHeight = options->getOpt(o => o.height, max(6, height()->Option.getOr(24) * 4 / 10))
+  let padding = options->getOpt(o => o.padding, 3)
+  let style = options->getOpt(o => o.style, "*")
 
-let values = data->Array.map(config.value)
+  let values = data->Array.map(config.value)
   let maxVal = values->Array.reduce(-1.0e308, (acc, v) => if v > acc { v } else { acc })
 
   // Guard: NaN or Infinity in values

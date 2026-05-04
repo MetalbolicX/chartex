@@ -5,6 +5,7 @@
  */
 open Types
 open Terminal
+open Options
 
 let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -15,18 +16,9 @@ let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, (
 
   let options: option<pieOptions> = opts
 
-  let radius = switch options {
-  | Some(o) => o.radius->Option.getOr(max(4, height()->Option.getOr(24) * 4 / 10))
-  | None => max(4, height()->Option.getOr(24) * 4 / 10)
-  }
-  let left = switch options {
-  | Some(o) => o.left->Option.getOr(0)
-  | None => 0
-  }
-  let innerRadius = switch options {
-  | Some(o) => o.innerRadius->Option.getOr(0)
-  | None => 0
-  }
+  let radius = options->getOpt(o => o.radius, max(4, height()->Option.getOr(24) * 4 / 10))
+  let left = options->getOpt(o => o.left, 0)
+  let innerRadius = options->getOpt(o => o.innerRadius, 0)
 
   let dataLen = data->Array.length
   let values = data->Array.map(config.value)
