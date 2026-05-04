@@ -1,6 +1,6 @@
 open CliTypes
 
-let parseInputFormat = (value: option<string>): inputFormat =>
+let parseInputFormat = (value: option<string>): Bindings.Util.inputFormat =>
   switch value {
   | Some("json") => #json
   | Some("ndjson") => #ndjson
@@ -8,7 +8,7 @@ let parseInputFormat = (value: option<string>): inputFormat =>
   | _ => #auto
   }
 
-let parseChartType = (value: option<string>): chartType =>
+let parseChartType = (value: option<string>): Bindings.Util.chartType =>
   switch value {
   | Some("bar") => #bar
   | Some("scatter") => #scatter
@@ -16,30 +16,24 @@ let parseChartType = (value: option<string>): chartType =>
   | _ => #auto
   }
 
-let parseIntSafe = (value: option<string>): option<int> =>
-  switch value {
-  | Some(raw) => Int.fromString(raw)
-  | None => None
-  }
-
-let parse = (): parsedArgs => {
+let parse = (): CliTypes.parsedArgs => {
   module U = Bindings.Util
 
-  let options: dict<Bindings.Util.flagConfig> = Dict.fromArray([
-    ("file", ({type_: "string", short: "f"}: U.flagConfig)),
-    ("format", ({type_: "string", default: U.String("auto")}: U.flagConfig)),
-    ("chart", ({type_: "string", short: "t", default: U.String("auto")}: U.flagConfig)),
-    ("width", ({type_: "string"}: U.flagConfig)),
-    ("height", ({type_: "string"}: U.flagConfig)),
-    ("key", ({type_: "string"}: U.flagConfig)),
-    ("value", ({type_: "string"}: U.flagConfig)),
-    ("x-key", ({type_: "string"}: U.flagConfig)),
-    ("y-key", ({type_: "string"}: U.flagConfig)),
-    ("series", ({type_: "string"}: U.flagConfig)),
-    ("no-header", ({type_: "boolean", default: U.Bool(false)}: U.flagConfig)),
-    ("help", ({type_: "boolean", short: "h", default: U.Bool(false)}: U.flagConfig)),
-    ("version", ({type_: "boolean", default: U.Bool(false)}: U.flagConfig)),
-  ])
+  let options: dict<U.flagConfig> = dict{
+    "file": {U.type_: "string", U.short: "f"},
+    "format": {U.type_: "string", U.default: U.String("auto")},
+    "chart": {U.type_: "string", U.short: "t", U.default: U.String("auto")},
+    "width": {U.type_: "string"},
+    "height": {U.type_: "string"},
+    "key": {U.type_: "string"},
+    "value": {U.type_: "string"},
+    "x-key": {U.type_: "string"},
+    "y-key": {U.type_: "string"},
+    "series": {U.type_: "string"},
+    "no-header": {U.type_: "boolean", U.default: U.Bool(false)},
+    "help": {U.type_: "boolean", U.short: "h", U.default: U.Bool(false)},
+    "version": {U.type_: "boolean", U.default: U.Bool(false)},
+  }
 
   let result =
     U.parseArgs({
@@ -61,8 +55,8 @@ let parse = (): parsedArgs => {
     options: {
       format: parseInputFormat(values.format),
       chartType: parseChartType(values.chart),
-      width: ?parseIntSafe(values.width),
-      height: ?parseIntSafe(values.height),
+      width: ?Int.fromString(values.width->Option.getOr("")),
+      height: ?Int.fromString(values.height->Option.getOr("")),
       keyField: ?values.key,
       valueField: ?values.value,
       xKey: ?values.xKey,

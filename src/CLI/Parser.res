@@ -20,9 +20,9 @@ let parseJsonObject = (payload: string): parseResult<row> =>
   | _ => Error("Invalid JSON object")
   }
 
-let detectFormat = (chunk: string): inputFormat => {
+let detectFormat = (chunk: string): Bindings.Util.inputFormat => {
   let chars = chunk->String.split("")
-  let rec loop = (idx: int): inputFormat =>
+  let rec loop = (idx: int): Bindings.Util.inputFormat =>
     if idx >= chars->Array.length {
       #csv
     } else {
@@ -327,7 +327,7 @@ let createJsonArrayParser = (): parser => {
   {pushChunk, finish}
 }
 
-let create = (~format: inputFormat, ~noHeader: bool): parser =>
+let create = (~format: Bindings.Util.inputFormat, ~noHeader: bool): parser =>
   switch format {
   | #json => createJsonArrayParser()
   | #ndjson => createNdjsonParser()

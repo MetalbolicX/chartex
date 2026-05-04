@@ -1,3 +1,5 @@
+module P = Bindings.Process
+
 let writeLine = (text: string): unit => StreamIO.writeStdout(text ++ "\n")
 
 let writeErrorLine = (text: string): unit => StreamIO.writeStderr(text ++ "\n")
@@ -7,10 +9,10 @@ let run = (): unit => {
 
   if parsed.help {
     writeLine(Args.helpText)
-    StreamIO.exit(0)
+    P.exit(0)
   } else if parsed.version {
     writeLine("chartex cli (rescript)")
-    StreamIO.exit(0)
+    P.exit(0)
   } else {
     let parser = Parser.create(~format=parsed.options.format, ~noHeader=parsed.options.noHeader)
 
@@ -21,23 +23,23 @@ let run = (): unit => {
         switch parser.finish() {
         | Parser.Error(message) => {
             writeErrorLine(message)
-            StreamIO.exit(2)
+            P.exit(2)
           }
         | Parser.Ok(rows) => {
             let result = Main.runWithOptions(parsed.options, rows)
             if result.success {
               writeLine(result.output)
-              StreamIO.exit(0)
+              P.exit(0)
             } else {
               writeErrorLine(result.error->Option.getOr("Unknown CLI error"))
-              StreamIO.exit(1)
+              P.exit(1)
             }
           }
         }
       },
       ~onError=message => {
         writeErrorLine(message)
-        StreamIO.exit(1)
+        P.exit(1)
       },
     )
   }

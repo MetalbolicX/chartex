@@ -81,12 +81,26 @@ module Util = {
 module Process = {
   @val @scope("process") external argv: array<string> = "argv"
 
+  /**
+    * Represents `process.stdout` and `process.stderr` — writable streams used
+    * for writing chart output and error messages.
+    */
+  type writable = {
+    write: string => bool,
+  }
+
+  /** A reference to `process.stdout`. */
+  @val @scope("process") external stdout: writable = "stdout"
+
+  /** A reference to `process.stderr`. */
+  @val @scope("process") external stderr: writable = "stderr"
+
     /**
     * Represents the `process.stdin` readable stream.
     *
     * `isTTY` is `Some(true)` when stdin is a terminal (interactive), `None`
     * when it is a pipe or redirected file — used to detect piped input.
-   */
+    */
   type stdInput = {
     isTTY?: bool,
   }
@@ -97,8 +111,14 @@ module Process = {
   /** Listens for `"data"` events, invoking `cb` with each UTF-8 chunk. */
   @send external onData: (stdInput, @as("data") _, string => unit) => unit = "on"
 
+  /** Listens once for a single `"data"` event, then auto-unsubscribes. */
+  @send external onceData: (stdInput, @as("data") _, string => unit) => unit = "once"
+
   /** Listens for the `"end"` event, invoked once the stream is fully consumed. */
   @send external onEnd: (stdInput, @as("end") _, unit => unit) => unit = "on"
+
+  /** Listens once for the `"end"` event, then auto-unsubscribes. */
+  @send external onceEnd: (stdInput, @as("end") _, unit => unit) => unit = "once"
 
   /** Listens for `"error"` events on the stream. */
   @send external onError: (stdInput, @as("error") _, JsExn.t => unit) => unit = "on"
@@ -106,8 +126,18 @@ module Process = {
   /** Resumes a paused readable stream, allowing data events to flow. */
   @send external resume: stdInput => unit = "resume"
 
+  /** Pauses a readable stream, temporarily stopping data events. */
+  @send external pause: stdInput => unit = "pause"
+
+  /** Prepends data back onto the readable stream buffer. */
+  @send external unshift: (stdInput, string) => unit = "unshift"
+
   /** Sets the character encoding for data events (e.g. `"utf8"`). */
   @send external setEncoding: (stdInput, string) => unit = "setEncoding"
 
   @val @scope("process") external exit: int => unit = "exit"
+}
+
+module Fs = {
+  @module("node:fs") external createReadStream: string => Process.stdInput = "createReadStream"
 }

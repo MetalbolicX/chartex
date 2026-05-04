@@ -1,20 +1,8 @@
-type stream
-type writer
+module P = Bindings.Process
 
-@scope("process") @val external stdin: stream = "stdin"
-@scope("process") @val external stdout: writer = "stdout"
-@scope("process") @val external stderr: writer = "stderr"
-@scope("process") @val external exit: int => unit = "exit"
+let writeStdout = (message: string): unit => P.stdout.write(message)->ignore
 
-@module("node:fs") external createReadStream: string => stream = "createReadStream"
-
-@send external setEncoding: (stream, string) => unit = "setEncoding"
-@send external on: (stream, string, 'a => unit) => unit = "on"
-@send external write: (writer, string) => unit = "write"
-
-let writeStdout = (message: string): unit => write(stdout, message)
-
-let writeStderr = (message: string): unit => write(stderr, message)
+let writeStderr = (message: string): unit => P.stderr.write(message)->ignore
 
 let readInput = (
   ~inputPath: option<string>=?,
@@ -23,12 +11,12 @@ let readInput = (
   ~onError: string => unit,
 ): unit => {
   let source = switch inputPath {
-  | Some(path) => createReadStream(path)
-  | None => stdin
+  | Some(path) => Bindings.Fs.createReadStream(path)
+  | None => P.stdin
   }
 
-  setEncoding(source, "utf8")
-  on(source, "data", chunk => onChunk(chunk))
-  on(source, "end", _ => onEnd())
-  on(source, "error", _ => onError("Failed to read input stream"))
+  P.setEncoding(source, "utf8")
+  P.onData(source, chunk => onChunk(chunk))
+  P.onEnd(source, _ => onEnd())
+  P.onError(source, _ => onError("Failed to read input stream"))
 }

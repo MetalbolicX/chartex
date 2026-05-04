@@ -1,10 +1,10 @@
-type inputFormat = [#auto | #json | #ndjson | #csv]
-
-type chartType = [#auto | #bar | #scatter | #sparkline]
+/**
+ * CLI shared types — parsed arguments, input rows, and run result.
+ */
 
 type cliOptions = {
-  format: inputFormat,
-  chartType: chartType,
+  format: Bindings.Util.inputFormat,
+  chartType: Bindings.Util.chartType,
   width?: int,
   height?: int,
   keyField?: string,
