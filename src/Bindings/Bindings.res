@@ -36,6 +36,7 @@ module Util = {
     chart?: string,
     width?: string,
     height?: string,
+    @as("max-rows") maxRows?: string,
     key?: string,
     value?: string,
     @as("x-key") xKey?: string,

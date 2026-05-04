@@ -82,7 +82,7 @@ let testDetectFormat = () => {
 // ─────────────────────────────────────────────────────────────────
 
 let testCsvNoHeader = () => {
-  let p = P.createCsvParser(~noHeader=false)
+  let p = P.createCsvParser(~cfg={}, ~noHeader=false)
   p.pushChunk("name,value\n")
   p.pushChunk("foo,42\n")
   p.pushChunk("bar,99\n")
@@ -106,7 +106,7 @@ let testCsvNoHeader = () => {
 }
 
 let testCsvNoHeaderFlag = () => {
-  let p = P.createCsvParser(~noHeader=true)
+  let p = P.createCsvParser(~cfg={}, ~noHeader=true)
   p.pushChunk("foo,42\n")
   p.pushChunk("bar,99\n")
 
@@ -129,7 +129,7 @@ let testCsvNoHeaderFlag = () => {
 }
 
 let testCsvQuotedFields = () => {
-  let p = P.createCsvParser(~noHeader=false)
+  let p = P.createCsvParser(~cfg={}, ~noHeader=false)
   // Quoted field containing a comma
   p.pushChunk("name,desc\n")
   p.pushChunk("\"foo bar\",\"value,with,commas\"\n")
@@ -154,7 +154,7 @@ let testCsvQuotedFields = () => {
 }
 
 let testCsvEscapedQuotes = () => {
-  let p = P.createCsvParser(~noHeader=false)
+  let p = P.createCsvParser(~cfg={}, ~noHeader=false)
   p.pushChunk("name,text\n")
   // Doubled quote inside quotes: "foo""bar"
   p.pushChunk("\"foo\"\"\"\"bar\",hello\n")
@@ -172,7 +172,7 @@ let testCsvEscapedQuotes = () => {
 }
 
 let testCsvMissingFinalNewline = () => {
-  let p = P.createCsvParser(~noHeader=false)
+  let p = P.createCsvParser(~cfg={}, ~noHeader=false)
   p.pushChunk("name,value\n")
   p.pushChunk("foo,42") // no trailing \n
 
@@ -190,7 +190,7 @@ let testCsvMissingFinalNewline = () => {
 }
 
 let testCsvUnterminatedQuote = () => {
-  let p = P.createCsvParser(~noHeader=false)
+  let p = P.createCsvParser(~cfg={}, ~noHeader=false)
   p.pushChunk("name,value\n")
   p.pushChunk("\"unterminated,hello\n")
 
@@ -205,7 +205,7 @@ let testCsvUnterminatedQuote = () => {
 }
 
 let testCsvEmptyField = () => {
-  let p = P.createCsvParser(~noHeader=false)
+  let p = P.createCsvParser(~cfg={}, ~noHeader=false)
   p.pushChunk("a,b,c\n")
   p.pushChunk(",missing,value\n")
 
@@ -231,7 +231,7 @@ let testCsvEmptyField = () => {
 // ─────────────────────────────────────────────────────────────────
 
 let testNdjsonBasic = () => {
-  let p = P.createNdjsonParser()
+  let p = P.createNdjsonParser(~cfg={})
   p.pushChunk("{\"key\":\"A\",\"value\":10}\n")
   p.pushChunk("{\"key\":\"B\",\"value\":20}\n")
 
@@ -254,7 +254,7 @@ let testNdjsonBasic = () => {
 }
 
 let testNdjsonBufferingAcrossChunks = () => {
-  let p = P.createNdjsonParser()
+  let p = P.createNdjsonParser(~cfg={})
   // Second line split across two chunks
   p.pushChunk("{\"key\":\"A\",\"value\":10}\n{\"key\":\"B\"")
   p.pushChunk(",\"value\":20}\n")
@@ -273,7 +273,7 @@ let testNdjsonBufferingAcrossChunks = () => {
 }
 
 let testNdjsonSkipsEmptyLines = () => {
-  let p = P.createNdjsonParser()
+  let p = P.createNdjsonParser(~cfg={})
   p.pushChunk("{\"key\":\"A\",\"value\":10}\n")
   p.pushChunk("\n")
   p.pushChunk("{\"key\":\"B\",\"value\":20}\n")
@@ -286,7 +286,7 @@ let testNdjsonSkipsEmptyLines = () => {
 }
 
 let testNdjsonInvalidJson = () => {
-  let p = P.createNdjsonParser()
+  let p = P.createNdjsonParser(~cfg={})
   p.pushChunk("not json\n")
 
   switch p.finish() {
@@ -300,7 +300,7 @@ let testNdjsonInvalidJson = () => {
 // ─────────────────────────────────────────────────────────────────
 
 let testJsonArraySimple = () => {
-  let p = P.createJsonArrayParser()
+  let p = P.createJsonArrayParser(~cfg={})
   p.pushChunk(" [ {\"key\":\"p1\",\"value\":1} , {\"key\":\"p2\",\"value\":2} ] ")
 
   switch p.finish() {
@@ -317,7 +317,7 @@ let testJsonArraySimple = () => {
 }
 
 let testJsonArrayNestedObjects = () => {
-  let p = P.createJsonArrayParser()
+  let p = P.createJsonArrayParser(~cfg={})
   // Nested object with braces inside the string value
   p.pushChunk("[{\"key\":\"a\",\"meta\":{\"id\":1}},{\"key\":\"b\",\"meta\":{\"id\":2}}]")
 
@@ -338,7 +338,7 @@ let testJsonArrayNestedObjects = () => {
 }
 
 let testJsonArrayChunkedStreaming = () => {
-  let p = P.createJsonArrayParser()
+  let p = P.createJsonArrayParser(~cfg={})
   p.pushChunk("[\n")
   p.pushChunk("  {\"key\":\"A\",\"value\":1},\n")
   p.pushChunk("  {\"key\":\"B\",\"value\":2}\n")
@@ -358,7 +358,7 @@ let testJsonArrayChunkedStreaming = () => {
 }
 
 let testJsonArrayTrailingWhitespace = () => {
-  let p = P.createJsonArrayParser()
+  let p = P.createJsonArrayParser(~cfg={})
   p.pushChunk("[{\"key\":\"A\",\"value\":1}]  \n  ")
 
   switch p.finish() {
@@ -370,7 +370,7 @@ let testJsonArrayTrailingWhitespace = () => {
 }
 
 let testJsonArrayMustStartWithBracket = () => {
-  let p = P.createJsonArrayParser()
+  let p = P.createJsonArrayParser(~cfg={})
   p.pushChunk("{\"key\":\"A\",\"value\":1}")
 
   switch p.finish() {
@@ -384,7 +384,7 @@ let testJsonArrayMustStartWithBracket = () => {
 }
 
 let testJsonArrayEmptyInput = () => {
-  let p = P.createJsonArrayParser()
+  let p = P.createJsonArrayParser(~cfg={})
 
   switch p.finish() {
   | Error("Empty input") => passWith("JSON array empty input: returns Error")
@@ -394,7 +394,7 @@ let testJsonArrayEmptyInput = () => {
 }
 
 let testJsonArrayUnterminatedQuote = () => {
-  let p = P.createJsonArrayParser()
+  let p = P.createJsonArrayParser(~cfg={})
   p.pushChunk("[{\"key\":\"unterminated")
 
   switch p.finish() {
@@ -406,7 +406,7 @@ let testJsonArrayUnterminatedQuote = () => {
 }
 
 let testJsonArrayMissingClosingBracket = () => {
-  let p = P.createJsonArrayParser()
+  let p = P.createJsonArrayParser(~cfg={})
   p.pushChunk("[{\"key\":\"A\",\"value\":1}")
 
   switch p.finish() {

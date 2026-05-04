@@ -13,7 +13,7 @@ let parseJsonObject = (payload: string): parseResult<row> =>
     | None => Error("Expected JSON object")
     }
   } catch {
-  | _ => Error("Invalid JSON object")
+  | _ => Error("Invalid JSON object (parse failed)")
   }
 
 let detectFormat = (chunk: string): Bindings.Util.inputFormat => {
@@ -36,46 +36,89 @@ let detectFormat = (chunk: string): Bindings.Util.inputFormat => {
   loop(0)
 }
 
+type parserConfig = {
+  maxRows?: int,
+  onRow?: row => unit,
+}
+
 type parser = {
   pushChunk: string => unit,
   finish: unit => parseResult<array<row>>,
+  rowCount: unit => int,
 }
 
-let createNdjsonParser = (): parser => {
-  let buffer = ref("")
+let keyForColumn = (header: option<array<string>>, idx: int, noHeader: bool): string =>
+  switch (header, noHeader) {
+  | (Some(h), false) => h->Array.get(idx)->Option.getOr("col_" ++ idx->Int.toString)
+  | _ => "col_" ++ idx->Int.toString
+  }
+
+let createNdjsonParser = (~cfg: parserConfig): parser => {
+  let lineChars: array<string> = []
   let rows: array<row> = []
+  let rowCount = ref(0)
   let error = ref(None)
 
   let emitLine = (line: string): unit => {
     let trimmed = line->String.trim
     if trimmed != "" {
       switch parseJsonObject(trimmed) {
-      | Ok(obj) => rows->Array.push(obj)
+      | Ok(obj) =>
+        switch cfg.maxRows {
+        | None => ()
+        | Some(max) if rowCount.contents >= max => error := Some("Row limit exceeded")
+        | Some(_) => ()
+        }
+        switch error.contents {
+        | Some(_) => ()
+        | None => {
+            rowCount := rowCount.contents + 1
+            rows->Array.push(obj)
+            switch cfg.onRow {
+            | Some(cb) => cb(obj)
+            | None => ()
+            }
+          }
+        }
       | Error(msg) => error := Some(msg)
       }
     }
+  }
+
+  let clearChars = (): unit =>
+    lineChars->Array.splice(~start=0, ~remove=lineChars->Array.length, ~insert=[])
+
+  let flushCurrentLine = (): unit => {
+    emitLine(lineChars->Array.join(""))
+    clearChars()
   }
 
   let pushChunk = (chunk: string): unit => {
     switch error.contents {
     | Some(_) => ()
     | None => {
-        let joined = buffer.contents ++ chunk
-        let lines = joined->String.split("\n")
-        let count = lines->Array.length
-
-        if count > 0 {
-          for i in 0 to count - 2 {
-            switch lines[i] {
-            | Some(line) => emitLine(line)
-            | None => ()
+        let chars = chunk->String.split("")
+        let len = chars->Array.length
+        let rec loop = (idx: int): unit => {
+          if idx < len {
+            switch chars[idx] {
+            | Some(ch) =>
+              switch ch {
+              | "\n" => {
+                  flushCurrentLine()
+                  loop(idx + 1)
+                }
+              | "\r" => loop(idx + 1)
+              | _ => {
+                  lineChars->Array.push(ch)
+                  loop(idx + 1)
+                }
+              }
+            | None => loop(idx + 1)
             }
           }
-          buffer := switch lines[count - 1] {
-          | Some(last) => last
-          | None => ""
-          }
         }
+        loop(0)
       }
     }
   }
@@ -84,7 +127,7 @@ let createNdjsonParser = (): parser => {
     switch error.contents {
     | Some(msg) => Error(msg)
     | None => {
-        emitLine(buffer.contents)
+        flushCurrentLine()
         switch error.contents {
         | Some(msg) => Error(msg)
         | None => Ok(rows)
@@ -93,40 +136,63 @@ let createNdjsonParser = (): parser => {
     }
   }
 
-  {pushChunk, finish}
+  let rowCount = (): int => rowCount.contents
+
+  {pushChunk, finish, rowCount}
 }
 
-let createCsvParser = (~noHeader: bool): parser => {
+let createCsvParser = (~cfg: parserConfig, ~noHeader: bool): parser => {
   let rows: array<row> = []
+  let rowCount = ref(0)
   let header = ref(None)
-  let currentField = ref("")
+  let fieldChars: array<string> = []
   let currentRow: array<string> = []
   let inQuotes = ref(false)
   let error = ref(None)
-  let appendFieldChar = (ch: string): unit => currentField := currentField.contents ++ ch
 
-  let keyForColumn = (idx: int): string =>
-    switch (header.contents, noHeader) {
-    | (Some(h), false) => h->Array.get(idx)->Option.getOr(`col_${idx->Int.toString}`)
-    | _ => `col_${idx->Int.toString}`
-    }
+  let clearFieldChars = (): unit =>
+    fieldChars->Array.splice(~start=0, ~remove=fieldChars->Array.length, ~insert=[])
+
+  let currentField = (): string => fieldChars->Array.join("")
+
+  let pushFieldChar = (ch: string): unit => fieldChars->Array.push(ch)
+
+  let closeField = (): unit => {
+    currentRow->Array.push(currentField())
+    clearFieldChars()
+  }
 
   let emitRow = (): unit => {
-    currentRow->Array.push(currentField.contents)
-    currentField := ""
+    closeField()
 
     switch currentRow->Array.length {
     | 0 => ()
     | _ =>
       switch (header.contents, noHeader) {
       | (None, false) => header := Some(currentRow->Array.map(v => v))
-      | _ =>
-        let rowDict = Dict.make()
-        currentRow->Array.forEachWithIndex((value, idx) => {
-          let key = keyForColumn(idx)
-          rowDict->Dict.set(key, JSON.Encode.string(value))
-        })
-        rows->Array.push(rowDict)
+      | _ => {
+          let rowDict = Dict.make()
+          currentRow->Array.forEachWithIndex((value, idx) => {
+            let key = keyForColumn(header.contents, idx, noHeader)
+            rowDict->Dict.set(key, JSON.Encode.string(value))
+          })
+          switch cfg.maxRows {
+          | None => ()
+          | Some(max) if rowCount.contents >= max => error := Some("Row limit exceeded")
+          | Some(_) => ()
+          }
+          switch error.contents {
+          | Some(_) => ()
+          | None => {
+              rowCount := rowCount.contents + 1
+              rows->Array.push(rowDict)
+              switch cfg.onRow {
+              | Some(cb) => cb(rowDict)
+              | None => ()
+              }
+            }
+          }
+        }
       }
     }
 
@@ -149,7 +215,7 @@ let createCsvParser = (~noHeader: bool): parser => {
               | (true, "\"") =>
                 switch chars[idx + 1] {
                 | Some(next) if next == "\"" => {
-                    appendFieldChar("\"")
+                    pushFieldChar("\"")
                     loop(idx + 2)
                   }
                 | _ => {
@@ -158,7 +224,7 @@ let createCsvParser = (~noHeader: bool): parser => {
                   }
                 }
               | (true, _) => {
-                  appendFieldChar(ch)
+                  pushFieldChar(ch)
                   loop(idx + 1)
                 }
               | (false, "\"") => {
@@ -166,8 +232,7 @@ let createCsvParser = (~noHeader: bool): parser => {
                   loop(idx + 1)
                 }
               | (false, ",") => {
-                  currentRow->Array.push(currentField.contents)
-                  currentField := ""
+                  closeField()
                   loop(idx + 1)
                 }
               | (false, "\n") => {
@@ -176,7 +241,7 @@ let createCsvParser = (~noHeader: bool): parser => {
                 }
               | (false, "\r") => loop(idx + 1)
               | (false, _) => {
-                  appendFieldChar(ch)
+                  pushFieldChar(ch)
                   loop(idx + 1)
                 }
               }
@@ -190,67 +255,67 @@ let createCsvParser = (~noHeader: bool): parser => {
   }
 
   let finish = (): parseResult<array<row>> => {
-    let hasPending = currentField.contents != "" || currentRow->Array.length > 0
+    let hasPending = currentField() != "" || currentRow->Array.length > 0
     switch (inQuotes.contents, hasPending) {
     | (true, _) => Error("Unterminated quoted CSV field")
     | (false, true) => {
         emitRow()
-        Ok(rows)
+        switch error.contents {
+        | Some(msg) => Error(msg)
+        | None => Ok(rows)
+        }
       }
-    | (false, false) => Ok(rows)
+    | (false, false) =>
+      switch error.contents {
+      | Some(msg) => Error(msg)
+      | None => Ok(rows)
+      }
     }
   }
 
-  {pushChunk, finish}
+  let rowCount = (): int => rowCount.contents
+
+  {pushChunk, finish, rowCount}
 }
 
-let createJsonArrayParser = (): parser => {
+let createJsonArrayParser = (~cfg: parserConfig): parser => {
   let rows: array<row> = []
+  let rowCount = ref(0)
   let error = ref(None)
   let started = ref(false)
   let ended = ref(false)
   let depth = ref(0)
   let inString = ref(false)
   let escaping = ref(false)
-  let current = ref("")
-  let appendCurrent = (ch: string): unit => current := current.contents ++ ch
-
-  let handleBeforeStart = (ch: string, idx: int, loop: int => unit): unit =>
-    switch ch {
-    | ch if isWhitespace(ch) => loop(idx + 1)
-    | "[" => {
-        started := true
-        loop(idx + 1)
-      }
-    | _ => error := Some("JSON array input must start with '['")
-    }
-
-  let handleAfterEnd = (ch: string, idx: int, loop: int => unit): unit =>
-    switch ch {
-    | ch if isWhitespace(ch) => loop(idx + 1)
-    | _ => error := Some("Unexpected trailing characters after JSON array")
-    }
-
-  let handleInsideString = (ch: string, idx: int, loop: int => unit): unit => {
-    appendCurrent(ch)
-    switch (escaping.contents, ch) {
-    | (true, _) => escaping := false
-    | (false, "\\") => escaping := true
-    | (false, "\"") => inString := false
-    | _ => ()
-    }
-    loop(idx + 1)
-  }
+  // Accumulate chunks into an array instead of repeated string concat.
+  let currentChunks: array<string> = []
 
   let flushObject = (): unit => {
-    let payload = current.contents->String.trim
+    let payload = currentChunks->Array.join("")->String.trim
     if payload != "" {
       switch parseJsonObject(payload) {
-      | Ok(obj) => rows->Array.push(obj)
+      | Ok(obj) =>
+        switch cfg.maxRows {
+        | None => ()
+        | Some(max) if rowCount.contents >= max => error := Some("Row limit exceeded")
+        | Some(_) => ()
+        }
+        switch error.contents {
+        | Some(_) => ()
+        | None => {
+            rowCount := rowCount.contents + 1
+            rows->Array.push(obj)
+            switch cfg.onRow {
+            | Some(cb) => cb(obj)
+            | None => ()
+            }
+          }
+        }
       | Error(msg) => error := Some(msg)
       }
     }
-    current := ""
+    // Clear the chunk buffer without creating a new array reference.
+    currentChunks->Array.splice(~start=0, ~remove=currentChunks->Array.length, ~insert=[])
   }
 
   let pushChunk = (chunk: string): unit => {
@@ -264,24 +329,45 @@ let createJsonArrayParser = (): parser => {
             switch chars[idx] {
             | Some(ch) =>
               switch (started.contents, ended.contents, inString.contents) {
-              | (false, _, _) => handleBeforeStart(ch, idx, loop)
-              | (true, true, _) => handleAfterEnd(ch, idx, loop)
-              | (true, false, true) => handleInsideString(ch, idx, loop)
+              | (false, _, _) =>
+                switch ch {
+                | ch if isWhitespace(ch) => loop(idx + 1)
+                | "[" => {
+                    started := true
+                    loop(idx + 1)
+                  }
+                | _ => error := Some("JSON array input must start with '['")
+                }
+              | (true, true, _) =>
+                switch ch {
+                | ch if isWhitespace(ch) => loop(idx + 1)
+                | _ => error := Some("Unexpected trailing characters after JSON array")
+                }
+              | (true, false, true) => {
+                  currentChunks->Array.push(ch)
+                  switch (escaping.contents, ch) {
+                  | (true, _) => escaping := false
+                  | (false, "\\") => escaping := true
+                  | (false, "\"") => inString := false
+                  | _ => ()
+                  }
+                  loop(idx + 1)
+                }
               | (true, false, false) =>
                 switch ch {
                 | "\"" => {
                     inString := true
-                    appendCurrent(ch)
+                    currentChunks->Array.push(ch)
                     loop(idx + 1)
                   }
                 | "{" => {
                     depth := depth.contents + 1
-                    appendCurrent(ch)
+                    currentChunks->Array.push(ch)
                     loop(idx + 1)
                   }
                 | "}" => {
                     depth := depth.contents - 1
-                    appendCurrent(ch)
+                    currentChunks->Array.push(ch)
                     switch depth.contents {
                     | 0 => flushObject()
                     | _ => ()
@@ -289,7 +375,7 @@ let createJsonArrayParser = (): parser => {
                     loop(idx + 1)
                   }
                 | "]" =>
-                  switch (depth.contents == 0, current.contents->String.trim == "") {
+                  switch (depth.contents == 0, currentChunks->Array.join("")->String.trim == "") {
                   | (true, true) => {
                       ended := true
                       loop(idx + 1)
@@ -297,19 +383,17 @@ let createJsonArrayParser = (): parser => {
                   | _ => error := Some("Malformed JSON array payload")
                   }
                 | ch if isWhitespace(ch) || ch == "," => {
-                    switch depth.contents > 0 {
-                    | true => appendCurrent(ch)
-                    | false => ()
+                    if depth.contents > 0 {
+                      currentChunks->Array.push(ch)
                     }
                     loop(idx + 1)
                   }
                 | _ =>
-                  switch depth.contents > 0 {
-                  | true => {
-                      appendCurrent(ch)
-                      loop(idx + 1)
-                    }
-                  | false => error := Some("Only arrays of JSON objects are supported")
+                  if depth.contents > 0 {
+                    currentChunks->Array.push(ch)
+                    loop(idx + 1)
+                  } else {
+                    error := Some("Only arrays of JSON objects are supported")
                   }
                 }
               }
@@ -333,21 +417,25 @@ let createJsonArrayParser = (): parser => {
     }
   }
 
-  {pushChunk, finish}
+  let rowCount = (): int => rowCount.contents
+
+  {pushChunk, finish, rowCount}
 }
 
-let create = (~format: Bindings.Util.inputFormat, ~noHeader: bool): parser =>
+let defaultConfig: parserConfig = {}
+
+let create = (~format: Bindings.Util.inputFormat, ~noHeader: bool, ~cfg: parserConfig=defaultConfig): parser =>
   switch format {
-  | #json => createJsonArrayParser()
-  | #ndjson => createNdjsonParser()
-  | #csv => createCsvParser(~noHeader)
+  | #json => createJsonArrayParser(~cfg)
+  | #ndjson => createNdjsonParser(~cfg)
+  | #csv => createCsvParser(~cfg, ~noHeader)
   | #auto => {
       let chosen = ref(None)
       let createFromChunk = (chunk: string): parser =>
         switch detectFormat(chunk) {
-        | #json => createJsonArrayParser()
-        | #ndjson => createNdjsonParser()
-        | _ => createCsvParser(~noHeader)
+        | #json => createJsonArrayParser(~cfg)
+        | #ndjson => createNdjsonParser(~cfg)
+        | _ => createCsvParser(~cfg, ~noHeader)
         }
 
       {
@@ -365,6 +453,11 @@ let create = (~format: Bindings.Util.inputFormat, ~noHeader: bool): parser =>
           switch chosen.contents {
           | Some(parser) => parser.finish()
           | None => Error("No input received")
+          },
+        rowCount: () =>
+          switch chosen.contents {
+          | Some(parser) => parser.rowCount()
+          | None => 0
           },
       }
     }

@@ -5,6 +5,7 @@
 type cliOptions = {
   format: Bindings.Util.inputFormat,
   chartType: Bindings.Util.chartType,
+  maxRows?: int,
   width?: int,
   height?: int,
   keyField?: string,

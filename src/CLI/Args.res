@@ -25,6 +25,7 @@ let parse = (): CliTypes.parsedArgs => {
     "chart": {U.type_: "string", U.short: "t", U.default: U.String("auto")},
     "width": {U.type_: "string"},
     "height": {U.type_: "string"},
+    "max-rows": {U.type_: "string"},
     "key": {U.type_: "string"},
     "value": {U.type_: "string"},
     "x-key": {U.type_: "string"},
@@ -57,6 +58,7 @@ let parse = (): CliTypes.parsedArgs => {
       chartType: parseChartType(values.chart),
       width: ?Int.fromString(values.width->Option.getOr("")),
       height: ?Int.fromString(values.height->Option.getOr("")),
+      maxRows: ?Int.fromString(values.maxRows->Option.getOr("")),
       keyField: ?values.key,
       valueField: ?values.value,
       xKey: ?values.xKey,
@@ -78,6 +80,7 @@ let helpText = `Usage: chartex [--file path] [--format auto|json|ndjson|csv] [--
   --chart, -t     Chart type (default: auto)
   --width         Chart width
   --height        Chart height
+  --max-rows      Maximum parsed rows before failing
   --key           Key field name
   --value         Value field name
   --x-key         X field for scatter

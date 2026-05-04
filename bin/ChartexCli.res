@@ -14,7 +14,12 @@ let run = (): unit => {
     writeLine("chartex cli (rescript)")
     P.exit(0)
   } else {
-    let parser = Parser.create(~format=parsed.options.format, ~noHeader=parsed.options.noHeader)
+    let parser =
+      Parser.create(
+        ~format=parsed.options.format,
+        ~noHeader=parsed.options.noHeader,
+        ~cfg={maxRows: ?parsed.options.maxRows},
+      )
 
     StreamIO.readInput(
       ~inputPath=?parsed.inputPath,
