@@ -4,15 +4,11 @@ type parseResult<'a> =
   | Ok('a)
   | Error(string)
 
-@send external push: (array<'a>, 'a) => unit = "push"
-
-@scope("JSON") @val external jsonParse: string => JSON.t = "parse"
-
 let isWhitespace = (ch: string): bool => ch == " " || ch == "\n" || ch == "\r" || ch == "\t"
 
 let parseJsonObject = (payload: string): parseResult<row> =>
   try {
-    switch payload->jsonParse->JSON.Decode.object {
+    switch payload->JSON.parseOrThrow->JSON.Decode.object {
     | Some(obj) => Ok(obj)
     | None => Error("Expected JSON object")
     }
@@ -28,14 +24,11 @@ let detectFormat = (chunk: string): Bindings.Util.inputFormat => {
     } else {
       switch chars[idx] {
       | Some(ch) =>
-        if isWhitespace(ch) {
-          loop(idx + 1)
-        } else if ch == "[" {
-          #json
-        } else if ch == "{" {
-          #ndjson
-        } else {
-          #csv
+        switch ch {
+        | ch if isWhitespace(ch) => loop(idx + 1)
+        | "[" => #json
+        | "{" => #ndjson
+        | _ => #csv
         }
       | None => #csv
       }
@@ -57,7 +50,7 @@ let createNdjsonParser = (): parser => {
     let trimmed = line->String.trim
     if trimmed != "" {
       switch parseJsonObject(trimmed) {
-      | Ok(obj) => push(rows, obj)
+      | Ok(obj) => rows->Array.push(obj)
       | Error(msg) => error := Some(msg)
       }
     }
@@ -110,35 +103,30 @@ let createCsvParser = (~noHeader: bool): parser => {
   let currentRow: array<string> = []
   let inQuotes = ref(false)
   let error = ref(None)
+  let appendFieldChar = (ch: string): unit => currentField := currentField.contents ++ ch
+
+  let keyForColumn = (idx: int): string =>
+    switch (header.contents, noHeader) {
+    | (Some(h), false) => h->Array.get(idx)->Option.getOr(`col_${idx->Int.toString}`)
+    | _ => `col_${idx->Int.toString}`
+    }
 
   let emitRow = (): unit => {
-    push(currentRow, currentField.contents)
+    currentRow->Array.push(currentField.contents)
     currentField := ""
 
-    if currentRow->Array.length > 0 {
+    switch currentRow->Array.length {
+    | 0 => ()
+    | _ =>
       switch (header.contents, noHeader) {
       | (None, false) => header := Some(currentRow->Array.map(v => v))
       | _ =>
         let rowDict = Dict.make()
-        let rec assign = (idx: int): unit => {
-          if idx < currentRow->Array.length {
-            let key = switch (header.contents, noHeader) {
-            | (Some(h), false) => switch h[idx] {
-              | Some(name) => name
-              | None => `col_${idx->Int.toString}`
-              }
-            | _ => `col_${idx->Int.toString}`
-            }
-            let value = switch currentRow[idx] {
-            | Some(v) => v
-            | None => ""
-            }
-            rowDict->Dict.set(key, JSON.Encode.string(value))
-            assign(idx + 1)
-          }
-        }
-        assign(0)
-        push(rows, rowDict)
+        currentRow->Array.forEachWithIndex((value, idx) => {
+          let key = keyForColumn(idx)
+          rowDict->Dict.set(key, JSON.Encode.string(value))
+        })
+        rows->Array.push(rowDict)
       }
     }
 
@@ -157,37 +145,40 @@ let createCsvParser = (~noHeader: bool): parser => {
           if idx < len {
             switch chars[idx] {
             | Some(ch) =>
-              if inQuotes.contents {
-                if ch == "\"" {
-                  switch chars[idx + 1] {
-                  | Some(next) if next == "\"" => {
-                      currentField := currentField.contents ++ "\""
-                      loop(idx + 2)
-                    }
-                  | _ => {
-                      inQuotes := false
-                      loop(idx + 1)
-                    }
+              switch (inQuotes.contents, ch) {
+              | (true, "\"") =>
+                switch chars[idx + 1] {
+                | Some(next) if next == "\"" => {
+                    appendFieldChar("\"")
+                    loop(idx + 2)
                   }
-                } else {
-                  currentField := currentField.contents ++ ch
+                | _ => {
+                    inQuotes := false
+                    loop(idx + 1)
+                  }
+                }
+              | (true, _) => {
+                  appendFieldChar(ch)
                   loop(idx + 1)
                 }
-              } else if ch == "\"" {
-                inQuotes := true
-                loop(idx + 1)
-              } else if ch == "," {
-                push(currentRow, currentField.contents)
-                currentField := ""
-                loop(idx + 1)
-              } else if ch == "\n" {
-                emitRow()
-                loop(idx + 1)
-              } else if ch == "\r" {
-                loop(idx + 1)
-              } else {
-                currentField := currentField.contents ++ ch
-                loop(idx + 1)
+              | (false, "\"") => {
+                  inQuotes := true
+                  loop(idx + 1)
+                }
+              | (false, ",") => {
+                  currentRow->Array.push(currentField.contents)
+                  currentField := ""
+                  loop(idx + 1)
+                }
+              | (false, "\n") => {
+                  emitRow()
+                  loop(idx + 1)
+                }
+              | (false, "\r") => loop(idx + 1)
+              | (false, _) => {
+                  appendFieldChar(ch)
+                  loop(idx + 1)
+                }
               }
             | None => loop(idx + 1)
             }
@@ -199,13 +190,14 @@ let createCsvParser = (~noHeader: bool): parser => {
   }
 
   let finish = (): parseResult<array<row>> => {
-    if inQuotes.contents {
-      Error("Unterminated quoted CSV field")
-    } else {
-      if currentField.contents != "" || currentRow->Array.length > 0 {
+    let hasPending = currentField.contents != "" || currentRow->Array.length > 0
+    switch (inQuotes.contents, hasPending) {
+    | (true, _) => Error("Unterminated quoted CSV field")
+    | (false, true) => {
         emitRow()
+        Ok(rows)
       }
-      Ok(rows)
+    | (false, false) => Ok(rows)
     }
   }
 
@@ -221,12 +213,40 @@ let createJsonArrayParser = (): parser => {
   let inString = ref(false)
   let escaping = ref(false)
   let current = ref("")
+  let appendCurrent = (ch: string): unit => current := current.contents ++ ch
+
+  let handleBeforeStart = (ch: string, idx: int, loop: int => unit): unit =>
+    switch ch {
+    | ch if isWhitespace(ch) => loop(idx + 1)
+    | "[" => {
+        started := true
+        loop(idx + 1)
+      }
+    | _ => error := Some("JSON array input must start with '['")
+    }
+
+  let handleAfterEnd = (ch: string, idx: int, loop: int => unit): unit =>
+    switch ch {
+    | ch if isWhitespace(ch) => loop(idx + 1)
+    | _ => error := Some("Unexpected trailing characters after JSON array")
+    }
+
+  let handleInsideString = (ch: string, idx: int, loop: int => unit): unit => {
+    appendCurrent(ch)
+    switch (escaping.contents, ch) {
+    | (true, _) => escaping := false
+    | (false, "\\") => escaping := true
+    | (false, "\"") => inString := false
+    | _ => ()
+    }
+    loop(idx + 1)
+  }
 
   let flushObject = (): unit => {
     let payload = current.contents->String.trim
     if payload != "" {
       switch parseJsonObject(payload) {
-      | Ok(obj) => push(rows, obj)
+      | Ok(obj) => rows->Array.push(obj)
       | Error(msg) => error := Some(msg)
       }
     }
@@ -243,63 +263,55 @@ let createJsonArrayParser = (): parser => {
           if idx < len {
             switch chars[idx] {
             | Some(ch) =>
-              if !started.contents {
-                if isWhitespace(ch) {
-                  loop(idx + 1)
-                } else if ch == "[" {
-                  started := true
-                  loop(idx + 1)
-                } else {
-                  error := Some("JSON array input must start with '['")
+              switch (started.contents, ended.contents, inString.contents) {
+              | (false, _, _) => handleBeforeStart(ch, idx, loop)
+              | (true, true, _) => handleAfterEnd(ch, idx, loop)
+              | (true, false, true) => handleInsideString(ch, idx, loop)
+              | (true, false, false) =>
+                switch ch {
+                | "\"" => {
+                    inString := true
+                    appendCurrent(ch)
+                    loop(idx + 1)
+                  }
+                | "{" => {
+                    depth := depth.contents + 1
+                    appendCurrent(ch)
+                    loop(idx + 1)
+                  }
+                | "}" => {
+                    depth := depth.contents - 1
+                    appendCurrent(ch)
+                    switch depth.contents {
+                    | 0 => flushObject()
+                    | _ => ()
+                    }
+                    loop(idx + 1)
+                  }
+                | "]" =>
+                  switch (depth.contents == 0, current.contents->String.trim == "") {
+                  | (true, true) => {
+                      ended := true
+                      loop(idx + 1)
+                    }
+                  | _ => error := Some("Malformed JSON array payload")
+                  }
+                | ch if isWhitespace(ch) || ch == "," => {
+                    switch depth.contents > 0 {
+                    | true => appendCurrent(ch)
+                    | false => ()
+                    }
+                    loop(idx + 1)
+                  }
+                | _ =>
+                  switch depth.contents > 0 {
+                  | true => {
+                      appendCurrent(ch)
+                      loop(idx + 1)
+                    }
+                  | false => error := Some("Only arrays of JSON objects are supported")
+                  }
                 }
-              } else if ended.contents {
-                if isWhitespace(ch) {
-                  loop(idx + 1)
-                } else {
-                  error := Some("Unexpected trailing characters after JSON array")
-                }
-              } else if inString.contents {
-                current := current.contents ++ ch
-                if escaping.contents {
-                  escaping := false
-                } else if ch == "\\" {
-                  escaping := true
-                } else if ch == "\"" {
-                  inString := false
-                }
-                loop(idx + 1)
-              } else if ch == "\"" {
-                inString := true
-                current := current.contents ++ ch
-                loop(idx + 1)
-              } else if ch == "{" {
-                depth := depth.contents + 1
-                current := current.contents ++ ch
-                loop(idx + 1)
-              } else if ch == "}" {
-                depth := depth.contents - 1
-                current := current.contents ++ ch
-                if depth.contents == 0 {
-                  flushObject()
-                }
-                loop(idx + 1)
-              } else if ch == "]" {
-                if depth.contents == 0 && current.contents->String.trim == "" {
-                  ended := true
-                  loop(idx + 1)
-                } else {
-                  error := Some("Malformed JSON array payload")
-                }
-              } else if isWhitespace(ch) || ch == "," {
-                if depth.contents > 0 {
-                  current := current.contents ++ ch
-                }
-                loop(idx + 1)
-              } else if depth.contents > 0 {
-                current := current.contents ++ ch
-                loop(idx + 1)
-              } else {
-                error := Some("Only arrays of JSON objects are supported")
               }
             | None => loop(idx + 1)
             }
@@ -310,19 +322,15 @@ let createJsonArrayParser = (): parser => {
     }
   }
 
-  let finish = (): parseResult<array<row>> =>
-    switch error.contents {
-    | Some(msg) => Error(msg)
-    | None => {
-        if inString.contents || depth.contents != 0 {
-          Error("Incomplete JSON array input")
-        } else if !started.contents {
-          Error("Empty input")
-        } else {
-          Ok(rows)
-        }
-      }
+  let finish = (): parseResult<array<row>> => {
+    let incomplete = inString.contents || depth.contents != 0
+    switch (error.contents, incomplete, started.contents) {
+    | (Some(msg), _, _) => Error(msg)
+    | (None, true, _) => Error("Incomplete JSON array input")
+    | (None, false, false) => Error("Empty input")
+    | (None, false, true) => Ok(rows)
     }
+  }
 
   {pushChunk, finish}
 }
