@@ -2,7 +2,6 @@
  * F001-types — Public Type Definitions
  *
  * All shared types for the chartex library.
- * Re-exported via the Chartex barrel as Chartex.Types.
  */
 
 // ─────────────────────────────────────────────────────────────
