@@ -324,11 +324,12 @@ let createJsonArrayParser = (): parser => {
 
   let finish = (): parseResult<array<row>> => {
     let incomplete = inString.contents || depth.contents != 0
-    switch (error.contents, incomplete, started.contents) {
-    | (Some(msg), _, _) => Error(msg)
-    | (None, true, _) => Error("Incomplete JSON array input")
-    | (None, false, false) => Error("Empty input")
-    | (None, false, true) => Ok(rows)
+    switch (error.contents, incomplete, started.contents, ended.contents) {
+    | (Some(msg), _, _, _) => Error(msg)
+    | (None, true, _, _) => Error("Incomplete JSON array input")
+    | (None, false, false, _) => Error("Empty input")
+    | (None, false, true, false) => Error("Incomplete JSON array input")
+    | (None, false, true, true) => Ok(rows)
     }
   }
 

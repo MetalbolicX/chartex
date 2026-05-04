@@ -405,6 +405,20 @@ let testJsonArrayUnterminatedQuote = () => {
   }
 }
 
+let testJsonArrayMissingClosingBracket = () => {
+  let p = P.createJsonArrayParser()
+  p.pushChunk("[{\"key\":\"A\",\"value\":1}")
+
+  switch p.finish() {
+  | Error("Incomplete JSON array input") =>
+    passWith("JSON array missing closing bracket: returns Error")
+  | Error(msg) =>
+    failWith("JSON array missing closing bracket: wrong error: " ++ msg)
+  | Ok(_) =>
+    failWith("JSON array missing closing bracket: should have returned Error")
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────
 // P.create (factory)
 // ─────────────────────────────────────────────────────────────────
@@ -529,6 +543,10 @@ test("P.createJsonArrayParser: empty input returns Error", () =>
 
 test("P.createJsonArrayParser: unterminated string inside array returns Error", () =>
   testJsonArrayUnterminatedQuote()
+)
+
+test("P.createJsonArrayParser: missing closing bracket returns Error", () =>
+  testJsonArrayMissingClosingBracket()
 )
 
 test("P.create: #auto format delegates to CSV when input looks like CSV", () =>
