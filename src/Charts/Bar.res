@@ -6,6 +6,8 @@
 open Types
 open Terminal
 open Options
+open ChartValidation
+open ChartPadding
 
 let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -26,39 +28,14 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
   let maxVal = values->Array.reduce(-1.0e308, (acc, v) => if v > acc { v } else { acc })
 
   // Guard: NaN or Infinity in values
-  let hasNaN = values->Array.some(v => Float.isNaN(v))
-  let hasInf = values->Array.some(v => !Float.isFinite(v))
-  let _ = switch hasNaN {
-  | true => JsError.throwWithMessage("Error: Bar chart data contains NaN values")
-  | false => ()
-  }
-  let _ = switch hasInf {
-  | true => JsError.throwWithMessage("Error: Bar chart data contains infinite values")
-  | false => ()
-  }
+  ensureNoNaN(values, "Error: Bar chart data contains NaN values")
+  ensureNoInfinite(values, "Error: Bar chart data contains infinite values")
 
   // Guard: negative values are not supported (bar charts require positive values)
-  let hasNegative = values->Array.some(v => v < 0.0)
-  let _ = switch hasNegative {
-  | true => JsError.throwWithMessage("Error: Bar chart does not support negative values. Filter out negative values before rendering.")
-  | false => ()
-  }
+  ensureNoNegative(values, "Error: Bar chart does not support negative values. Filter out negative values before rendering.")
 
   // Guard: all-zero values
-  let _ = switch maxVal <= 0.0 {
-  | true => JsError.throwWithMessage("Error: Bar chart requires at least one positive value to render")
-  | false => ()
-  }
-
-  let padMid = (str: string, width: int): string => {
-    let sLen = str->String.length
-    if sLen >= width { str } else {
-      let totalPad = width - sLen
-      let leftPad = totalPad / 2
-      let rightPad = totalPad - leftPad
-      Js.String.repeat(leftPad, " ") ++ str ++ Js.String.repeat(rightPad, " ")
-    }
-  }
+  ensureAtLeastOnePositive(maxVal, "Error: Bar chart requires at least one positive value to render")
 
   let result = ref(Js.String.repeat(left, " "))
 

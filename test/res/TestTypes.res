@@ -142,12 +142,12 @@ let testScatterConfigRequiresXY = () => {
 }
 
 /**
- * Test: pieConfig and donutConfig require style accessor (not optional)
- * Verifies: FR-006 (required style in pie/donut)
- * Verifies: SC-003 (pie/donut style required)
+ * Test: pieConfig and donutConfig allow optional style accessor
+ * Verifies: FR-006 (optional style in pie/donut with defaults)
+ * Verifies: SC-003 (pie/donut style optional)
  */
 let testPieAndDonutRequireStyle = () => {
-  // pieConfig — style is REQUIRED, no default
+  // pieConfig — style is optional (provided here explicitly)
   let pieCfg: Types.pieConfig<pieData> = {
     key: d => d.category,
     value: d => d.amount,
@@ -278,7 +278,7 @@ test("scatterConfig: series/x/y accessors enforced", () =>
   testScatterConfigRequiresXY()
 )
 
-test("pieConfig and donutConfig: style required", () =>
+test("pieConfig and donutConfig: style optional", () =>
   testPieAndDonutRequireStyle()
 )
 

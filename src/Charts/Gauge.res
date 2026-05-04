@@ -6,6 +6,8 @@
 open Types
 open Terminal
 open Options
+open ChartValidation
+open ChartPadding
 
 let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -23,21 +25,14 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
 
   // Guard: data[0] exists
   let firstItem = switch data[0] {
-    | Some(x) => x
-    | None => JsError.throwWithMessage("Error: Gauge chart requires at least one data point")
+  | Some(x) => x
+  | None => JsError.throwWithMessage("Error: Gauge chart requires at least one data point")
   }
 
-let rawValue = firstItem->config.value
+  let rawValue = firstItem->config.value
 
   // Guard: NaN or Infinity in value
-  let _ = switch Float.isNaN(rawValue) {
-  | true => JsError.throwWithMessage("Error: Gauge chart data contains NaN values")
-  | false => ()
-  }
-  let _ = switch !Float.isFinite(rawValue) {
-  | true => JsError.throwWithMessage("Error: Gauge chart data contains infinite values")
-  | false => ()
-  }
+  ensureFinite(rawValue, "Error: Gauge chart data contains NaN values", "Error: Gauge chart data contains infinite values")
 
   // Guard: value must be 0-100 range (gauge percentage)
   let _ = switch rawValue < 0.0 || rawValue > 100.0 {
@@ -85,16 +80,6 @@ let rawValue = firstItem->config.value
       } else {
         result := result.contents ++ "  "
       }
-    }
-  }
-
-  let padMid = (str: string, width: int): string => {
-    let sLen = str->String.length
-    if sLen >= width { str } else {
-      let totalPad = width - sLen
-      let leftPad = totalPad / 2
-      let rightPad = totalPad - leftPad
-      Js.String.repeat(leftPad, " ") ++ str ++ Js.String.repeat(rightPad, " ")
     }
   }
 

@@ -6,6 +6,8 @@
 open Types
 open Terminal
 open Options
+open ChartValidation
+open ChartPadding
 
 type sparkPoint = {x: int, y: int, style: string}
 
@@ -31,14 +33,8 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
   let maxVal = values->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
 
   // Guard: NaN or Infinity values
-  let _ = switch Float.isNaN(minVal) || Float.isNaN(maxVal) {
-  | true => JsError.throwWithMessage("Error: Sparkline chart data contains NaN values")
-  | false => ()
-  }
-  let _ = switch !Float.isFinite(minVal) || !Float.isFinite(maxVal) {
-  | true => JsError.throwWithMessage("Error: Sparkline chart data contains infinite values")
-  | false => ()
-  }
+  ensureFinite(minVal, "Error: Sparkline chart data contains NaN values", "Error: Sparkline chart data contains infinite values")
+  ensureFinite(maxVal, "Error: Sparkline chart data contains NaN values", "Error: Sparkline chart data contains infinite values")
 
   // Handle degenerate case: all values identical
   let effectiveMin = switch maxVal == minVal {
@@ -114,11 +110,6 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
       effectiveMax -. i->Int.toFloat *. (effectiveMax -. effectiveMin) /. (charHeight - 1)->Int.toFloat
     } else { effectiveMin }
     yLabels[i] = formatY(yValue, yDecimals)
-  }
-
-  let padStart = (str: string, targetLen: int, ch: string): string => {
-    let sl = str->String.length
-    if sl >= targetLen { str } else { Js.String.repeat(targetLen - sl, ch) ++ str }
   }
 
   let yAxisWidth = ref(0)

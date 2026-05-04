@@ -6,6 +6,8 @@
 open Types
 open Terminal
 open Options
+open ChartValidation
+open ChartPadding
 
 let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -44,26 +46,13 @@ let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, (
   let total = values->Array.reduce(0.0, (a, b) => a +. b)
 
   // Guard: NaN or Infinity in values or total
-  let hasNaN = values->Array.some(v => Float.isNaN(v))
-  let hasInf = values->Array.some(v => !Float.isFinite(v))
-  let _ = switch hasNaN {
-  | true => JsError.throwWithMessage("Error: Pie chart data contains NaN values")
-  | false => ()
-  }
-  let _ = switch hasInf {
-  | true => JsError.throwWithMessage("Error: Pie chart data contains infinite values")
-  | false => ()
-  }
+  ensureNoNaN(values, "Error: Pie chart data contains NaN values")
+  ensureNoInfinite(values, "Error: Pie chart data contains infinite values")
 
   let maxKeyLength = data->Array.reduce(0, (acc, item) => {
     let l = item->config.key->String.length
     if l > acc { l } else { acc }
   })
-
-  let padStart = (str: string, len: int, ch: string): string => {
-    let sl = str->String.length
-    if sl >= len { str } else { Js.String.repeat(len - sl, ch) ++ str }
-  }
 
   // Guard: total == 0.0 means all-zero values, distribute evenly but still render
   let ratios = total == 0.0

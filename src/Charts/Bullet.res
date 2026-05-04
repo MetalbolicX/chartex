@@ -6,6 +6,8 @@
 open Types
 open Terminal
 open Options
+open ChartValidation
+open ChartPadding
 
 let make = (data: array<'data>, ~config: bulletConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -22,38 +24,18 @@ let make = (data: array<'data>, ~config: bulletConfig<'data>, ~options as opts=?
   let charWidth = options->getOpt(o => o.width, max(10, width()->Option.getOr(80) * 6 / 10))
   let padding = options->getOpt(o => o.padding, 1)
 
-let values = data->Array.map(config.value)
+  let values = data->Array.map(config.value)
   let maxVal = values->Array.reduce(-1.0e308, (acc, v) => if v > acc { v } else { acc })
 
   // Guard: NaN or Infinity in values
-  let hasNaN = values->Array.some(v => Float.isNaN(v))
-  let hasInf = values->Array.some(v => !Float.isFinite(v))
-  let _ = switch hasNaN {
-  | true => JsError.throwWithMessage("Error: Bullet chart data contains NaN values")
-  | false => ()
-  }
-  let _ = switch hasInf {
-  | true => JsError.throwWithMessage("Error: Bullet chart data contains infinite values")
-  | false => ()
-  }
+  ensureNoNaN(values, "Error: Bullet chart data contains NaN values")
+  ensureNoInfinite(values, "Error: Bullet chart data contains infinite values")
 
   // Guard: negative values are not supported (bullet charts require positive values)
-  let hasNegative = values->Array.some(v => v < 0.0)
-  let _ = switch hasNegative {
-  | true => JsError.throwWithMessage("Error: Bullet chart does not support negative values. Filter out negative values before rendering.")
-  | false => ()
-  }
+  ensureNoNegative(values, "Error: Bullet chart does not support negative values. Filter out negative values before rendering.")
 
   // Guard: all-zero values
-  let _ = switch maxVal <= 0.0 {
-  | true => JsError.throwWithMessage("Error: Bullet chart requires at least one positive value to render")
-  | false => ()
-  }
-
-  let padStart = (str: string, len: int, ch: string): string => {
-    let sl = str->String.length
-    if sl >= len { str } else { Js.String.repeat(len - sl, ch) ++ str }
-  }
+  ensureAtLeastOnePositive(maxVal, "Error: Bullet chart requires at least one positive value to render")
 
   let maxKeyLength = data->Array.reduce(0, (acc, item) => {
     let label = item->config.key ++ " [" ++ item->config.value->Float.toString ++ "]"

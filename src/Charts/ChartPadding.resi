@@ -1,0 +1,6 @@
+/**
+ * F003-charts — Shared Text Padding Helpers (Public Interface)
+ */
+
+let padStart: (string, int, string) => string
+let padMid: (string, int) => string

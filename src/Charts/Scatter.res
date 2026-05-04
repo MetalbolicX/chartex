@@ -7,6 +7,8 @@
 open Types
 open Terminal
 open Options
+open ChartValidation
+open ChartPadding
 
 let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=?, ()): string => {
   // Guard: empty data
@@ -113,14 +115,10 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   let maxY = yVals->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
 
   // Guard: NaN or Infinity in computed ranges
-  let _ = switch Float.isNaN(minX) || Float.isNaN(maxX) || Float.isNaN(minY) || Float.isNaN(maxY) {
-  | true => JsError.throwWithMessage("Error: Scatter chart data contains NaN values")
-  | false => ()
-  }
-  let _ = switch !Float.isFinite(minX) || !Float.isFinite(maxX) || !Float.isFinite(minY) || !Float.isFinite(maxY) {
-  | true => JsError.throwWithMessage("Error: Scatter chart data contains infinite values")
-  | false => ()
-  }
+  ensureFinite(minX, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
+  ensureFinite(maxX, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
+  ensureFinite(minY, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
+  ensureFinite(maxY, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
 
   let yScale = switch maxY == minY {
   | true => 1.0
@@ -205,11 +203,6 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
       maxY -. i->Int.toFloat *. (maxY -. minY) /. (charHeight - 1)->Int.toFloat
     } else { minY }
     yLabels[i] = formatY(yValue, yDecimals)
-  }
-
-  let padStart = (str: string, len: int, ch: string): string => {
-    let sl = str->String.length
-    if sl >= len { str } else { Js.String.repeat(len - sl, ch) ++ str }
   }
 
   let yAxisWidth = ref(0)
