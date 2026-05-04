@@ -15,6 +15,13 @@ type cliOptions = {
   noHeader: bool,
 }
 
+type parsedArgs = {
+  options: cliOptions,
+  inputPath?: string,
+  help: bool,
+  version: bool,
+}
+
 type row = dict<JSON.t>
 
 type runResult = {

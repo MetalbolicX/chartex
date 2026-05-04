@@ -31,16 +31,19 @@ module Util = {
   type chartType = [#auto | #bar | #scatter | #sparkline]
 
   type cliValues = {
-    format: inputFormat,
-    chartType: chartType,
-    width?: int,
-    height?: int,
-    keyField?: string,
-    valueField?: string,
-    xKey?: string,
-    yKey?: string,
-    seriesField?: string,
-    noHeader: bool,
+    file?: string,
+    format?: string,
+    chart?: string,
+    width?: string,
+    height?: string,
+    key?: string,
+    value?: string,
+    @as("x-key") xKey?: string,
+    @as("y-key") yKey?: string,
+    series?: string,
+    @as("no-header") noHeader?: bool,
+    help?: bool,
+    version?: bool,
   }
 
   /**
