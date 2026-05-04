@@ -2,6 +2,7 @@
   "name": "chartex",
   "namespace": true,
   "sources": [
+    { "dir": "bin", "subdirs": true },
     { "dir": "test/res", "subdirs": true, "type": "dev" },
     { "dir": "src", "subdirs": true }
   ],

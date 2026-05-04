@@ -19,6 +19,9 @@
   },
   "module": "./dist/index.mjs",
   "main": "dist/main.mjs",
+  "bin": {
+    "chartex": "bin/ChartexCli.res.mjs"
+  },
   "types": "dist/index.d.mts",
   "scripts": {
     "docs": "docsify serve docs",
@@ -28,7 +31,8 @@
     "res:dev": "rescript watch",
     "res:clean": "rescript clean",
     "res:test": "retest ./test/res/*.res.mjs",
-    "bundle": "rolldown -c"
+    "bundle": "rolldown -c",
+    "cli:build": "npm run res:build && npm run bundle"
   },
   "author": {
     "name": "José Martínez Santana"
@@ -50,7 +54,8 @@
     "url": "https://github.com/MetalbolicX/chartex/issues"
   },
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "license": "MIT",
   "devDependencies": {
