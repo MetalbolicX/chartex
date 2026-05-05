@@ -108,13 +108,13 @@ type bulletOptions = {
 /**
  * Configuration for scatter plot data accessors.
  * Uses SEPARATE x and y accessors (not a single value accessor).
- * `series` identifies which series a data point belongs to — used for
+ * `key` identifies which series a data point belongs to — used for
  * grouping, per-series style assignment, and legend rendering.
  *
  * Source: src/types/types.ts → ScatterChartDatum + ScatterChartOptions
  */
 type scatterConfig<'data> = {
-  series: accessor<'data, string>,
+  key: accessor<'data, string>,
   x: accessor<'data, float>,
   y: accessor<'data, float>,
   style?: accessor<'data, string>,

@@ -128,13 +128,13 @@ let testBulletConfigWithOptionalBarWidth = () => {
  */
 let testScatterConfigRequiresXY = () => {
   let cfg: Types.scatterConfig<scatterData> = {
-    series: d => d.seriesName,
+    key: d => d.seriesName,
     x: d => d.coordX,
     y: d => d.coordY,
   }
 
   let data = {seriesName: "temperature", coordX: 10.5, coordY: 20.3}
-  isTextEqualTo("temperature", cfg.series(data), ~message="scatterConfig series accessor works")
+  isTextEqualTo("temperature", cfg.key(data), ~message="scatterConfig key accessor works")
   isIntEqualTo(10, cfg.x(data)->Float.toInt, ~message="scatterConfig x accessor works")
   isIntEqualTo(20, cfg.y(data)->Float.toInt, ~message="scatterConfig y accessor works")
 

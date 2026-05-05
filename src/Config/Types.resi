@@ -62,7 +62,7 @@ type bulletOptions = {
 // ─────────────────────────────────────────────────────────────
 
 type scatterConfig<'data> = {
-  series: accessor<'data, string>,
+  key: accessor<'data, string>,
   x: accessor<'data, float>,
   y: accessor<'data, float>,
   style?: accessor<'data, string>,

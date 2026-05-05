@@ -106,7 +106,7 @@ let testScatterHappyPath = () => {
     {seriesName: "alpha", coordX: 2.0, coordY: 4.0, pointStyle: "*"},
     {seriesName: "beta", coordX: 3.0, coordY: 1.0, pointStyle: "#"},
   ]
-  let config: Types.scatterConfig<scatterData> = {series: d => d.seriesName, x: d => d.coordX, y: d => d.coordY, style: d => d.pointStyle}
+  let config: Types.scatterConfig<scatterData> = {key: d => d.seriesName, x: d => d.coordX, y: d => d.coordY, style: d => d.pointStyle}
   let opts: Types.scatterOptions = {width: 30, height: 10, showLegend: false}
   let result = Scatter.make(data, ~config, ~options=opts, ())
   if result->String.includes("|") { passWith("Scatter: contains Y-axis bar") }
@@ -122,7 +122,7 @@ let testScatterLegend = () => {
     {seriesName: "CO2", coordX: 1.0, coordY: 400.0, pointStyle: "#"},
     {seriesName: "CO2", coordX: 2.0, coordY: 405.0, pointStyle: "#"},
   ]
-  let config: Types.scatterConfig<scatterData> = {series: d => d.seriesName, x: d => d.coordX, y: d => d.coordY, style: d => d.pointStyle}
+  let config: Types.scatterConfig<scatterData> = {key: d => d.seriesName, x: d => d.coordX, y: d => d.coordY, style: d => d.pointStyle}
   let opts: Types.scatterOptions = {width: 30, height: 10, showLegend: true}
   let result = Scatter.make(data, ~config, ~options=opts, ())
   if result->String.includes("temperature") { passWith("Scatter legend: contains first series name") }

@@ -1,16 +1,6 @@
-// import { bg, fg, scatter, bar, pie, type ScatterPlotDatum } from "../src/index.ts";
-
-// const scatterData: ScatterPlotDatum[] = [
-//   { key: "A", value: [1, 2], style: fg("red", "*") },
-//   { key: "B", value: [3, 4], style: fg("blue", "#") },
-//   { key: "C", value: [5, 6], style: fg("green", "+") },
-// ];
-
-// console.log(scatter(scatterData, { width: 15 }));
-// console.log("");
 import * as Chartex from "../dist/main.mjs";
 
-const { Bar, Ansi, Bullet, Pie, Donut } = Chartex;
+const { Bar, Ansi, Bullet, Pie, Donut, Gauge, Scatter } = Chartex;
 
 const salesData = [
   { country: "MX", amount: 5, style: Ansi.fg("Red", "*") },
@@ -81,26 +71,38 @@ const donutChartElectronic = Donut.make(
 
 console.log(donutChartElectronic + "\n");
 
-// const serverData = [
-//   { key: "Server A", value: 80, style: bg("green", 2) },
-//   { key: "Server B", value: 60, style: bg("yellow", 2) },
-//   { key: "Server C", value: 90, style: bg("red", 2) },
-// ];
+const CPUDate = [
+  { metric: "CPU Usage", value: 0.75 },
+]
 
-// console.log(bar(serverData, { barWidth: 3, height: 6 }));
-// console.log("");
+const gaugeChartCPU = Gauge.make(
+  CPUDate,
+  {
+    key: ({ metric }: { metric: string }) => metric,
+    value: ({ value }: { value: number }) => value,
+  },
+  { radius: 7 },
+);
 
-// const categorical = [
-//   { key: "Mexico", value: 5, style: "*" },
-//   { key: "USA", value: 7, style: "+" },
-//   { key: "Canada", value: 4, style: "#" },
-// ];
-// console.log("categorical:", bar(categorical, { height: 6 }));
-// console.log("");
+console.log(gaugeChartCPU + "\n");
 
-// const scatterRow: ScatterPlotDatum[] = [
-//   { key: "Mexico", value: [1, 5], style: fg("red", "*") },
-//   { key: "USA", value: [2, 7], style: fg("blue", "#") },
-//   { key: "Canada", value: [3, 4], style: fg("green", "+") },
-// ];
-// console.log("scatter:", scatter(scatterRow, { width: 15 }));
+const coordinates = [
+  { group: "A", x: 1, y: 2, style: Ansi.fg("Red", "*") },
+  { group: "A", x: 2, y: 3, style: Ansi.fg("Red", "*") },
+  { group: "B", x: 3, y: 1, style: Ansi.fg("Blue", "+") },
+  { group: "B", x: 4, y: 4, style: Ansi.fg("Blue", "+") },
+  { group: "C", x: 5, y: 2, style: Ansi.fg("Green", "#") },
+  { group: "C", x: 6, y: 3, style: Ansi.fg("Green", "#") },
+];
+
+const scatterChartCoordinates = Scatter.make(
+  coordinates,
+  {
+    key: ({ group }: { group: string }) => group,
+    x: ({ x }: { x: number }) => x,
+    y: ({ y }: { y: number }) => y,
+    style: ({ style }: { style: string }) => style,
+  },
+);
+
+console.log(scatterChartCoordinates + "\n");

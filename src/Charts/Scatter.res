@@ -39,7 +39,7 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   let seriesIndexMap: dict<int> = Dict.make()
   let seriesNameArr: array<string> = Array.make(~length=Array.length(data), "")
   data->Array.forEach(d => {
-    let name = config.series(d)
+    let name = config.key(d)
     switch Dict.get(seriesIndexMap, name) {
     | None =>
       let idx = seriesCount.contents
@@ -74,7 +74,7 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   let legendStyleArr: array<string> = Array.make(~length=numSeries, globalStyle)
   let legendStyleSet: dict<bool> = Dict.make()
   data->Array.forEach(d => {
-    let name = config.series(d)
+    let name = config.key(d)
     switch Dict.get(legendStyleSet, name) {
     | None =>
       switch Dict.get(seriesIndexMap, name) {
@@ -132,7 +132,7 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
     let xCol = linearScale(d->config.x, minX, maxX, 0.0, (charWidth - 1)->Int.toFloat)->Math.round->Float.toInt
     let yRow = charHeight - 1 - ((d->config.y -. minY) *. yScale)->Math.round->Float.toInt
     // Per-point style overrides series default when config.style is provided.
-    let pStyle = switch config.style { | Some(st) => st(d) | None => getSeriesStyle(config.series(d)) }
+    let pStyle = switch config.style { | Some(st) => st(d) | None => getSeriesStyle(config.key(d)) }
     if yRow >= 0 && yRow < charHeight && xCol >= 0 && xCol < charWidth {
       switch grid[yRow] { | Some(row) => row[xCol] = pStyle | None => () }
     }

@@ -11,7 +11,7 @@ let sparklineConfig: Types.sparklineConfig<Adapter.categoricalDatum> = {
 }
 
 let scatterConfig: Types.scatterConfig<Adapter.scatterDatum> = {
-  series: (d: Adapter.scatterDatum) => d.series,
+  key: (d: Adapter.scatterDatum) => d.series,
   x: d => d.x,
   y: d => d.y,
 }
