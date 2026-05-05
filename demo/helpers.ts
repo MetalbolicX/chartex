@@ -8,10 +8,9 @@
 
 // console.log(scatter(scatterData, { width: 15 }));
 // console.log("");
-import { A } from "@rescript/runtime/lib/es6/Belt_internalMapInt.js";
 import * as Chartex from "../dist/main.mjs";
 
-const { Bar, Ansi, Bullet } = Chartex;
+const { Bar, Ansi, Bullet, Pie, Donut } = Chartex;
 
 const salesData = [
   { country: "MX", amount: 5, style: Ansi.fg("Red", "*") },
@@ -30,13 +29,10 @@ const barChartSales = Bar.make(
 
 console.log(barChartSales + "\n");
 
-// console.log(bar(salesData, { barWidth: 3, height: 6 }));
-// console.log("");
-
 const departmentScores = [
-  { dept: "Sales", score: 85 },
-  { dept: "Marketing", score: 92 },
-  { dept: "Support", score: 78 },
+  { dept: "Sales", score: 85, style: Ansi.fg("Red", "█") },
+  { dept: "Marketing", score: 92, style: Ansi.fg("Blue", "+") },
+  { dept: "Support", score: 78, style: Ansi.fg("Green", "#") },
 ];
 
 const bulletChartCO2 = Bullet.make(
@@ -44,23 +40,46 @@ const bulletChartCO2 = Bullet.make(
   {
     key: ({ dept }: { dept: string }) => dept,
     value: ({ score }: { score: number }) => score,
+    style: ({ style }: { style: string }) => style,
   },
-  {
-    style: "█"
-  }
 );
 
-console.log(bulletChartCO2);
+console.log(bulletChartCO2 + "\n");
 
-// const monthlyData = [
-//   { key: "Jan", value: 100, style: "* " },
-//   { key: "Feb", value: 150, style: "+ " },
-//   { key: "Mar", value: 120, style: "# " },
-//   { key: "Apr", value: 180, style: "O " },
-// ];
+const monthlyData = [
+  { month: "Jan", value: 100, style: "* " },
+  { month: "Feb", value: 150, style: "+ " },
+  { month: "Mar", value: 120, style: "# " },
+  { month: "Apr", value: 180, style: "O " },
+];
 
-// console.log(pie(monthlyData, { left: 1 }));
-// console.log("");
+const pieChartMonthly = Pie.make(
+  monthlyData,
+  {
+    key: ({ month }: { month: string }) => month,
+    value: ({ value }: { value: number }) => value,
+    style: ({ style }: { style: string }) => style,
+  },
+);
+
+console.log(pieChartMonthly + "\n");
+
+const electronicData = [
+  { segment: "Desktop", pct: 45, style: Ansi.fg("Red", "*") },
+  { segment: "Mobile", pct: 35, style: Ansi.fg("Blue", "+") },
+  { segment: "Tablet", pct: 20, style: Ansi.fg("Green", "#") },
+];
+
+const donutChartElectronic = Donut.make(
+  electronicData,
+  {
+    key: ({ segment }: { segment: string }) => segment,
+    value: ({ pct }: { pct: number }) => pct,
+    style: ({ style }: { style: string }) => style,
+  },
+);
+
+console.log(donutChartElectronic + "\n");
 
 // const serverData = [
 //   { key: "Server A", value: 80, style: bg("green", 2) },
