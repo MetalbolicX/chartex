@@ -320,7 +320,7 @@ Scatter.make(data, config, options?): string
 
 ```ts
 type scatterConfig<T> = {
-  series: (item: T) => string,  // Extract the series label
+  key: (item: T) => string,     // Extract the series label
   x: (item: T) => number,       // Extract the X coordinate
   y: (item: T) => number,       // Extract the Y coordinate
   style?: (item: T) => string,  // Optional per-item style
