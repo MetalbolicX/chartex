@@ -82,7 +82,6 @@ let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?,
   }
 
   let result = ref("")
-  let innerRadiusSq = effectiveInnerRadius * effectiveInnerRadius
 
   for i in -radius to radius - 1 {
     if i != -radius {
@@ -98,6 +97,7 @@ let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?,
       if distSq < radiusSq {
         let angle = Math.atan2(~y=i->Int.toFloat, ~x=j->Int.toFloat) /. Math.Constants.pi *. 0.5 +. 0.5
         let normalizedAngle = if angle < 0.0 { angle +. 1.0 } else { angle }
+        let innerRadiusSq = effectiveInnerRadius * effectiveInnerRadius
         let isOuter = distSq > innerRadiusSq
 
         if isOuter {
