@@ -1,35 +1,45 @@
-Quick, high-signal hints for agents working in this repo
+# chartex
 
-Core facts
-- Node required: >=22.0.0 (package.json "engines"). Many tools and the bundle target ESM; use Node 22+.
-- Primary source language: ReScript (files under src/*.res, src/*.resi). Compiled-in-source outputs use the suffix .res.mjs (see rescript.json).
+Terminal ASCII data visualization library. ReScript → TypeScript build.
 
-What to run (exact)
-- Build ReScript sources: npm run res:build  (runs the `rescript` tool / compiles .res -> .res.mjs)
-- Bundle for runtime (produces dist/main.mjs): npm run bundle  (runs `rolldown -c` using rolldown.config.mjs)
-- Start the app (after bundle): npm run start  (runs `node dist/main.mjs`)
-- Run tests (ReScript test runner): npm run res:test  (tests expect compilation first; if in doubt run res:build then res:test)
-- Watch ReScript during development: npm run res:dev
-- Serve docs locally: npm run docs
+## Dev Commands
 
-Important ordering and gotchas
-- Do NOT trust npm run build — it runs `tsdown` (TypeScript legacy). The current ReScript flow is: npm run res:build && npm run bundle. If you only run `npm run build` the bundle/start will likely fail or be stale.
-- rescript.json has "namespace": true. Do not remove or change this lightly — module names will gain/lose the Chartex__ prefix and break imports/tests.
-- rescript.json uses in-source compilation and suffix ".res.mjs". The committed .res.mjs files in src/ are generated artifacts. Edit the .res source files, not the compiled .res.mjs files; run npm run res:build to regenerate.
-- rolldown.config.mjs expects entry src/index.mjs and emits dist/main.mjs. The bundle step depends on compiled .res.mjs modules being present under src/ (rescript build produces those).
-- The bundle excludes @rescript/runtime (external). @rescript/runtime is a dependency and must be present in node_modules during runtime and publishing.
+| Command | Purpose |
+|---------|---------|
+| `npm run build` | Build library (tsdown: TypeScript) |
+| `npm run bundle` | Bundle CLI (rolldown + minify) |
+| `npm run cli:build` | Full CLI build: rescript → bundle |
+| `npm run res:build` | Compile ReScript sources |
+| `npm run res:test` | Run ReScript tests (`retest`) |
+| `npm run start` | Run CLI entry: `node dist/main.mjs` |
 
-Quick file references (what I checked)
-- package.json — scripts and engines
-- rescript.json — namespace, in-source, suffix
-- rolldown.config.mjs — bundle input/output and externals
-- tsdown.config.mjs — legacy TypeScript bundler (leftover; used by npm run build)
+## Build Order (CLI)
 
-If something is failing
-- If start fails with missing dist/*: run npm run res:build && npm run bundle.
-- If imports resolve differently after changing rescript.json: run a full rescript build and re-bundle; expect module name changes.
+```
+rescript → tsdown → rolldown
+    ↓        ↓         ↓
+  .res   → .res.mjs → dist/main.mjs (minified)
+```
 
-If you're making changes to build config or publishing
-- The package.json `files` array includes only dist — ensure your bundle produces the expected files before publishing.
+## Architecture
 
-Keep it minimal: prefer executable sources of truth (package.json, rescript.json, rolldown.config.mjs) over docs.
+- **Source**: ReScript (`.res`) → compiled to `.res.mjs` (in-source)
+- **Entry**: `src/index.ts` → `dist/index.mjs` / `dist/index.cjs`
+- **CLI bin**: `bin/ChartexCli.res` → `bin/ChartexCli.res.mjs`
+- **Exports**: `src/index.mjs` re-exports all chart modules
+
+## Important Constraints
+
+- **Node**: >= 22.0.0 required
+- **Tests**: Use `rescript-test`, not Jest/Vitest
+- **ReScript suffix**: `.res.mjs` (compiled in-source, not `.js`)
+- **External**: `@rescript/runtime` must be external in rolldown bundle
+- **SDD specs**: In `specs/` directory
+
+## File Patterns
+
+- `src/**/*.res` → ReScript sources
+- `src/**/*.resi` → ReScript interfaces
+- `src/**/*.res.mjs` → compiled output
+- `test/res/**/*.res` → test sources
+- `dist/` → build output (published)

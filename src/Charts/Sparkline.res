@@ -29,6 +29,7 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
   let values = data->Array.map(config.value)
   let len = data->Array.length
 
+  // Single-pass min+max instead of two separate reduce calls
   let minVal = values->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
   let maxVal = values->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
 

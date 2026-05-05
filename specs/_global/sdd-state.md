@@ -1,49 +1,53 @@
 # SDD State
 
-## 5 Axes
+## Project Metadata
 
-**Domain Profile**: library
-**Interfaces**: library
-**Concerns**: none
-**Archetype**: none
-**Framework**: custom
-**Context Mode**: rebuild
-**Context Scale**: prototype × solo
-**Context Modifiers**: migration
+| Field | Value |
+|-------|-------|
+| **Project** | chartex |
+| **Origin** | rebuild |
+| **Artifact Language** | en |
+| **Created** | 2025-05-04 |
+| **Last Updated** | 2025-05-04 |
 
-## Project
+## Domain Profile
 
-**Project**: chartex
-**Origin**: rebuild
-**Source Path**: /home/metalbolicx/Documents/chartex
-**Scope**: full
-**Structure**: single-package
-**Artifact Language**: en
-**Created**: 2026-05-02
-**Last Updated**: 2026-05-02
+| Field | Value |
+|-------|-------|
+| **Interfaces** | library, cli |
+| **Concerns** | data-visualization, terminal-output |
+| **Archetype** | none |
+| **Scenario** | rebuild |
+| **Framework** | custom |
+| **Structure** | single-package |
+| **Source Path** | /home/metalbolicx/Documents/chartex |
+| **Scope** | core |
+| **Project Maturity** | production |
+| **Team Context** | solo |
 
 ## Feature Mapping
 
-| ID | Feature | Status | Tier | Release Group |
-|----|---------|--------|------|---------------|
-| F001 | Types | — | — | RG-1 |
-| F002 | Core | — | — | RG-2 |
-| F003 | Charts | — | — | RG-3 |
-| F004 | Barrel | — | — | RG-4 |
+| Feature ID | Feature Name | Tier | Status |
+|------------|--------------|------|--------|
+| F001 | core-types | T1 | — |
+| F002 | terminal-utils | T1 | — |
+| F003 | chart-rendering | T1 | — |
+| F004 | cli-interface | T2 | — |
+| F005 | bindings | T3 | — |
 
 ## Feature Progress
 
-| ID | specify | plan | tasks | analyze | implement | verify | merge |
-|----|---------|------|-------|---------|-----------|--------|-------|
-| F001 | — | — | — | — | — | — | — |
-| F002 | — | — | — | — | — | — | — |
-| F003 | — | — | — | — | — | — | — |
-| F004 | — | — | — | — | — | — | — |
+| Feature | Tier | Release Group | Specify | Plan | Tasks | Implement | Verify | Merge |
+|---------|------|---------------|----------|------|-------|-----------|--------|------|
+| F001-core-types | T1 | RG1 | — | — | — | — | — | — |
+| F002-terminal-utils | T1 | RG2 | — | — | — | — | — | — |
+| F003-chart-rendering | T1 | RG3 | — | — | — | — | — | — |
+| F004-cli-interface | T2 | RG3 | — | — | — | — | — | — |
+| F005-bindings | T3 | RG3 | — | — | — | — | — | — |
 
-## Demo Group Progress
+## Demo Groups
 
-| ID | Scenario | Status |
-|----|----------|--------|
-| DG-01 | Render a bar chart from JSON data | — |
-| DG-02 | Render a scatter plot with color styling | — |
-| DG-03 | Use all 7 chart types with helper functions | — |
+| Demo Group | Features | Status |
+|------------|----------|--------|
+| DG-01: Library Usage | F001, F002, F003 | — |
+| DG-02: CLI Usage | F001, F002, F003, F004 | — |

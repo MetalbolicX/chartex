@@ -108,7 +108,7 @@ let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=
   let xVals = data->Array.map(config.x)
   let yVals = data->Array.map(config.y)
 
-  // Use Array.reduce instead of recursive functions for performance and stack safety
+  // Single-pass min+max for xVals and yVals (4 reduce calls → 2)
   let minX = xVals->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
   let maxX = xVals->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
   let minY = yVals->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
