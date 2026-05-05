@@ -9,10 +9,9 @@
 
 - **Universal compatibility:** Works in any terminal, shell, or console—perfect for remote servers, CI pipelines, or local scripts.
 - **Instant data insight:** Quickly visualize logs, metrics, or trends without leaving your coding environment.
-- **No dependencies:** Lightweight and fast, with zero external requirements.
+- **Lightweight:** Minimal runtime footprint with only ReScript runtime as a dependency.
 - **Customizable:** Style your charts with different characters to match your workflow or terminal theme.
-- **TypeScript support:** Enjoy type safety and autocompletion for a smooth development experience.
-- **Easy integration:** Add charts to any Node.js, Deno, or browser-based JavaScript project in seconds.
+- **Easy integration:** Add charts to any Node.js or browser-based JavaScript project in seconds.
 
 If you need to see your data at a glance, automate reporting, or just want to make your terminal more fun and informative, chartex is the tool for you! 🚀
 
@@ -21,7 +20,6 @@ If you need to see your data at a glance, automate reporting, or just want to ma
 - **Text-Based Charts**: Create bar charts, line charts, and more using ASCII text characters.
 - **Terminal Compatibility**: Works in any terminal or console, making it ideal for command-line applications.
 - **Customizable Styles**: Easily customize the appearance of charts with different characters and styles.
-- **Lightweight**: No dependencies ensure fast performance and easy integration.
-- **For any JavaScript runtime**: Execute in any moder JavaScript runtime.
-- **TypeScript Support**: Fully typed with TypeScript for better development experience.
+- **Lightweight**: Minimal runtime footprint with only ReScript runtime as a dependency.
+- **For any JavaScript runtime**: Execute in any modern JavaScript runtime.
 - **Easy to Use**: Simple API for quick chart rendering.

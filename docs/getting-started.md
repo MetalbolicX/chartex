@@ -1,10 +1,10 @@
 # Getting Started
 
-**Chartex** can work in any JavaScript environment, including Node.js, Deno, Bun and browsers. To get started, you need to install the library and import it into your project.
+**Chartex** is a terminal ASCII data visualization library written in **ReScript** and compiled to **TypeScript**.
 
 ## For Node.js
 
-To work with Node.js, you must have version 20 or higher installed..
+To work with Node.js, you must have version 22.0.0 or higher installed.
 
 Check your Node.js version with the following command:
 
@@ -45,11 +45,6 @@ yarn init
 bun init
 ```
 
-#### **deno**
-```sh
-deno init
-```
-
 <!-- tabs:end -->
 
 
@@ -80,12 +75,6 @@ yarn add chartex
 ##### **bun**
 ```sh
 bun add chartex
-```
-
-
-#### **deno**
-```sh
-deno add --npm chartex
 ```
 
 <!-- tabs:end -->

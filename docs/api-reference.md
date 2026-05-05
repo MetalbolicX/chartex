@@ -1,591 +1,628 @@
 # API Reference
 
-This page documents the core functions and types of the chartex module to build various types of ASCII charts in the terminal and their configuration.
+This page documents the core modules and types of chartex — a terminal ASCII data visualization library written in ReScript and compiled to TypeScript.
 
-## Categorical Chart
+## Accessor Functions
 
-### `bar`
+Since chartex is built with ReScript, the API uses **accessor functions** instead of plain key-value objects. Accessors are functions that extract values from your data items at render time.
 
-Creates a vertical bar chart with bars representing data values. The chart displays bars vertically with values shown at the top and labels at the bottom.
-
-#### Signature
+Instead of passing `{ key: "A", value: 10 }`, you pass a **config** with functions:
 
 ```ts
-bar(data: BarChartDatum[], opts?: BarChartOptions): string
-```
-
-#### Parameters
-
-- `data` (`BarChartDatum[]`): An array of data points for the bar chart.
-- `opts` (`BarChartOptions`, optional): Configuration options for customizing the chart appearance.
-
-#### Types
-
-```ts
-interface BarChartDatum {
-  key: string;           // The label for the bar
-  value: number;         // The numeric value for the bar height
-  style?: string;        // Optional custom style character for this bar
-}
-
-interface BarChartOptions {
-  barWidth?: number;     // Width of each bar (default: 3)
-  left?: number;         // Left offset position (default: 1)
-  height?: number;       // Height of the chart (default: 40% of terminal height, min 6)
-  padding?: number;      // Padding between bars (default: 3)
-  style?: string;        // Default style character for bars (default: "*")
+// Tell chartex HOW to get the key and value from YOUR data shape
+const config = {
+  key: (item) => item.category,  // extract label
+  value: (item) => item.sales,   // extract number
 }
 ```
 
-#### Returns
+This means chartex works with **any data shape** — you never need to pre-transform your data.
 
-A string representation of the bar chart, which can be printed to the terminal.
-
-#### Examples
-
-##### Basic Bar Chart
+### Basic Example
 
 ```ts
-import { bar } from "chartex";
+import { Bar } from "chartex";
 
-const barData = [
-  { key: "A", value: 10, style: "*" },
-  { key: "B", value: 20, style: "#" },
-  { key: "C", value: 15, style: "+" }
+const salesData = [
+  { country: "Mexico", amount: 10 },
+  { country: "USA", amount: 20 },
+  { country: "Canada", amount: 15 },
 ];
 
-const chart = bar(barData, { height: 10 });
+const chart = Bar.make(salesData, {
+  key: (d) => d.country,
+  value: (d) => d.amount,
+});
+
 console.log(chart);
-// Outputs a vertical bar chart with the specified data and options
 ```
 
-##### Custom Bar Chart with Options
+### Optional Style Accessor
+
+You can also provide a style accessor for per-item styling:
 
 ```ts
-import { bar } from "chartex";
-
-const customData = [
-  { key: "Jan", value: 45, style: "█" },
-  { key: "Feb", value: 67 },
-  { key: "Mar", value: 82, style: "▓" },
-  { key: "Apr", value: 38 }
-];
-
-const options = {
-  barWidth: 4,
-  height: 8,
-  padding: 2,
-  style: "▒",
-  left: 2
-};
-
-console.log(bar(customData, options));
+const chart = Bar.make(data, {
+  key: (d) => d.category,
+  value: (d) => d.sales,
+  style: (d) => d.sales > 15 ? "█" : "▒",
+});
 ```
 
-### `bullet`
+### Why Accessors?
 
-Creates a horizontal bullet chart with bars representing data values. The chart displays horizontal bars with labels and values on the left side, making it ideal for comparing performance metrics or progress indicators.
+Accessors give you **type safety** and **flexibility** — your data stays in its natural shape, and the compiler verifies the accessors match your data at compile time.
+
+---
+
+## Categorical Charts
+
+### Bar
+
+Creates a vertical bar chart. Bars display vertically with values at the top and labels at the bottom.
 
 #### Signature
 
 ```ts
-bullet(data: BulletChartDatum[], opts?: BulletChartOptions): string
+Bar.make(data, config, options?): string
 ```
 
 #### Parameters
 
-- `data` (BulletChartDatum[]): An array of data points for the bullet chart.
-- `opts` (BulletChartOptions, optional): Configuration options for customizing the chart appearance.
+- `data` (`T[]`): Array of data items of any shape.
+- `config` (`barConfig<T>`): Accessor functions for your data.
+- `options` (`barOptions`, optional): Configuration for chart appearance.
 
 #### Types
 
 ```ts
-interface BulletChartDatum {
-  key: string;           // The label for the bullet
-  value: number;         // The numeric value for the bullet length
-  style?: string;        // Optional custom style character for this bullet
+type barConfig<T> = {
+  key: (item: T) => string,   // Extract the label
+  value: (item: T) => number, // Extract the numeric value
+  style?: (item: T) => string, // Optional per-item style
 }
 
-interface BulletChartOptions {
-  bulletWidth?: number;  // Width of each bullet (default: 3)
-  left?: number;         // Left offset position (default: 1)
-  height?: number;       // Height of the chart (default: 6)
-  padding?: number;      // Padding between bullets (default: 3)
-  style?: string;        // Default style character for bullets (default: "*")
+type barOptions = {
+  barWidth?: number,  // Width of each bar (default: 3)
+  left?: number,      // Left offset (default: 1)
+  height?: number,    // Chart height (default: 40% of terminal height, min 6)
+  padding?: number,   // Padding between bars (default: 3)
+  style?: string,     // Default style character (default: "*")
 }
 ```
 
 #### Returns
 
-A string representation of the bullet chart, which can be printed to the terminal.
+A string representation of the bar chart.
 
 #### Examples
 
-##### Basic Bullet Chart
-
 ```ts
-import { bullet } from "chartex";
+import { Bar } from "chartex";
 
-const performanceData = [
-  { key: "Sales", value: 85 },
-  { key: "Marketing", value: 92 },
-  { key: "Support", value: 78 },
-  { key: "Development", value: 96 }
+const data = [
+  { name: "Jan", total: 45 },
+  { name: "Feb", total: 67 },
+  { name: "Mar", total: 82 },
 ];
 
-console.log(bullet(performanceData));
+// Basic usage
+console.log(Bar.make(data, {
+  key: (d) => d.name,
+  value: (d) => d.total,
+}));
+
+// With options
+console.log(Bar.make(data, {
+  key: (d) => d.name,
+  value: (d) => d.total,
+  style: (d) => d.total > 60 ? "█" : "▒",
+}, { height: 10, padding: 2 }));
 ```
 
-##### Custom Bullet Chart with Options
+---
 
-```ts
-import { bullet } from "chartex";
+### Bullet
 
-const projectProgress = [
-  { key: "Frontend", value: 80, style: "█" },
-  { key: "Backend", value: 65, style: "▓" },
-  { key: "Testing", value: 45, style: "▒" },
-  { key: "Documentation", value: 30, style: "░" }
-];
-
-const options = {
-  width: 15,
-  barWidth: 2,
-  padding: 2,
-  left: 2
-};
-
-console.log(bullet(projectProgress, options));
-```
-
-### `donut`
-
-Creates a donut chart with a hollow center, representing data as segments around a circle. The chart displays percentages and labels for each data segment, with customizable styling and positioning.
+Creates a horizontal bullet chart. Displays horizontal bars with labels and values on the left side — ideal for comparing performance metrics or progress indicators.
 
 #### Signature
 
 ```ts
-donut(data: DonutChartDatum[], opts?: DonutChartOptions): string
+Bullet.make(data, config, options?): string
 ```
-
-#### Parameters
-
-- `data` (DonutChartDatum[]): An array of data points for the donut chart.
-- `opts` (DonutChartOptions, optional): Configuration options for customizing the chart appearance.
 
 #### Types
 
 ```ts
-interface DonutChartDatum {
-  key: string;           // The label for the segment
-  value: number;         // The numeric value for the segment
-  style?: string;        // Optional custom style character for this segment
+type bulletConfig<T> = {
+  key: (item: T) => string,     // Extract the label
+  value: (item: T) => number,   // Extract the numeric value
+  style?: (item: T) => string,  // Optional per-item style
+  barWidth?: (item: T) => number, // Optional per-item bar width
 }
 
-interface DonutChartOptions {
-  radius?: number;       // Radius of the donut (default: 5)
-  innerRadius?: number;  // Inner radius for the hollow center (default: 2)
-  left?: number;         // Left offset position (default: 1)
-  padding?: number;      // Padding around the chart (default: 1)
-  style?: string;        // Default style character for segments (default: "*")
-  showPercentage?: boolean; // Whether to show percentage values (default: true)
-  showLabels?: boolean;  // Whether to show labels (default: true)
+type bulletOptions = {
+  barWidth?: number, // Width of each bar (default: 3)
+  style?: string,    // Default style character (default: "*")
+  left?: number,     // Left offset (default: 1)
+  width?: number,    // Total width
+  padding?: number,  // Padding between bars (default: 3)
 }
 ```
 
-#### Returns
-
-A string representation of the donut chart, which can be printed to the terminal.
-
-#### Examples
-
-##### Basic Donut Chart
+#### Example
 
 ```ts
-import { donut } from "chartex";
+import { Bullet } from "chartex";
 
-const marketShareData = [
-  { key: "Desktop", value: 45 },
-  { key: "Mobile", value: 35 },
-  { key: "Tablet", value: 20 }
+const data = [
+  { dept: "Sales", score: 85 },
+  { dept: "Marketing", score: 92 },
+  { dept: "Support", score: 78 },
 ];
 
-console.log(donut(marketShareData));
+console.log(Bullet.make(data, {
+  key: (d) => d.dept,
+  value: (d) => d.score,
+}, { width: 20 }));
 ```
 
-##### Custom Donut Chart with Options
+---
 
-```ts
-import { donut } from "chartex";
+### Donut
 
-const budgetData = [
-  { key: "Salaries", value: 60, style: "█" },
-  { key: "Marketing", value: 25, style: "▓" },
-  { key: "Operations", value: 15, style: "▒" }
-];
-
-const options = {
-  radius: 7,
-  innerRadius: 3,
-  left: 3,
-  padding: 2,
-  showPercentage: true,
-  showLabels: true
-};
-
-console.log(donut(budgetData, options));
-```
-
-### `gauge`
-
-Creates a gauge chart to display a single value as a semi-circular meter. The chart shows a value as a filled arc within a semi-circle, with percentage display and customizable styling, ideal for showing progress, performance metrics, or completion status.
+Creates a donut chart with a hollow center, representing data as segments around a circle. Displays percentages and labels in a legend.
 
 #### Signature
 
 ```ts
-gauge(data: GaugeChartDatum[], opts?: GaugeChartOptions): string
+Donut.make(data, config, options?): string
 ```
-
-#### Parameters
-
-- `data` (GaugeChartDatum[]): An array containing a single data point for the gauge chart.
-- `opts` (GaugeChartOptions, optional): Configuration options for customizing the gauge appearance.
 
 #### Types
 
 ```ts
-interface GaugeChartDatum {
-  key: string;           // The label for the gauge
-  value: number;         // The numeric value (0-1 representing 0-100%)
-  style?: string;        // Optional custom style character for the filled portion
+type donutConfig<T> = {
+  key: (item: T) => string,     // Extract the label
+  value: (item: T) => number,   // Extract the numeric value
+  style?: (item: T) => string,  // Optional per-item style
 }
 
-interface GaugeChartOptions {
-  radius?: number;       // Radius of the gauge (default: 5)
-  left?: number;         // Left offset position (default: 2)
-  style?: string;        // Default style character for filled portion (default: "# ")
-  bgStyle?: string;      // Background style character for unfilled portion (default: "+ ")
+type donutOptions = {
+  radius?: number,      // Radius of the donut (default: 5)
+  left?: number,        // Left offset (default: 1)
+  innerRadius?: number, // Inner radius for hollow center (default: 2)
 }
 ```
 
-#### Returns
-
-A string representation of the gauge chart, which can be printed to the terminal.
-
-#### Examples
-
-##### Basic Gauge Chart
+#### Example
 
 ```ts
-import { gauge } from "chartex";
+import { Donut } from "chartex";
 
-const performanceData = [
-  { key: "CPU Usage", value: 0.75 }
+const data = [
+  { segment: "Desktop", pct: 45 },
+  { segment: "Mobile", pct: 35 },
+  { segment: "Tablet", pct: 20 },
 ];
 
-console.log(gauge(performanceData));
+console.log(Donut.make(data, {
+  key: (d) => d.segment,
+  value: (d) => d.pct,
+}, { radius: 6 }));
 ```
 
-##### Custom Gauge Chart with Options
+---
 
-```ts
-import { gauge } from "chartex";
+### Gauge
 
-const batteryData = [
-  { key: "Battery Level", value: 0.42, style: "█ " }
-];
-
-const options = {
-  radius: 7,
-  left: 3,
-  bgStyle: "░ ",
-  style: "▓ "
-};
-
-console.log(gauge(batteryData, options));
-```
-
-##### Multiple Gauge Examples
-
-```ts
-import { gauge } from "chartex";
-
-// Low value example
-const lowValueData = [{ key: "Progress", value: 0.25 }];
-console.log(gauge(lowValueData));
-
-// High value example
-const highValueData = [{ key: "Completion", value: 0.90 }];
-console.log(gauge(highValueData));
-
-// Custom styling
-const customData = [{ key: "Score", value: 0.68, style: "●●" }];
-const customOptions = {
-  radius: 6,
-  bgStyle: "○○",
-  left: 4
-};
-console.log(gauge(customData, customOptions));
-```
-
-### `pie`
-
-Creates a pie chart representing data as segments of a circle. The chart displays each data value as a proportional slice of the pie, with a legend showing labels, values, and percentages for each segment.
+Creates a semi-circular gauge meter to display a single value. Shows the value as a filled arc with percentage display — ideal for progress, performance metrics, or completion status.
 
 #### Signature
 
 ```ts
-pie(data: PieChartDatum[], opts?: PieChartOptions): string
+Gauge.make(data, config, options?): string
 ```
-
-#### Parameters
-
-- `data` (PieChartDatum[]): An array of data points for the pie chart.
-- `opts` (PieChartOptions, optional): Configuration options for customizing the chart appearance.
 
 #### Types
 
 ```ts
-interface PieChartDatum {
-  key: string;           // The label for the pie segment
-  value: number;         // The numeric value for the segment
-  style?: string;        // Optional custom style character for this segment
+type gaugeConfig<T> = {
+  key: (item: T) => string,     // Extract the label
+  value: (item: T) => number,   // Extract the numeric value (0–1)
+  style?: (item: T) => string,  // Optional per-item style
 }
 
-interface PieChartOptions {
-  radius?: number;       // Radius of the pie chart (default: 4)
-  left?: number;         // Left offset position (default: 0)
-  innerRadius?: number;  // Inner radius (used for donut charts, default: 1)
+type gaugeOptions = {
+  radius?: number,  // Radius of the gauge (default: 5)
+  left?: number,    // Left offset (default: 2)
+  style?: string,   // Style for filled portion (default: "# ")
+  bgStyle?: string, // Style for unfilled portion (default: "+ ")
 }
 ```
 
-#### Returns
-
-A string representation of the pie chart, which can be printed to the terminal.
-
-#### Examples
-
-##### Basic Pie Chart
+#### Example
 
 ```ts
-import { pie } from "chartex";
+import { Gauge } from "chartex";
 
-const expenseData = [
-  { key: "Housing", value: 1200, style: "██" },
-  { key: "Food", value: 800, style: "▓▓" },
-  { key: "Transport", value: 400, style: "▒▒" },
-  { key: "Entertainment", value: 300, style: "░░" }
+const data = [
+  { metric: "CPU Usage", value: 0.75 },
 ];
 
-console.log(pie(expenseData));
+console.log(Gauge.make(data, {
+  key: (d) => d.metric,
+  value: (d) => d.value,
+}, { radius: 6 }));
 ```
 
-##### Custom Pie Chart with Options
+---
 
-```ts
-import { pie } from "chartex";
+### Pie
 
-const surveyData = [
-  { key: "Very Satisfied", value: 45, style: "██" },
-  { key: "Satisfied", value: 35, style: "▓▓" },
-  { key: "Neutral", value: 15, style: "▒▒" },
-  { key: "Dissatisfied", value: 5, style: "░░" }
-];
-
-const options = {
-  radius: 6,
-  left: 2
-};
-
-console.log(pie(surveyData, options));
-```
-
-##### Multiple Pie Chart Examples
-
-```ts
-import { pie } from "chartex";
-
-// Market share data
-const marketData = [
-  { key: "Chrome", value: 65, style: "██" },
-  { key: "Firefox", value: 18, style: "▓▓" },
-  { key: "Safari", value: 12, style: "▒▒" },
-  { key: "Edge", value: 5, style: "░░" }
-];
-
-console.log(pie(marketData));
-
-// Small pie chart
-const smallData = [
-  { key: "Yes", value: 70, style: "██" },
-  { key: "No", value: 30, style: "▒▒" }
-];
-
-const smallOptions = { radius: 3, left: 1 };
-console.log(pie(smallData, smallOptions));
-```
-
-## Numerical Chart
-
-### `scatter`
-
-Creates a scatter plot chart to display data points as coordinates on a two-dimensional grid. The chart shows individual data points with customizable styling and includes labeled axes with scales.
+Creates a pie chart representing data as segments of a circle. Displays each value as a proportional slice with a legend showing labels, values, and percentages.
 
 #### Signature
 
 ```ts
-scatter(data: ScatterPlotDatum[], options?: ScatterPlotOptions): string
+Pie.make(data, config, options?): string
 ```
-
-#### Parameters
-
-- `data` (`ScatterPlotDatum[]`): An array of data points for the scatter plot.
-- `options` (`ScatterPlotOptions`, optional): Configuration options for customizing the chart appearance.
 
 #### Types
 
 ```ts
-interface ScatterPlotDatum {
-  key: string;             // The label/category for the data point
-  value: [number, number]; // The [x, y] coordinates for the point
-  style?: string;          // Optional custom style character for this point
+type pieConfig<T> = {
+  key: (item: T) => string,     // Extract the label
+  value: (item: T) => number,   // Extract the numeric value
+  style?: (item: T) => string,  // Optional per-item style
 }
 
-interface ScatterPlotOptions {
-  width?: number;          // Width of the plot area (default: 60% of terminal width, min 10)
-  height?: number;         // Height of the plot area (default: 30% of terminal height, min 8)
-  style?: string;          // Default style character for points (default: "*")
-  // left?: number;        // (reserved for future use)
+type pieOptions = {
+  radius?: number,      // Radius of the pie (default: 4)
+  left?: number,        // Left offset (default: 0)
+  innerRadius?: number, // Inner radius for donut effect (default: 0)
 }
 ```
 
-#### Returns
-
-A string representation of the scatter plot chart, which can be printed to the terminal.
-
-#### Examples
-
-##### Basic Scatter Plot
+#### Example
 
 ```ts
-import { scatter } from "chartex";
+import { Pie } from "chartex";
 
-const scatterData = [
-  { key: "A", value: [1, 2], style: "*" },
-  { key: "B", value: [2, 3], style: "*" },
-  { key: "C", value: [3, 1], style: "*" }
+const data = [
+  { category: "Housing", amount: 1200 },
+  { category: "Food", amount: 800 },
+  { category: "Transport", amount: 400 },
 ];
 
-const chart = scatter(scatterData, { width: 20, height: 10 });
+console.log(Pie.make(data, {
+  key: (d) => d.category,
+  value: (d) => d.amount,
+}, { radius: 5 }));
+```
+
+---
+
+## Numerical Charts
+
+### Scatter
+
+Creates a scatter plot displaying data points as coordinates on a two-dimensional grid. Includes labeled axes with scales.
+
+#### Signature
+
+```ts
+Scatter.make(data, config, options?): string
+```
+
+#### Types
+
+```ts
+type scatterConfig<T> = {
+  series: (item: T) => string,  // Extract the series label
+  x: (item: T) => number,       // Extract the X coordinate
+  y: (item: T) => number,       // Extract the Y coordinate
+  style?: (item: T) => string,  // Optional per-item style
+}
+
+type scatterOptions = {
+  width?: number,      // Width of the plot area (default: 60% of terminal width, min 10)
+  height?: number,     // Height of the plot area (default: 30% of terminal height, min 8)
+  style?: string,      // Default style for points (default: "*")
+  showLegend?: boolean, // Whether to show the legend
+}
+```
+
+#### Example
+
+```ts
+import { Scatter } from "chartex";
+
+const data = [
+  { group: "A", x: 1, y: 2 },
+  { group: "B", x: 3, y: 4 },
+  { group: "C", x: 2, y: 5 },
+];
+
+console.log(Scatter.make(data, {
+  series: (d) => d.group,
+  x: (d) => d.x,
+  y: (d) => d.y,
+}, { width: 20, height: 10 }));
+```
+
+---
+
+### Sparkline
+
+Creates a compact, inline sparkline chart representing a series of numeric values as a sequence of bar characters. Ideal for visualizing trends in small spaces like tables or dashboards.
+
+#### Signature
+
+```ts
+Sparkline.make(data, config, options?): string
+```
+
+#### Types
+
+```ts
+type sparklineConfig<T> = {
+  key: (item: T) => string,     // Extract the label
+  value: (item: T) => number,   // Extract the numeric value
+  style?: (item: T) => string,  // Optional per-item style
+}
+
+type sparklineOptions = {
+  width?: number,      // Width of the sparkline (default: data.length)
+  height?: number,     // Height of the sparkline (default: 8)
+  tolerance?: number,  // Tolerance for interpolation (default: 1)
+  style?: string,      // Default style character (default: "*")
+  yAxisChar?: string,  // Character for the y-axis (default: "|")
+}
+```
+
+#### Example
+
+```ts
+import { Sparkline } from "chartex";
+
+const data = [
+  { label: "Mon", value: 10 },
+  { label: "Tue", value: 25 },
+  { label: "Wed", value: 15 },
+  { label: "Thu", value: 30 },
+  { label: "Fri", value: 20 },
+];
+
+console.log(Sparkline.make(data, {
+  key: (d) => d.label,
+  value: (d) => d.value,
+}, { width: 12, height: 6 }));
+```
+
+---
+
+## Utility Modules
+
+Utility modules provide terminal detection, ANSI formatting, JSON handling, and validation. They are available alongside chart modules.
+
+---
+
+### Types
+
+```ts
+import { Types } from "chartex";
+```
+
+All type definitions for chart configs and options.
+
+```ts
+// Chart configs (accessor-based)
+type barConfig<T>        = { key: (T) => string, value: (T) => number, style?: (T) => string }
+type bulletConfig<T>     = { key: (T) => string, value: (T) => number, style?: (T) => string, barWidth?: (T) => number }
+type donutConfig<T>      = { key: (T) => string, value: (T) => number, style?: (T) => string }
+type gaugeConfig<T>      = { key: (T) => string, value: (T) => number, style?: (T) => string }
+type pieConfig<T>        = { key: (T) => string, value: (T) => number, style?: (T) => string }
+type scatterConfig<T>    = { series: (T) => string, x: (T) => number, y: (T) => number, style?: (T) => string }
+type sparklineConfig<T>  = { key: (T) => string, value: (T) => number, style?: (T) => string }
+
+// Chart options
+type barOptions          = { barWidth?: number, left?: number, height?: number, padding?: number, style?: string }
+type bulletOptions       = { barWidth?: number, style?: string, left?: number, width?: number, padding?: number }
+type donutOptions        = { radius?: number, left?: number, innerRadius?: number }
+type gaugeOptions        = { radius?: number, left?: number, style?: string, bgStyle?: string }
+type pieOptions          = { radius?: number, left?: number, innerRadius?: number }
+type scatterOptions      = { width?: number, height?: number, style?: string, showLegend?: boolean }
+type sparklineOptions    = { width?: number, height?: number, tolerance?: number, style?: string, yAxisChar?: string }
+
+// Color palette
+type backgroundColor = "Black" | "Red" | "Green" | "Yellow" | "Blue" | "Magenta" | "Cyan" | "White"
+```
+
+---
+
+### Ansi
+
+```ts
+import { Ansi } from "chartex";
+```
+
+ANSI escape code helpers for terminal coloring and cursor movement.
+
+#### Coloring
+
+```ts
+Ansi.bg(color: backgroundColor, length: number): string
+```
+
+Returns `length` space characters filled with the given ANSI background color.
+
+```ts
+Ansi.fg(color: backgroundColor, style: string): string
+```
+
+Wraps `style` in the given ANSI foreground color and resets at the end.
+
+**Accepted colors** — use one of:
+
+| Value | Background | Foreground |
+|-------|-----------|------------|
+| `"Black"` | 40 | 30 |
+| `"Red"` | 41 | 31 |
+| `"Green"` | 42 | 32 |
+| `"Yellow"` | 43 | 33 |
+| `"Blue"` | 44 | 34 |
+| `"Magenta"` | 45 | 35 |
+| `"Cyan"` | 46 | 36 |
+| `"White"` | 47 | 37 |
+
+Both functions return raw ANSI escape sequences. The library handles reset (`\x1b[0m`) automatically, so you can safely concatenate outputs with non-colored text.
+
+#### Cursor Movement
+
+| Function | Signature | Output | Description |
+|----------|-----------|--------|-------------|
+| `curForward` | `(step: number) => string` | `\x1b[{n}C` | Move cursor right by `step` columns |
+| `curBack` | `(step: number) => string` | `\x1b[{n}D` | Move cursor left by `step` columns |
+| `curUp` | `(step: number) => string` | `\x1b[{n}A` | Move cursor up by `step` rows |
+| `curDown` | `(step: number) => string` | `\x1b[{n}B` | Move cursor down by `step` rows |
+
+#### Example — Colored Chart
+
+```ts
+import { Bar, Ansi } from "chartex";
+
+const data = [
+  { label: "High",   value: 90 },
+  { label: "Medium", value: 60 },
+  { label: "Low",    value: 30 },
+];
+
+const chart = Bar.make(data, {
+  key:   (d) => d.label,
+  value: (d) => d.value,
+  style: (d) =>
+    d.value >= 80 ? Ansi.fg("Green", "█") :
+    d.value >= 50 ? Ansi.fg("Yellow", "█") :
+                   Ansi.fg("Red", "█"),
+});
+
 console.log(chart);
-// Outputs a grid-based scatter plot with the specified data and options
 ```
 
-##### Custom Scatter Plot
+---
+
+### Terminal
 
 ```ts
-import { scatter } from "chartex";
-
-const performanceData = [
-  { key: "Team A", value: [3, 4], style: "██" },
-  { key: "Team B", value: [5, 6], style: "▓▓" },
-  { key: "Team C", value: [2, 8], style: "▒▒" },
-  { key: "Team D", value: [7, 5], style: "░░" }
-];
-
-const options = {
-  width: 12,
-  height: 8,
-  style: "●"
-};
-
-console.log(scatter(performanceData, options));
+import { Terminal } from "chartex";
 ```
 
-### `sparkline`
-
-Creates a compact, inline sparkline chart representing a series of numeric values as a sequence of Unicode bar characters. Sparklines are ideal for visualizing trends or patterns in small spaces, such as tables or dashboards.
-
-#### Signature
+Terminal dimension detection.
 
 ```ts
-sparkline(data: SparklineDatum[], opts?: SparklineOptions): string
+Terminal.width(): number | undefined
 ```
 
-#### Parameters
-
-- `data` (SparklineDatum[]): An array of data points for the sparkline.
-- `opts` (SparklineOptions, optional): Configuration options for customizing the sparkline appearance.
-
-#### Types
+Returns the terminal width in columns (characters), or `undefined` if stdout is not a TTY.
 
 ```ts
-interface SparklineDatum {
-  key: string;           // The label for the sparkline point (optional, not used for rendering)
-  value: number;         // The numeric value for the sparkline point
-  style?: string;        // Optional custom style character for this point
+Terminal.height(): number | undefined
+```
+
+Returns the terminal height in rows (lines), or `undefined` if stdout is not a TTY.
+
+#### Example
+
+```ts
+import { Terminal } from "chartex";
+
+const cols = Terminal.width();   // e.g. 80
+const rows = Terminal.height();  // e.g. 24
+```
+
+Chart functions use these automatically to set default dimensions — you usually do not need to call them directly.
+
+---
+
+### Json
+
+```ts
+import { Json } from "chartex";
+```
+
+ReScript JSON variant type and accessors. Useful for type-safe JSON traversal in ReScript contexts.
+
+#### Type
+
+```ts
+type json =
+  | JObject(Dict<json>)
+  | JArray(json[])
+  | JString(string)
+  | JNumber(number)
+  | JBool(boolean)
+  | JNull
+```
+
+#### Accessors
+
+Each accessor extracts the value from a specific variant. Throws if the variant does not match.
+
+| Function | Signature | Returns | Throws If |
+|----------|-----------|---------|-----------|
+| `Json.string` | `(j: json) => string` | The inner string | `j` is not `JString` |
+| `Json.number` | `(j: json) => number` | The inner number | `j` is not `JNumber` |
+| `Json.bool` | `(j: json) => boolean` | The inner boolean | `j` is not `JBool` |
+| `Json.array` | `(j: json) => json[]` | The inner array | `j` is not `JArray` |
+| `Json.object_` | `(j: json) => Dict<json>` | The inner dictionary | `j` is not `JObject` |
+
+> Note: `object_` has a trailing underscore because `object` is a reserved word in JavaScript.
+
+---
+
+### Validate
+
+```ts
+import { Validate } from "chartex";
+```
+
+JSON data structure validation.
+
+```ts
+Validate.data(json: Json.json): boolean
+```
+
+Validates that a `Json.json` value is a well-structured chart dataset — specifically, that it is a `JArray` of `JObject` entries. Returns `true` if valid, `false` otherwise.
+
+#### Example
+
+```ts
+import { Validate, Json } from "chartex";
+
+const raw = JSON.parse(`[{"name":"A","value":10}]`);
+// In ReScript flows where data enters as Json.json:
+if (Validate.data(raw)) {
+  // safe to access raw via Json.array(raw), etc.
 }
-
-interface SparklineOptions {
-  width?: number;        // Width of the sparkline (default: data.length)
-  height?: number;       // Height of the sparkline (default: 8)
-  tolerance?: number;    // Tolerance for interpolation (default: 1)
-  style?: string;        // Default style character for points (default: "*")
-  yAxisChar?: string;    // Character for the y-axis (default: "|")
-}
 ```
 
-#### Returns
+---
 
-A string representation of the sparkline, which can be printed inline in the terminal.
-
-#### Examples
-
-##### Basic Sparkline
+### CLI Modules
 
 ```ts
-import { sparkline } from "chartex";
-
-const trendData = [
-  { value: 10 },
-  { value: 20 },
-  { value: 15 },
-  { value: 30 },
-  { value: 25 },
-  { value: 35 },
-  { value: 40 },
-  { value: 30 },
-  { value: 20 },
-  { value: 25 }
-];
-
-console.log(sparkline(trendData));
+import { CliTypes, CliArgs, CliStreamIO, CliParser, CliAdapter, CliMain } from "chartex";
 ```
 
-##### Custom Sparkline with Styles
+Internal modules used by the CLI (`npx chartex`). Exported for programmatic use but primarily intended for CLI operation.
 
-```ts
-import { sparkline } from "chartex";
-
-const customTrend = [
-  { value: 10, style: "░" },
-  { value: 20, style: "▒" },
-  { value: 15, style: "▓" },
-  { value: 30, style: "█" },
-  { value: 25 },
-  { value: 35 },
-  { value: 40, style: "█" },
-  { value: 30 },
-  { value: 20 },
-  { value: 25 }
-];
-
-const options = {
-  width: 12,
-  height: 6,
-  style: "*",
-  yAxisChar: "|"
-};
-
-console.log(sparkline(customTrend, options));
-```
+| Module | Purpose |
+|--------|---------|
+| `CliTypes` | Type definitions for CLI options and parsed args |
+| `CliArgs` | Argument parsing using `parseArgs` from `node:util` |
+| `CliStreamIO` | Stdin/stdout stream I/O with event-based reading |
+| `CliParser` | Input format detection and parsing (JSON, NDJSON, CSV) |
+| `CliAdapter` | Adapts parsed rows into chart module data structures |
+| `CliMain` | Entry point routing adapted data to the appropriate renderer |
