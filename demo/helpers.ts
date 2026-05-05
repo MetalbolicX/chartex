@@ -55,9 +55,9 @@ const pieChartMonthly = Pie.make(
 console.log(pieChartMonthly + "\n");
 
 const electronicData = [
-  { segment: "Desktop", pct: 45, style: Ansi.fg("Red", "*") },
-  { segment: "Mobile", pct: 35, style: Ansi.fg("Blue", "+") },
-  { segment: "Tablet", pct: 20, style: Ansi.fg("Green", "#") },
+  { segment: "Desktop", pct: 45, style: Ansi.fg("Red", "* ") },
+  { segment: "Mobile", pct: 35, style: Ansi.fg("Blue", "+ ") },
+  { segment: "Tablet", pct: 20, style: Ansi.fg("Green", "# ") },
 ];
 
 const donutChartElectronic = Donut.make(

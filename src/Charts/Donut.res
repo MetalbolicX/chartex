@@ -29,7 +29,7 @@ let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?,
   let values = data->Array.map(config.value)
 
   // Handle optional style: use round-robin defaults if not provided
-  let defaultStyles = ["●", "○", "◆", "◇", "■", "□"]
+  let defaultStyles = ["● ", "○ ", "◆ ", "◇ ", "■ ", "□ "]
   let styles = switch config.style {
   | Some(styleFn) => data->Array.map(styleFn)
   | None =>
