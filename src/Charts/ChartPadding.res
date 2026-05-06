@@ -4,6 +4,10 @@
  * Reusable string padding helpers used across chart renderers.
  */
 
+let ansiRe = RegExp.fromString("\\x1b\\[[0-9;]*m")
+
+let stripAnsi = (s: string): string => s->String.replaceRegExp(ansiRe, "")
+
 let padStart = (str: string, len: int, ch: string): string => {
   let sl = str->String.length
   if sl >= len { str } else { Js.String.repeat(len - sl, ch) ++ str }
