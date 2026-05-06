@@ -1,0 +1,8 @@
+[
+  {"department": "Engineering", "revenue": 120000, "growth": 15},
+  {"department": "Sales", "revenue": 95000, "growth": 8},
+  {"department": "Marketing", "revenue": 78000, "growth": 12},
+  {"department": "Product", "revenue": 110000, "growth": 20},
+  {"department": "Support", "revenue": 45000, "growth": 5},
+  {"department": "Operations", "revenue": 62000, "growth": 3}
+]

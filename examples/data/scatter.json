@@ -1,0 +1,17 @@
+[
+  {"x": 1, "y": 5, "series": "Group A", "value": 10},
+  {"x": 2, "y": 7, "series": "Group A", "value": 15},
+  {"x": 3, "y": 4, "series": "Group A", "value": 8},
+  {"x": 4, "y": 9, "series": "Group A", "value": 20},
+  {"x": 5, "y": 6, "series": "Group A", "value": 12},
+  {"x": 1, "y": 3, "series": "Group B", "value": 6},
+  {"x": 2, "y": 5, "series": "Group B", "value": 10},
+  {"x": 3, "y": 2, "series": "Group B", "value": 4},
+  {"x": 4, "y": 7, "series": "Group B", "value": 14},
+  {"x": 5, "y": 4, "series": "Group B", "value": 8},
+  {"x": 1, "y": 8, "series": "Group C", "value": 16},
+  {"x": 2, "y": 6, "series": "Group C", "value": 12},
+  {"x": 3, "y": 9, "series": "Group C", "value": 18},
+  {"x": 4, "y": 5, "series": "Group C", "value": 10},
+  {"x": 5, "y": 3, "series": "Group C", "value": 6}
+]
