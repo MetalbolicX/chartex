@@ -39,7 +39,7 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
 
   let result = ref(Js.String.repeat(left, " "))
 
-  let ansiRe = Js.Re.fromString("\\x1b\\[[0-9;]*m")
+  let ansiRe = RegExp.fromString("\\x1b\\[[0-9;]*m")
   let stripAnsi = (s: string): string => s->String.replaceRegExp(ansiRe, "")
 
   for i in 0 to chartHeight + 1 {
@@ -67,11 +67,10 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
       if padChar == valStr {
         result := result.contents ++ padMidVisual(valStr, colWidth, ~visibleLen=valStr->String.length, ()) ++ Js.String.repeat(padding, " ")
       } else if i != chartHeight + 1 {
-        let visibleSym = stripAnsi(padChar)
-        let barBody = Js.String.repeat(barWidth, visibleSym)
-        result := result.contents ++ padMidVisual(barBody, colWidth, ~visibleLen=barWidth, ()) ++ Js.String.repeat(padding, " ")
+        let barBodyRaw = Js.String.repeat(barWidth, padChar)
+        result := result.contents ++ padMidVisual(barBodyRaw, colWidth, ~visibleLen=barWidth, ()) ++ Js.String.repeat(padding, " ")
       } else {
-        result := result.contents ++ padMid(key, colWidth) ++ Js.String.repeat(padding, " ")
+        result := result.contents ++ padMidVisual(key, colWidth, ~visibleLen=stripAnsi(key)->String.length, ()) ++ Js.String.repeat(padding, " ")
       }
     })
   }
