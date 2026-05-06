@@ -1,6 +1,6 @@
 import * as Chartex from "../dist/main.mjs";
 
-const { Bar, Ansi, Bullet, Pie, Donut, Gauge, Scatter } = Chartex;
+const { Bar, Ansi, Bullet, Pie, Donut, Gauge, Scatter, Sparkline } = Chartex;
 
 const salesData = [
   { country: "MX", amount: 5, style: Ansi.fg("Red", "*") },
@@ -106,3 +106,20 @@ const scatterChartCoordinates = Scatter.make(
 );
 
 console.log(scatterChartCoordinates + "\n");
+
+const sparklineData = [
+  { label: "A", value: 10, style: Ansi.fg("Blue", "+") },
+  { label: "A", value: 20, style: Ansi.fg("Blue", "+") },
+  { label: "A", value: 15, style: Ansi.fg("Blue", "+") },
+];
+
+const sparklineChart = Sparkline.make(
+  sparklineData,
+  {
+    key: ({ label }: { label: string }) => label,
+    value: ({ value }: { value: number }) => value,
+    style: ({ style }: { style: string }) => style,
+  },
+);
+
+console.log(sparklineChart + "\n");
