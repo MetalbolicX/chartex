@@ -39,6 +39,9 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
 
   let result = ref(Js.String.repeat(left, " "))
 
+  let ansiRe = Js.Re.fromString("\\x1b\\[[0-9;]*m")
+  let stripAnsi = (s: string): string => s->String.replaceRegExp(ansiRe, "")
+
   for i in 0 to chartHeight + 1 {
     if i > 0 {
       result := result.contents ++ "\n" ++ Js.String.repeat(left, " ")
@@ -46,7 +49,7 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
 
     data->Array.forEach(item => {
       let key = item->config.key
-      let colWidth = max(barWidth, key->String.length)
+      let colWidth = max(barWidth, stripAnsi(key)->String.length)
       let val = item->config.value
       let valStr = val->Float.toString
       let ratio = chartHeight->Int.toFloat -. (chartHeight->Int.toFloat *. val /. maxVal)
@@ -62,9 +65,11 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
         } else { " " }
 
       if padChar == valStr {
-        result := result.contents ++ padMid(valStr, colWidth) ++ Js.String.repeat(padding, " ")
+        result := result.contents ++ padMidVisual(valStr, colWidth, ~visibleLen=valStr->String.length, ()) ++ Js.String.repeat(padding, " ")
       } else if i != chartHeight + 1 {
-        result := result.contents ++ padMid(Js.String.repeat(barWidth, padChar), colWidth) ++ Js.String.repeat(padding, " ")
+        let visibleSym = stripAnsi(padChar)
+        let barBody = Js.String.repeat(barWidth, visibleSym)
+        result := result.contents ++ padMidVisual(barBody, colWidth, ~visibleLen=barWidth, ()) ++ Js.String.repeat(padding, " ")
       } else {
         result := result.contents ++ padMid(key, colWidth) ++ Js.String.repeat(padding, " ")
       }

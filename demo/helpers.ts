@@ -3,9 +3,9 @@ import * as Chartex from "../dist/main.mjs";
 const { Bar, Ansi, Bullet, Pie, Donut, Gauge, Scatter, Sparkline } = Chartex;
 
 const salesData = [
-  { country: "MX", amount: 5, style: Ansi.fg("Red", "*") },
-  { country: "US", amount: 7, style: Ansi.fg("Blue", "+") },
-  { country: "CA", amount: 4, style: Ansi.fg("Green", "#") },
+  { country: "Mexico", amount: 5, style: Ansi.fg("Red", "*") },
+  { country: "USA", amount: 7, style: Ansi.fg("Blue", "+") },
+  { country: "Canada", amount: 4, style: Ansi.fg("Green", "#") },
 ];
 
 const barChartSales = Bar.make(

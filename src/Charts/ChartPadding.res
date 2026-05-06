@@ -18,3 +18,21 @@ let padMid = (str: string, width: int): string => {
     Js.String.repeat(leftPad, " ") ++ str ++ Js.String.repeat(rightPad, " ")
   }
 }
+
+let padMidVisual = (
+  str: string,
+  width: int,
+  ~visibleLen: option<int>=?,
+  ()
+): string => {
+  let vLen = switch visibleLen {
+  | Some(v) => v
+  | None => str->String.length
+  }
+  if vLen >= width { str } else {
+    let totalPad = width - vLen
+    let leftPad = totalPad / 2
+    let rightPad = totalPad - leftPad
+    Js.String.repeat(leftPad, " ") ++ str ++ Js.String.repeat(rightPad, " ")
+  }
+}
