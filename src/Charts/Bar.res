@@ -45,6 +45,8 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
     }
 
     data->Array.forEach(item => {
+      let key = item->config.key
+      let colWidth = max(barWidth, key->String.length)
       let val = item->config.value
       let valStr = val->Float.toString
       let ratio = chartHeight->Int.toFloat -. (chartHeight->Int.toFloat *. val /. maxVal)
@@ -60,15 +62,11 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
         } else { " " }
 
       if padChar == valStr {
-        result := result.contents ++ padMid(valStr, barWidth) ++ Js.String.repeat(padding, " ")
+        result := result.contents ++ padMid(valStr, colWidth) ++ Js.String.repeat(padding, " ")
       } else if i != chartHeight + 1 {
-        result := result.contents ++ Js.String.repeat(barWidth, padChar) ++ Js.String.repeat(padding, " ")
+        result := result.contents ++ padMid(Js.String.repeat(barWidth, padChar), colWidth) ++ Js.String.repeat(padding, " ")
       } else {
-        let key = item->config.key
-        let keyDisplay =
-          if key->String.length > barWidth { key ++ Js.String.repeat(padding, " ") }
-          else { padMid(key, barWidth) ++ Js.String.repeat(padding, " ") }
-        result := result.contents ++ keyDisplay
+        result := result.contents ++ padMid(key, colWidth) ++ Js.String.repeat(padding, " ")
       }
     })
   }
