@@ -109,8 +109,12 @@ console.log(scatterChartCoordinates + "\n");
 
 const sparklineData = [
   { label: "A", value: 10, style: Ansi.fg("Blue", "+") },
-  { label: "A", value: 20, style: Ansi.fg("Blue", "+") },
-  { label: "A", value: 15, style: Ansi.fg("Blue", "+") },
+  { label: "B", value: 30, style: Ansi.fg("Blue", "+") },
+  { label: "C", value: 15, style: Ansi.fg("Blue", "+") },
+  { label: "D", value: 45, style: Ansi.fg("Blue", "+") },
+  { label: "E", value: 25, style: Ansi.fg("Blue", "+") },
+  { label: "F", value: 50, style: Ansi.fg("Blue", "+") },
+  { label: "G", value: 35, style: Ansi.fg("Blue", "+") },
 ];
 
 const sparklineChart = Sparkline.make(
@@ -120,6 +124,7 @@ const sparklineChart = Sparkline.make(
     value: ({ value }: { value: number }) => value,
     style: ({ style }: { style: string }) => style,
   },
+  { width: 60, height: 14 },
 );
 
 console.log(sparklineChart + "\n");
