@@ -72,7 +72,7 @@ const donutChartElectronic = Donut.make(
 console.log(donutChartElectronic + "\n");
 
 const CPUDate = [
-  { metric: "CPU Usage", value: 0.75 },
+  { metric: "CPU Usage", value: 75 },
 ]
 
 const gaugeChartCPU = Gauge.make(

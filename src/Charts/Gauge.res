@@ -22,6 +22,8 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
   let left = options->getOpt(o => o.left, 0)
   let style = options->getOpt(o => o.style, "*")
   let bgStyle = options->getOpt(o => o.bgStyle, ".")
+  let innerRadius = radius / 2
+  let innerRadiusSq = innerRadius * innerRadius
 
   // Guard: data[0] exists
   let firstItem = switch data[0] {
@@ -59,16 +61,18 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
       let radiusSq = radius * radius
 
       if distSq < radiusSq {
-        let isOuterRing = Math.Int.abs(i) > 2 || Math.Int.abs(j) > 2
+        let isOuterRing = distSq > innerRadiusSq
 
         if isOuterRing {
           let angle = Math.atan2(~y=i->Int.toFloat, ~x=j->Int.toFloat) /. Math.Constants.pi +. 1.0
-          if angle <= value { result := result.contents ++ itemStyle }
-          else { result := result.contents ++ bgStyle }
+          if angle <= value { result := result.contents ++ itemStyle ++ " " }
+          else { result := result.contents ++ bgStyle ++ " " }
         } else {
           if j == 0 && i == -1 {
             let pct = Math.round(value *. 100.0)->Float.toInt
             let pctStr = pct->Int.toString
+            /* Use Js.String.slice which maps to JS String.prototype.slice */
+            let pctStr = Js.String.slice(~from=0, ~to_=2, pctStr)
             result := result.contents ++ pctStr
             if pctStr->String.length < 2 {
               result := result.contents ++ " "
@@ -84,7 +88,13 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
   }
 
   result := result.contents ++ "\n" ++ Js.String.repeat(left, " ")
-  result := result.contents ++ Js.String.repeat(radius - 2, " ") ++ "0" ++ Js.String.repeat(radius - 4, " ") ++ padMid(key, 11) ++ Js.String.repeat(radius - 4, " ") ++ "100"
+  let gaugeWidth = 4 * radius
+  let textContent = "0" ++ padMid(key, 11) ++ "100"
+  let textWidth = 1 + 11 + 3
+  let totalPadding = gaugeWidth - textWidth
+  let leftPad = totalPadding / 2
+  let rightPad = totalPadding - leftPad
+  result := result.contents ++ Js.String.repeat(leftPad, " ") ++ textContent ++ Js.String.repeat(rightPad, " ")
 
   result.contents
 }
