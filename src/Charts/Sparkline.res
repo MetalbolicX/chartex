@@ -25,9 +25,30 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
   let _tolerance = options->getOpt(o => o.tolerance, 2)
   let globalStyle = options->getOpt(o => o.style, "*")
   let yAxisChar = options->getOpt(o => o.yAxisChar, "|")
+  let showLegend = options->getOpt(o => o.showLegend, true)
 
   let values = data->Array.map(config.value)
   let len = data->Array.length
+
+  /* Collect unique series for legend */
+  let seriesCount = ref(0)
+  let seriesIndexMap: dict<int> = Dict.make()
+  let seriesNameArr: array<string> = Array.make(~length=len, "")
+  let legendStyleArr: array<string> = Array.make(~length=len, "")
+  data->Array.forEach(d => {
+    let name = config.key(d)
+    switch Dict.get(seriesIndexMap, name) {
+    | None =>
+      Dict.set(seriesIndexMap, name, seriesCount.contents)
+      seriesNameArr[seriesCount.contents] = name
+      /* first point style wins */
+      let s = switch config.style { | Some(f) => f(d) | None => globalStyle }
+      legendStyleArr[seriesCount.contents] = s
+      seriesCount := seriesCount.contents + 1
+    | Some(_) => ()
+    }
+  })
+  let numSeries = seriesCount.contents
 
   // Single-pass min+max instead of two separate reduce calls
   let minVal = values->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
@@ -193,6 +214,18 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
   xRow[maxPos] = maxLabel
 
   result := result.contents ++ "\n" ++ Js.String.repeat(yAxisWidth.contents + 3, " ") ++ xAxisLine ++ "\n" ++ Js.String.repeat(yAxisWidth.contents + 3, " ") ++ Js.Array.joinWith("", xRow)
+
+  /* Legend: one entry per series */
+  if showLegend && numSeries > 0 {
+    let legendStr = ref("")
+    for i in 0 to numSeries - 1 {
+      let n = Belt.Option.getWithDefault(Belt.Array.get(seriesNameArr, i), "")
+      let s = Belt.Option.getWithDefault(Belt.Array.get(legendStyleArr, i), globalStyle)
+      let entry = n ++ ": " ++ s
+      legendStr := if i == 0 { entry } else { legendStr.contents ++ "   " ++ entry }
+    }
+    result := result.contents ++ "\n" ++ Js.String.repeat(yAxisWidth.contents + 3, " ") ++ legendStr.contents
+  }
 
   result.contents
 }

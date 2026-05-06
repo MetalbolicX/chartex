@@ -140,4 +140,5 @@ type sparklineOptions = {
   tolerance?: int,
   style?: string,
   yAxisChar?: string,
+  showLegend?: bool,
 }
