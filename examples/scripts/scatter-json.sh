@@ -1,6 +1,6 @@
 #!/bin/bash
 # Scatter chart from JSON array file
-# Default scatter fields: series=series, x=x, y=y
+# Scatter fields default to series=x, x=x, y=y (no need to pass explicit flags)
 
 echo "=== Scatter Chart (JSON) ==="
-node bin/ChartexCli.res.mjs --file examples/data/scatter.json --format json --chart scatter --series series --x-key x --y-key y
+node bin/ChartexCli.res.mjs --file examples/data/scatter.json --format json --chart scatter

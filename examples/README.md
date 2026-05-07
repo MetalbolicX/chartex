@@ -2,6 +2,8 @@
 
 Runnable examples demonstrating chartex CLI usage.
 
+> **Important:** Run all commands from the project root directory (`/path/to/chartex/`).
+
 ## Prerequisite
 
 Build the CLI first:
@@ -16,8 +18,10 @@ npm run cli:build
 | `data/sales.csv` | Departments with revenue (categorical data for bar/sparkline) |
 | `data/sales.json` | Same data as JSON array |
 | `data/sales.ndjson` | Same data as NDJSON |
+| `data/sales-no-header.csv` | Same data without header row (for --no-header demo) |
 | `data/scatter.csv` | Multi-series scatter data with x, y, series, value |
 | `data/scatter.json` | Same scatter data as JSON array |
+| `data/scatter.ndjson` | Same scatter data as NDJSON |
 
 ## Scripts
 
@@ -28,9 +32,11 @@ npm run cli:build
 | `scripts/bar-ndjson.sh` | Bar chart from NDJSON |
 | `scripts/scatter-csv.sh` | Scatter chart from CSV with explicit field mapping |
 | `scripts/scatter-json.sh` | Scatter chart from JSON array |
+| `scripts/scatter-ndjson.sh` | Scatter chart from NDJSON |
 | `scripts/sparkline.sh` | Sparkline using the `growth` field |
 | `scripts/stdin-pipe.sh` | Piping data via stdin (no --file) |
 | `scripts/all-formats.sh` | Same data in all three formats |
+| `scripts/no-header.sh` | CSV without header row (uses --no-header) |
 
 ## Quick Start
 
