@@ -4,7 +4,9 @@
   <img src="./docs/_media/chartex-logo.svg" alt="chartex Logo" width="220" />
 </div>
 
-chartex renders compact, beautiful ASCII charts from plain JSON/NDJSON/CSV input. It is written in ReScript and shipped as a tiny ESM library (with an optional CLI) so you can embed charts in scripts, CI logs, terminals, or static reports.
+> You don't need to leave the terminal to visualize your dataset.
+
+`chartex` renders compact, beautiful ASCII charts from plain JSON/NDJSON/CSV input or a CLI. It is written in ReScript and shipped as a tiny ESM library so you can embed charts in scripts.
 
 Quick highlights
 
