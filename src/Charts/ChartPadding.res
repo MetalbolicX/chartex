@@ -4,7 +4,7 @@
  * Reusable string padding helpers used across chart renderers.
  */
 
-let ansiRe = RegExp.fromString("\\x1b\\[[0-9;]*m")
+let ansiRe = RegExp.fromString("\\x1b\\[[0-9;]*m", ~flags="g")
 
 let stripAnsi = (s: string): string => s->String.replaceRegExp(ansiRe, "")
 

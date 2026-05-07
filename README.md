@@ -1,73 +1,91 @@
-# chartex
+# chartex — ASCII charts for terminals and scripts
 
 <div align="center">
-  <img src="./docs/_media/chartex-logo.svg" alt="chartex Logo" width="250" height="250" />
+  <img src="./docs/_media/chartex-logo.svg" alt="chartex Logo" width="220" />
 </div>
 
-> `chartex` Making sense of data, one character at a time, on any screen.
+chartex renders compact, beautiful ASCII charts from plain JSON/NDJSON/CSV input. It is written in ReScript and shipped as a tiny ESM library (with an optional CLI) so you can embed charts in scripts, CI logs, terminals, or static reports.
 
-**Supported Versions:**
+Quick highlights
 
-![npm](https://img.shields.io/badge/npm->=22.x.x-blue)
+- Small, zero-dependency renderers: Bar, Scatter, Sparkline, Pie/Donut/Gauge available in the library
+- Works with any data shape via accessor-based configs (no pre-transforms required)
+- Includes an experimental CLI for piping data-in → ASCII chart-out
+- Thoroughly tested ReScript core with TypeScript-compatible build artifacts
 
-## 🚀 Quick Installation
+Supported environment
 
-Add the required dependencies to your project:
+- Node.js (recommended >= 22)
 
-```sh
-npm i chartex
+Install
+
+```bash
+npm install chartex
 ```
 
-## 📊 Draw the First Chart
+Quickstart — draw a bar chart
 
-Here's a simple example of how to use `chartex`:
+Create a file `example.mjs` and paste:
 
-1. Create a file named `main.mjs`.
-2. Add the following code to `main.mjs`:
+```js
+import { Bar } from "chartex";
 
-```ts
-import { bar } from "chartex";
 const data = [
-  { key: "A", value: 10, style: "#" },
-  { key: "B", value: 20, style: "#" },
-  { key: "C", value: 30, style: "#" },
+  { name: "Jan", total: 45 },
+  { name: "Feb", total: 67 },
+  { name: "Mar", total: 82 },
 ];
-const options = { width: 50, height: 10, style: "# " };
-const chart = bar(data, options);
+
+const chart = Bar.make(data, {
+  key: (d) => d.name,
+  value: (d) => d.total,
+  style: (d) => (d.total > 60 ? "█" : "░"),
+}, { height: 10 });
+
 console.log(chart);
 ```
 
-3. Run the application:
+Run it:
 
-```sh
-node main.js
+```bash
+node example.mjs
 ```
 
-## 📚 Documentation
+CLI (experimental)
 
-<div align="center">
+The package ships an experimental CLI that reads from stdin or a file and prints charts:
 
-  [![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](https://metalbolicx.github.io/chartex)
+Build the CLI bundle (recommended before using examples in /examples):
 
-</div>
+```bash
+npm run cli:build
+```
 
-## Contributing
+Basic usage:
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```bash
+npx chartex [options] [file]
+```
 
-## Technologies used
+See docs/cli.md for full CLI flags and examples. The CLI supports `--format` (auto/json/ndjson/csv), `--chart` (auto/bar/scatter/sparkline), and field mapping flags like `--key`, `--value`, `--series`, `--x-key`, `--y-key`.
 
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://www.typescriptlang.org/" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" alt="TypeScript" width="42" height="42" /><br/>
-        <b>TypeScript</b><br/>
-      </a>
-    </td>
-  </tr>
-</table>
+Documentation
 
-## License
+Full API reference, examples and CLI instructions are in the docs:
 
-Released under [MIT](/LICENSE) by [@MetalbolicX](https://github.com/MetalbolicX).
+- API reference: docs/api-reference.md
+- CLI: docs/cli.md
+
+Contributing
+
+Contributions welcome — open issues or PRs. If you change ReScript sources, run:
+
+```bash
+npm run res:build   # compile ReScript
+npm run res:test    # run tests
+npm run cli:build   # bundle CLI (if needed)
+```
+
+License
+
+Released under the MIT License — see LICENSE. Maintained by @MetalbolicX.
