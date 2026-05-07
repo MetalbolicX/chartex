@@ -143,11 +143,11 @@ type bulletConfig<T> = {
 }
 
 type bulletOptions = {
-  barWidth?: number, // Width of each bar (default: 3)
+  barWidth?: number, // Width of each bar (default: 1)
   style?: string,    // Default style character (default: "*")
   left?: number,     // Left offset (default: 1)
   width?: number,    // Total width
-  padding?: number,  // Padding between bars (default: 3)
+  padding?: number,  // Padding between bars (default: 1)
 }
 ```
 
@@ -230,15 +230,15 @@ Gauge.make(data, config, options?): string
 ```ts
 type gaugeConfig<T> = {
   key: (item: T) => string,     // Extract the label
-  value: (item: T) => number,   // Extract the numeric value (0–1)
+  value: (item: T) => number,   // Extract the numeric value (0–100)
   style?: (item: T) => string,  // Optional per-item style
 }
 
 type gaugeOptions = {
-  radius?: number,  // Radius of the gauge (default: 5)
-  left?: number,    // Left offset (default: 2)
-  style?: string,   // Style for filled portion (default: "# ")
-  bgStyle?: string, // Style for unfilled portion (default: "+ ")
+  radius?: number,  // Radius of the gauge (default: max(4, terminal width / 10))
+  left?: number,    // Left offset (default: 0)
+  style?: string,   // Style for filled portion (default: "*")
+  bgStyle?: string, // Style for unfilled portion (default: ".")
 }
 ```
 
@@ -248,7 +248,7 @@ type gaugeOptions = {
 import { Gauge } from "chartex";
 
 const data = [
-  { metric: "CPU Usage", value: 0.75 },
+  { metric: "CPU Usage", value: 75 },
 ];
 
 console.log(Gauge.make(data, {
@@ -346,7 +346,7 @@ const data = [
 ];
 
 console.log(Scatter.make(data, {
-  series: (d) => d.group,
+  key: (d) => d.group,
   x: (d) => d.x,
   y: (d) => d.y,
 }, { width: 20, height: 10 }));
@@ -424,7 +424,7 @@ type bulletConfig<T>     = { key: (T) => string, value: (T) => number, style?: (
 type donutConfig<T>      = { key: (T) => string, value: (T) => number, style?: (T) => string }
 type gaugeConfig<T>      = { key: (T) => string, value: (T) => number, style?: (T) => string }
 type pieConfig<T>        = { key: (T) => string, value: (T) => number, style?: (T) => string }
-type scatterConfig<T>    = { series: (T) => string, x: (T) => number, y: (T) => number, style?: (T) => string }
+type scatterConfig<T>    = { key: (T) => string, x: (T) => number, y: (T) => number, style?: (T) => string }
 type sparklineConfig<T>  = { key: (T) => string, value: (T) => number, style?: (T) => string }
 
 // Chart options
@@ -434,7 +434,7 @@ type donutOptions        = { radius?: number, left?: number, innerRadius?: numbe
 type gaugeOptions        = { radius?: number, left?: number, style?: string, bgStyle?: string }
 type pieOptions          = { radius?: number, left?: number, innerRadius?: number }
 type scatterOptions      = { width?: number, height?: number, style?: string, showLegend?: boolean }
-type sparklineOptions    = { width?: number, height?: number, tolerance?: number, style?: string, yAxisChar?: string }
+type sparklineOptions    = { width?: number, height?: number, tolerance?: number, style?: string, yAxisChar?: string, showLegend?: boolean }
 
 // Color palette
 type backgroundColor = "Black" | "Red" | "Green" | "Yellow" | "Blue" | "Magenta" | "Cyan" | "White"
