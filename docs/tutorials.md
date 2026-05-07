@@ -2,13 +2,13 @@
 
 ## Introduction
 
-Welcome to the world of ASCII charts with **chartex**! Whether you're building dashboards, analyzing data, or just want to add some visual flair to your terminal, chartex makes it easy and fun. In this tutorial, we'll walk through the basics of using chartex to create beautiful charts right in your terminal.
+Welcome to the world of ASCII charts with **chartex**! Whether you're building dashboards, analyzing data, or just want to add some visual flair to your terminal, chartex makes it easier. In this tutorial, we'll walk through the basics of using chartex to create beautiful charts right in your terminal.
 
-chartex is written in **ReScript** and compiled to **TypeScript**. Its API uses **accessor functions** — you tell chartex how to extract data from your objects, rather than pre-transforming your data.
+`chartex` is written in **ReScript** and compiled to **JavaScript**. Its API uses **accessor functions** — you tell chartex how to extract data from your objects, rather than pre-transforming your data.
 
 ## Installing chartex
 
-First, make sure you have chartex installed. Follow the [Getting Started](getting-started) page to get set up. Once installed, you can start creating charts in your TypeScript projects.
+First, make sure you have chartex installed. Follow the [Getting Started](getting-started) page to get set up. Once installed, you can start creating charts in your JavaScript projects.
 
 ## Creating Your First Bar Chart
 
@@ -43,44 +43,6 @@ Step-by-step explanation
 The return value from `Bar.make` is a string — print it to stdout or capture it for further processing.
 
 ## Exploring Other Chart Types
-
-### Bullet Chart
-
-Bullet charts are great for comparing metrics side by side:
-
-```ts
-import { Bullet } from "chartex";
-
-const metrics = [
-  { dept: "Sales", pct: 85 },
-  { dept: "Marketing", pct: 92 },
-  { dept: "Support", pct: 78 },
-];
-
-console.log(Bullet.make(metrics, {
-  key: (d) => d.dept,
-  value: (d) => d.pct,
-}, { width: 20 }));
-```
-
-### Donut Chart
-
-For proportional data, use a donut chart:
-
-```ts
-import { Donut } from "chartex";
-
-const expenses = [
-  { item: "Rent", amount: 45 },
-  { item: "Food", amount: 35 },
-  { item: "Transport", amount: 20 },
-];
-
-console.log(Donut.make(expenses, {
-  key: (d) => d.item,
-  value: (d) => d.amount,
-}));
-```
 
 ### Scatter Plot
 
@@ -125,9 +87,7 @@ console.log(Sparkline.make(trend, {
 }, { width: 10, height: 6 }));
 ```
 
-With chartex, creating terminal charts is a breeze! From bar charts to sparklines, you can visualize your data in seconds. Explore the [API Reference](api-reference) for all available chart types and options, and make your terminal come alive with data. Happy charting!
-
-Advanced: Colors and changing defaults
+## Advanced: Colors and changing defaults
 
 chartex exposes an Ansi helper for colored text and background blocks. Use `Ansi.fg` / `Ansi.bg` to decorate style characters. Example: per-item coloring for a bar chart.
 
