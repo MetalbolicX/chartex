@@ -15,7 +15,7 @@
 
 ## Overview
 
-`chartex` renders compact, beautiful ASCII charts for terminals and scripts from plain JSON/NDJSON/CSV input or a CLI. It is written in ReScript and shipped as a tiny ESM library so you can embed charts in scripts.
+`chartex` renders compact, beautiful ASCII charts for terminals and scripts from plain `JSON`/`NDJSON`/`CSV` input or a CLI. It is written in ReScript and shipped as a tiny ESM library so you can embed charts in scripts.
 
 ### Quick highlights
 
@@ -86,6 +86,7 @@ Basic usage:
 npx chartex [options] [file]
 ```
 
+> [!NOTE]
 > Full CLI options reference: [docs/cli.md](docs/cli.md)
 
 ## Documentation
