@@ -59,6 +59,11 @@ let runWithOptions = (options: cliOptions, rows: array<row>): runResult =>
     try {
       {success: true, output: render(data, options)}
     } catch {
+    | JsExn(payload) =>
+      switch JsExn.message(payload) {
+      | Some(message) => {success: false, output: "", error: ?Some(message)}
+      | None => {success: false, output: "", error: ?Some("Renderer error")}
+      }
     | _ => {success: false, output: "", error: ?Some("Renderer error")}
     }
   }

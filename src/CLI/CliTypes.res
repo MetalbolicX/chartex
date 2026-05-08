@@ -21,6 +21,7 @@ type parsedArgs = {
   inputPath?: string,
   help: bool,
   version: bool,
+  parseError?: string,
 }
 
 type row = dict<JSON.t>

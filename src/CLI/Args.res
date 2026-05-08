@@ -16,6 +16,22 @@ let parseChartType = (value: option<string>): Bindings.Util.chartType =>
   | _ => #auto
   }
 
+let parseOptionalInt = (value: option<string>, flag: string): result<option<int>, string> =>
+  switch value {
+  | None => Ok(None)
+  | Some(raw) =>
+    switch Int.fromString(raw) {
+    | Some(parsed) => Ok(Some(parsed))
+    | None => Error(`Invalid value for --${flag}: '${raw}' is not an integer`)
+    }
+  }
+
+let setFirstParseError = (errorRef: ref<option<string>>, message: string): unit =>
+  switch errorRef.contents {
+  | Some(_) => ()
+  | None => errorRef := Some(message)
+  }
+
 let parse = (): CliTypes.parsedArgs => {
   module U = Bindings.Util
 
@@ -52,13 +68,39 @@ let parse = (): CliTypes.parsedArgs => {
   | None => positionals[0]
   }
 
+  let parseError = ref(None)
+
+  let width = switch parseOptionalInt(values.width, "width") {
+  | Ok(value) => value
+  | Error(message) => {
+      setFirstParseError(parseError, message)
+      None
+    }
+  }
+
+  let height = switch parseOptionalInt(values.height, "height") {
+  | Ok(value) => value
+  | Error(message) => {
+      setFirstParseError(parseError, message)
+      None
+    }
+  }
+
+  let maxRows = switch parseOptionalInt(values.maxRows, "max-rows") {
+  | Ok(value) => value
+  | Error(message) => {
+      setFirstParseError(parseError, message)
+      None
+    }
+  }
+
   {
     options: {
       format: parseInputFormat(values.format),
       chartType: parseChartType(values.chart),
-      width: ?Int.fromString(values.width->Option.getOr("")),
-      height: ?Int.fromString(values.height->Option.getOr("")),
-      maxRows: ?Int.fromString(values.maxRows->Option.getOr("")),
+      width: ?width,
+      height: ?height,
+      maxRows: ?maxRows,
       keyField: ?values.key,
       valueField: ?values.value,
       xKey: ?values.xKey,
@@ -69,6 +111,7 @@ let parse = (): CliTypes.parsedArgs => {
     inputPath: ?inputPath,
     help: values.help->Option.getOr(false),
     version: values.version->Option.getOr(false),
+    parseError: ?parseError.contents,
   }
 }
 

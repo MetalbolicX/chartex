@@ -13,6 +13,11 @@ let parseJsonObject = (payload: string): parseResult<row> =>
     | None => Error("Expected JSON object")
     }
   } catch {
+  | JsExn(exnPayload) =>
+    switch JsExn.message(exnPayload) {
+    | Some(message) => Error("Invalid JSON object: " ++ message)
+    | None => Error("Invalid JSON object (parse failed)")
+    }
   | _ => Error("Invalid JSON object (parse failed)")
   }
 

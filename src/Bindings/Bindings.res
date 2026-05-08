@@ -118,6 +118,9 @@ module Process = {
   /** Listens for the `"end"` event, invoked once the stream is fully consumed. */
   @send external onEnd: (stdInput, @as("end") _, unit => unit) => unit = "on"
 
+  /** Listens for the `"close"` event, invoked when stream resources are released. */
+  @send external onClose: (stdInput, @as("close") _, unit => unit) => unit = "on"
+
   /** Listens once for the `"end"` event, then auto-unsubscribes. */
   @send external onceEnd: (stdInput, @as("end") _, unit => unit) => unit = "once"
 
@@ -135,6 +138,9 @@ module Process = {
 
   /** Sets the character encoding for data events (e.g. `"utf8"`). */
   @send external setEncoding: (stdInput, string) => unit = "setEncoding"
+
+  /** Destroys the stream and releases underlying resources. */
+  @send external destroy: stdInput => unit = "destroy"
 
   @val @scope("process") external exit: int => unit = "exit"
 }

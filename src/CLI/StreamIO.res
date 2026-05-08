@@ -10,13 +10,34 @@ let readInput = (
   ~onEnd: unit => unit,
   ~onError: string => unit,
 ): unit => {
+  let isFileSource = switch inputPath {
+  | Some(_) => true
+  | None => false
+  }
+
   let source = switch inputPath {
   | Some(path) => Bindings.Fs.createReadStream(path)
   | None => P.stdin
   }
 
+  let hasEnded = ref(false)
+
+  let finalize = (): unit => {
+    if isFileSource && !hasEnded.contents {
+      hasEnded := true
+      P.destroy(source)
+    }
+  }
+
   P.setEncoding(source, "utf8")
   P.onData(source, chunk => onChunk(chunk))
-  P.onEnd(source, _ => onEnd())
-  P.onError(source, _ => onError("Failed to read input stream"))
+  P.onEnd(source, _ => {
+    finalize()
+    onEnd()
+  })
+  P.onClose(source, _ => finalize())
+  P.onError(source, _ => {
+    finalize()
+    onError("Failed to read input stream")
+  })
 }

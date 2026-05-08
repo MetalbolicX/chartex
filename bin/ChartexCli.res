@@ -7,7 +7,10 @@ let writeErrorLine = (text: string): unit => StreamIO.writeStderr(text ++ "\n")
 let run = (): unit => {
   let parsed = Args.parse()
 
-  if parsed.help {
+  if parsed.parseError->Option.isSome {
+    writeErrorLine(parsed.parseError->Option.getOr("Invalid CLI arguments"))
+    P.exit(1)
+  } else if parsed.help {
     writeLine(Args.helpText)
     P.exit(0)
   } else if parsed.version {
