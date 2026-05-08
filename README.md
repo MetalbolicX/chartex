@@ -24,7 +24,7 @@
   - ![Bullet chart](docs/_media/chartex-bullet.png)
   - ![Scatter chart](docs/_media/chartex-scatter.png)
   - ![Sparkline chart](docs/_media/chartex-sparkline.png)
-  - ![Pie chart](docs/_media/chartex-pie.png)
+  - ![Pie, Douut, Gauge chart](docs/_media/chartex-pie.png)
 - Works with any data shape via accessor-based configs (no pre-transforms required).
 - Includes an experimental CLI for piping data-in → ASCII chart-out.
 - Thoroughly tested ReScript core with JavaScript-compatible build artifacts.
