@@ -44,22 +44,22 @@ Notes about field names and mapping
 
 ### Examples
 
-Bar chart from NDJSON stdin (using field names `name` and `score`):
+Bar chart — daily calorie intake:
 
 ```bash
-cat data.ndjson | npx chartex --chart bar --key name --value score
+echo '[{"day":"Mon","cal":1850},{"day":"Tue","cal":2200},{"day":"Wed","cal":1650},{"day":"Thu","cal":2100},{"day":"Fri","cal":1950}]' | npx chartex --chart bar --key day --value cal
 ```
 
-Scatter from CSV file (positional file argument):
+Scatter plot — steps walked vs hours slept, by person:
 
 ```bash
-npx chartex points.csv --format csv --chart scatter --series group --x-key x --y-key y
+echo '[{"name":"Alice","steps":8200,"sleep":7.2,"group":"A"},{"name":"Bob","steps":6100,"sleep":5.8,"group":"A"},{"name":"Carol","steps":9400,"sleep":8.1,"group":"B"},{"name":"Dave","steps":7300,"sleep":6.5,"group":"B"},{"name":"Eve","steps":5500,"sleep":5.2,"group":"C"},{"name":"Frank","steps":8800,"sleep":7.8,"group":"C"}]' | npx chartex --chart scatter --series group --x-key steps --y-key sleep
 ```
 
-Sparkline from JSON array:
+Sparkline — resting heart rate over a week:
 
 ```bash
-npx chartex --file trend.json --format json --chart sparkline --key label --value value
+echo '[{"day":"Mon","bpm":62},{"day":"Tue","bpm":58},{"day":"Wed","bpm":65},{"day":"Thu","bpm":60},{"day":"Fri","bpm":57},{"day":"Sat","bpm":63},{"day":"Sun","bpm":55}]' | npx chartex --chart sparkline --key day --value bpm
 ```
 
 Using CSV without header row (columns will be named col_1, col_2, ... by the parser):
