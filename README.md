@@ -6,28 +6,38 @@
 
 > You don't need to leave the terminal to visualize your dataset.
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/res-scrapy"><img src="https://img.shields.io/npm/v/res-scrapy.svg" alt="npm version"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node->=22.0.0-272e33?logo=node.js&logoColor=white" alt="Node.js"></a>
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
+  <img src="https://img.shields.io/badge/ReScript-12.2.0-ff69ce?logo=rescript&logoColor=white" alt="ReScript">
+</p>
+
+## Overview
+
 `chartex` renders compact, beautiful ASCII charts from plain JSON/NDJSON/CSV input or a CLI. It is written in ReScript and shipped as a tiny ESM library so you can embed charts in scripts.
 
-Quick highlights
+### Quick highlights
 
-- Small, zero-dependency renderers: Bar, Scatter, Sparkline, Pie/Donut/Gauge available in the library
-- Works with any data shape via accessor-based configs (no pre-transforms required)
-- Includes an experimental CLI for piping data-in → ASCII chart-out
-- Thoroughly tested ReScript core with TypeScript-compatible build artifacts
+- Small, zero-dependency renderers: Bar, Bullet, Scatter, Sparkline, Pie/Donut/Gauge available in the library.
+- Works with any data shape via accessor-based configs (no pre-transforms required).
+- Includes an experimental CLI for piping data-in → ASCII chart-out.
+- Thoroughly tested ReScript core with JavaScript-compatible build artifacts.
 
-Supported environment
+> [!NOTE]
+> Requirements: Node.js 22+
 
-- Node.js (recommended >= 22)
+## Quick Install
 
-Install
-
-```bash
+```sh
 npm install chartex
 ```
 
-Quickstart — draw a bar chart
+## Usage
 
-Create a file `example.mjs` and paste:
+### Build your first chart with the library
+
+1. Create a file `example.mjs` and paste:
 
 ```js
 import { Bar } from "chartex";
@@ -47,21 +57,23 @@ const chart = Bar.make(data, {
 console.log(chart);
 ```
 
-Run it:
+2. Run it:
 
 ```bash
 node example.mjs
 ```
 
-CLI (experimental)
+### CLI
 
-The package ships an experimental CLI that reads from stdin or a file and prints charts:
+You can install the CLI globally or use `npx` to run it without installing:
 
-Build the CLI bundle (recommended before using examples in /examples):
+### Global install:
 
-```bash
-npm run cli:build
+```sh
+npm install -g chartex
 ```
+
+### No-install usage:
 
 Basic usage:
 
@@ -69,16 +81,33 @@ Basic usage:
 npx chartex [options] [file]
 ```
 
-See docs/cli.md for full CLI flags and examples. The CLI supports `--format` (auto/json/ndjson/csv), `--chart` (auto/bar/scatter/sparkline), and field mapping flags like `--key`, `--value`, `--series`, `--x-key`, `--y-key`.
+Options:
 
-Documentation
+| Flag | Description |
+|------|-------------|
+| `--file, -f` | Input file path (alternative to positional `file`) |
+| `--format` | Input format: `auto`, `json`, `ndjson`, `csv` (default: `auto`) |
+| `--chart, -t` | Chart type: `auto`, `bar`, `scatter`, `sparkline` (default: `auto`) — note: the CLI currently renders Bar, Scatter and Sparkline charts only |
+| `--width` | Chart width (columns) |
+| `--height` | Chart height (rows) |
+| `--max-rows` | Maximum parsed rows before failing |
+| `--key` | Key field name for categorical data (default: `key`) |
+| `--value` | Value field name for categorical data (default: `value`) |
+| `--x-key` | X field name for scatter plots (default: `x`) |
+| `--y-key` | Y field name for scatter plots (default: `y`) |
+| `--series` | Series field name for scatter plots (default: `series`) |
+| `--no-header` | Treat CSV as having no header row (default: false) |
+| `--help, -h` | Show help text |
+| `--version` | Show version number |
 
-Full API reference, examples and CLI instructions are in the docs:
+### Documentation
 
-- API reference: docs/api-reference.md
-- CLI: docs/cli.md
+📖 **Full docs at [metalbolicx.github.io/chartex](https://metalbolicx.github.io/chartex/)**
 
-Contributing
+- [API reference for library usage](https://metalbolicx.github.io/chartex/#/api-reference)
+- [Examples and guides](https://metalbolicx.github.io/chartex/#/tutorials)
+
+### Contributing
 
 Contributions welcome — open issues or PRs. If you change ReScript sources, run:
 
@@ -88,6 +117,6 @@ npm run res:test    # run tests
 npm run cli:build   # bundle CLI (if needed)
 ```
 
-License
+## License
 
-Released under the MIT License — see LICENSE. Maintained by @MetalbolicX.
+Released under [MIT](/LICENSE) by [@MetalbolicX](https://github.com/MetalbolicX).
