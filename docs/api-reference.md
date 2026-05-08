@@ -1,6 +1,6 @@
 # API Reference
 
-This page documents the core modules and types of chartex — a terminal ASCII data visualization library written in ReScript and compiled to TypeScript.
+This page documents the core modules and types of chartex — a terminal ASCII data visualization library written in ReScript and compiled to JavaScript.
 
 ## Accessor Functions
 
@@ -405,7 +405,7 @@ console.log(Sparkline.make(data, {
 
 ## Utility Modules
 
-Utility modules provide terminal detection, ANSI formatting, JSON handling, and validation. They are available alongside chart modules.
+The utility modules provide terminal detection, ANSI formatting, JSON handling, and validation. They are available alongside chart modules.
 
 ---
 
@@ -415,28 +415,9 @@ Utility modules provide terminal detection, ANSI formatting, JSON handling, and 
 import { Types } from "chartex";
 ```
 
-All type definitions for chart configs and options.
+All config and options types documented in each chart's section are re-exported under `Types`.
 
 ```ts
-// Chart configs (accessor-based)
-type barConfig<T>        = { key: (T) => string, value: (T) => number, style?: (T) => string }
-type bulletConfig<T>     = { key: (T) => string, value: (T) => number, style?: (T) => string, barWidth?: (T) => number }
-type donutConfig<T>      = { key: (T) => string, value: (T) => number, style?: (T) => string }
-type gaugeConfig<T>      = { key: (T) => string, value: (T) => number, style?: (T) => string }
-type pieConfig<T>        = { key: (T) => string, value: (T) => number, style?: (T) => string }
-type scatterConfig<T>    = { key: (T) => string, x: (T) => number, y: (T) => number, style?: (T) => string }
-type sparklineConfig<T>  = { key: (T) => string, value: (T) => number, style?: (T) => string }
-
-// Chart options
-type barOptions          = { barWidth?: number, left?: number, height?: number, padding?: number, style?: string }
-type bulletOptions       = { barWidth?: number, style?: string, left?: number, width?: number, padding?: number }
-type donutOptions        = { radius?: number, left?: number, innerRadius?: number }
-type gaugeOptions        = { radius?: number, left?: number, style?: string, bgStyle?: string }
-type pieOptions          = { radius?: number, left?: number, innerRadius?: number }
-type scatterOptions      = { width?: number, height?: number, style?: string, showLegend?: boolean }
-type sparklineOptions    = { width?: number, height?: number, tolerance?: number, style?: string, yAxisChar?: string, showLegend?: boolean }
-
-// Color palette
 type backgroundColor = "Black" | "Red" | "Green" | "Yellow" | "Blue" | "Magenta" | "Cyan" | "White"
 ```
 
@@ -478,6 +459,14 @@ Wraps `style` in the given ANSI foreground color and resets at the end.
 | `"White"` | 47 | 37 |
 
 Both functions return raw ANSI escape sequences. The library handles reset (`\x1b[0m`) automatically, so you can safely concatenate outputs with non-colored text.
+
+```ts
+// 10 spaces with blue background
+console.log(Ansi.bg("Blue", 10)); // => "\x1b[44m          \x1b[0m"
+
+// Red foreground character
+console.log(Ansi.fg("Red", "█")); // => "\x1b[31m█\x1b[0m"
+```
 
 #### Cursor Movement
 

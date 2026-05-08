@@ -7,7 +7,7 @@
 > You don't need to leave the terminal to visualize your dataset.
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/res-scrapy"><img src="https://img.shields.io/npm/v/res-scrapy.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/chartex"><img src="https://img.shields.io/npm/v/chartex.svg" alt="npm version"></a>
   <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node->=22.0.0-272e33?logo=node.js&logoColor=white" alt="Node.js"></a>
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
   <img src="https://img.shields.io/badge/ReScript-12.2.0-ff69ce?logo=rescript&logoColor=white" alt="ReScript">
@@ -24,7 +24,7 @@
   - ![Bullet chart](docs/_media/chartex-bullet.png)
   - ![Scatter chart](docs/_media/chartex-scatter.png)
   - ![Sparkline chart](docs/_media/chartex-sparkline.png)
-  - ![Pie, Douut, Gauge chart](docs/_media/chartex-pie.png)
+  - ![Pie, Donut, Gauge chart](docs/_media/chartex-pie.png)
 - Works with any data shape via accessor-based configs (no pre-transforms required).
 - Includes a CLI for piping data-in → ASCII chart-out.
 - Thoroughly tested ReScript core with JavaScript-compatible build artifacts.
@@ -72,13 +72,13 @@ node example.mjs
 
 You can install the CLI globally or use `npx` to run it without installing:
 
-### Global install:
+#### Global install
 
 ```sh
 npm install -g chartex
 ```
 
-### No-install usage:
+#### No-install usage
 
 Basic usage:
 
@@ -86,40 +86,25 @@ Basic usage:
 npx chartex [options] [file]
 ```
 
-Options:
+> Full CLI options reference: [docs/cli.md](docs/cli.md)
 
-| Flag | Description |
-|------|-------------|
-| `--file, -f` | Input file path (alternative to positional `file`) |
-| `--format` | Input format: `auto`, `json`, `ndjson`, `csv` (default: `auto`) |
-| `--chart, -t` | Chart type: `auto`, `bar`, `scatter`, `sparkline` (default: `auto`) — note: the CLI currently renders Bar, Scatter and Sparkline charts only |
-| `--width` | Chart width (columns) |
-| `--height` | Chart height (rows) |
-| `--max-rows` | Maximum parsed rows before failing |
-| `--key` | Key field name for categorical data (default: `key`) |
-| `--value` | Value field name for categorical data (default: `value`) |
-| `--x-key` | X field name for scatter plots (default: `x`) |
-| `--y-key` | Y field name for scatter plots (default: `y`) |
-| `--series` | Series field name for scatter plots (default: `series`) |
-| `--no-header` | Treat CSV as having no header row (default: false) |
-| `--help, -h` | Show help text |
-| `--version` | Show version number |
-
-### Documentation
+## Documentation
 
 📖 **Full docs at [metalbolicx.github.io/chartex](https://metalbolicx.github.io/chartex/)**
 
 - [API reference for library usage](https://metalbolicx.github.io/chartex/#/api-reference)
 - [Examples and guides](https://metalbolicx.github.io/chartex/#/tutorials)
 
-### Contributing
+## Contributing
 
-Contributions welcome — open issues or PRs. If you change ReScript sources, run:
+Contributions welcome — open issues or PRs.
 
 ```bash
 npm run res:build   # compile ReScript
 npm run res:test    # run tests
-npm run cli:build   # bundle CLI (if needed)
+npm run cli:build   # bundle CLI (if CLI changed)
+npm run build       # build dist/ artifacts (tsdown)
+npm run res:clean   # clean ReScript outputs
 ```
 
 ## License

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Welcome to the world of ASCII charts with **chartex**! Whether you're building dashboards, analyzing data, or just want to add some visual flair to your terminal, chartex makes it easier. In this tutorial, we'll walk through the basics of using chartex to create beautiful charts right in your terminal.
+Welcome to the world of ASCII charts with **chartex**! Whether you're building dashboards, analyzing data, or just want to add some visual flair to your terminal, chartex makes it straightforward. In this tutorial, we'll walk through the basics of using chartex to create beautiful charts right in your terminal.
 
 `chartex` is written in **ReScript** and compiled to **JavaScript**. Its API uses **accessor functions** — you tell chartex how to extract data from your objects, rather than pre-transforming your data.
 
@@ -136,4 +136,4 @@ Per-item and per-series styles
 - Provide `config.style` as a function to compute the style for each datum — this supports conditional characters or ANSI-colored characters.
 - For scatter plots, the `key` accessor groups points into series; `Scatter` assigns a round-robin default style per series. You can override this by providing a `style` accessor that returns a per-point or per-series char.
 
-If you need more examples or the full list of options, consult the [API Reference](api-reference) and the [CLI guide](cli).
+For more chart types (Pie, Donut, Gauge, Bullet), consult the [API Reference](api-reference). For CLI usage and examples, see the [CLI guide](cli) and the [examples](../examples/README.md) directory.

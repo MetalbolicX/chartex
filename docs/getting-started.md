@@ -1,6 +1,6 @@
 # Getting Started
 
-**Chartex** is a terminal ASCII data visualization library written in **ReScript** and compiled to **TypeScript**.
+**chartex** is a terminal ASCII data visualization library written in **ReScript** and compiled to **JavaScript**.
 
 ## For Node.js
 
@@ -50,7 +50,7 @@ bun init
 
 ### Install Dependencies
 
-Install `Chartex` using your preferred package manager:
+Install `chartex` using your preferred package manager:
 
 <!-- tabs:start -->
 
@@ -72,9 +72,32 @@ yarn add chartex
 ```
 
 
-##### **bun**
+#### **bun**
 ```sh
 bun add chartex
 ```
 
 <!-- tabs:end -->
+
+### Verify Installation
+
+Create a file `test.mjs`:
+
+```js
+import { Bar } from "chartex";
+
+const chart = Bar.make(
+  [{ name: "A", value: 5 }, { name: "B", value: 3 }],
+  { key: (d) => d.name, value: (d) => d.value },
+);
+
+console.log(chart);
+```
+
+Run it:
+
+```sh
+node test.mjs
+```
+
+You should see an ASCII bar chart printed to the terminal.

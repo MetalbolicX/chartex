@@ -8,7 +8,7 @@ This project includes a Unix-style CLI compiled from ReScript.
 npm run cli:build
 ```
 
-This runs the full build pipeline: ReScript → TypeScript → bundled/minified.
+This runs the full build pipeline: ReScript → JavaScript → bundled/minified.
 
 ## Usage
 
@@ -40,7 +40,7 @@ Reads input from stdin by default. You may also pass a single positional `file` 
 Notes about field names and mapping
 
 - When the CLI adapts parsed rows into chart data it looks up fields by name. Defaults are `key`/`value` for categorical charts and `series`/`x`/`y` for scatter charts. Use the corresponding flags to map different column names.
-- If `--chart auto` is used, the CLI may choose a renderer based on data shape; otherwise it forces the selected chart renderer.
+- When `--chart auto` is used, the CLI selects a renderer based on the adapted data shape: categorical data renders as Bar, scatter-structured data renders as Scatter. Otherwise it forces the selected chart renderer.
 
 ### Examples
 
