@@ -1,6 +1,6 @@
-# CLI (experimental)
+# CLI
 
-This project includes an experimental Unix-style CLI compiled from ReScript.
+This project includes a Unix-style CLI compiled from ReScript.
 
 ## Build
 
