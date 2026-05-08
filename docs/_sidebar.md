@@ -3,3 +3,4 @@
 - [API Reference](/api-reference)
 - [CLI](/cli)
 - [Tutorials](/tutorials)
+- [Architecture](/architecture)
