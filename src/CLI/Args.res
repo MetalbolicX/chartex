@@ -32,7 +32,7 @@ let setFirstParseError = (errorRef: ref<option<string>>, message: string): unit 
   | None => errorRef := Some(message)
   }
 
-let parse = (): CliTypes.parsedArgs => {
+let parseWith = (argv: array<string>): CliTypes.parsedArgs => {
   module U = Bindings.Util
 
   let options: dict<U.flagConfig> = dict{
@@ -54,7 +54,7 @@ let parse = (): CliTypes.parsedArgs => {
 
   let result =
     U.parseArgs({
-      args: Bindings.Process.argv->Array.slice(~start=2),
+      args: argv,
       strict: true,
       allowPositionals: true,
       options: options,
@@ -114,6 +114,8 @@ let parse = (): CliTypes.parsedArgs => {
     parseError: ?parseError.contents,
   }
 }
+
+let parse = (): CliTypes.parsedArgs => Bindings.Process.argv->Array.slice(~start=2)->parseWith
 
 let helpText = `Usage: chartex [--file path] [--format auto|json|ndjson|csv] [--chart bar|scatter|sparkline]
   Reads input from stdin by default and prints an ASCII chart to stdout.
