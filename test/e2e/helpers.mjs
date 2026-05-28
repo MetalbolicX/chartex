@@ -15,18 +15,35 @@ const FIXTURES = join(ROOT, 'test/cli/fixtures');
  */
 export function runCli(args, opts = {}) {
   const { timeout = 5000, stdin } = opts;
-  const result = execFileSync('node', [CLI, ...args], {
-    encoding: 'utf8',
-    timeout,
-    stdio: stdin ? ['pipe', 'pipe', 'pipe'] : ['ignore', 'pipe', 'pipe'],
-    input: stdin ?? null,
-  });
-  return result;
+  const textDecoder = new TextDecoder('utf8');
+  let stdout = '';
+  let stderr = '';
+  let exitCode = 0;
+  try {
+    const result = execFileSync('node', [CLI, ...args], {
+      encoding: null, // get Buffer so we can capture exitCode
+      timeout,
+      stdio: ['pipe', 'pipe', 'pipe'],
+      input: stdin ?? null,
+    });
+    stdout = textDecoder.decode(result);
+  } catch (err) {
+    stdout = err.stdout ? textDecoder.decode(err.stdout) : '';
+    stderr = err.stderr ? textDecoder.decode(err.stderr) : '';
+    exitCode = err.status ?? (err.exitCode ?? 1);
+    return { stdout, stderr, exitCode };
+  }
+  return { stdout, stderr: '', exitCode: 0 };
 }
 
 /** Resolve path to a fixture file under test/cli/fixtures/. */
 export function fixture(name) {
   return join(FIXTURES, name);
+}
+
+/** Resolve path to a file under examples/data/. */
+export function example(name) {
+  return join(ROOT, 'examples/data', name);
 }
 
 /** Assert stdout contains substring. Throws on failure. */
