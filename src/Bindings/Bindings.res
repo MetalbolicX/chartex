@@ -28,7 +28,7 @@ module Util = {
 
   type inputFormat = [#auto | #json | #ndjson | #csv]
 
-  type chartType = [#auto | #bar | #scatter | #sparkline]
+  type chartType = [#auto | #bar | #scatter | #sparkline | #pie | #donut | #gauge | #bullet]
 
   type cliValues = {
     file?: string,

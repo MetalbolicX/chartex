@@ -12,17 +12,12 @@ open ChartPadding
 type sparkPoint = {x: int, y: int, style: string}
 
 let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opts=?, ()): string => {
-  // Guard: empty data
-  let _ = switch data->Array.length == 0 {
-    | true => JsError.throwWithMessage("Error: Sparkline chart requires at least one data point")
-    | false => ()
-  }
+  ensureNonEmpty(data, "Sparkline")
 
   let options: option<sparklineOptions> = opts
 
   let charWidth = options->getOpt(o => o.width, width()->Option.getOr(80))
   let charHeight = options->getOpt(o => o.height, height()->Option.getOr(24))
-  let _tolerance = options->getOpt(o => o.tolerance, 2)
   let globalStyle = options->getOpt(o => o.style, "*")
   let yAxisChar = options->getOpt(o => o.yAxisChar, "|")
   let showLegend = options->getOpt(o => o.showLegend, true)

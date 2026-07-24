@@ -90,8 +90,9 @@ let createNdjsonParser = (~cfg: parserConfig): parser => {
     }
   }
 
-  let clearChars = (): unit =>
-    lineChars->Array.splice(~start=0, ~remove=lineChars->Array.length, ~insert=[])
+  let clearChars = (): unit => {
+    while lineChars->Array.length > 0 { lineChars->Array.pop->ignore }
+  }
 
   let flushCurrentLine = (): unit => {
     emitLine(lineChars->Array.join(""))
@@ -155,8 +156,9 @@ let createCsvParser = (~cfg: parserConfig, ~noHeader: bool): parser => {
   let inQuotes = ref(false)
   let error = ref(None)
 
-  let clearFieldChars = (): unit =>
-    fieldChars->Array.splice(~start=0, ~remove=fieldChars->Array.length, ~insert=[])
+  let clearFieldChars = (): unit => {
+    while fieldChars->Array.length > 0 { fieldChars->Array.pop->ignore }
+  }
 
   let currentField = (): string => fieldChars->Array.join("")
 
@@ -319,8 +321,7 @@ let createJsonArrayParser = (~cfg: parserConfig): parser => {
       | Error(msg) => error := Some(msg)
       }
     }
-    // Clear the chunk buffer without creating a new array reference.
-    currentChunks->Array.splice(~start=0, ~remove=currentChunks->Array.length, ~insert=[])
+    while currentChunks->Array.length > 0 { currentChunks->Array.pop->ignore }
   }
 
   let pushChunk = (chunk: string): unit => {

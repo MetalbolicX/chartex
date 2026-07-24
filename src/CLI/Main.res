@@ -10,6 +10,26 @@ let sparklineConfig: Types.sparklineConfig<Adapter.categoricalDatum> = {
   value: d => d.value,
 }
 
+let pieConfig: Types.pieConfig<Adapter.categoricalDatum> = {
+  key: (d: Adapter.categoricalDatum) => d.key,
+  value: d => d.value,
+}
+
+let donutConfig: Types.donutConfig<Adapter.categoricalDatum> = {
+  key: (d: Adapter.categoricalDatum) => d.key,
+  value: d => d.value,
+}
+
+let gaugeConfig: Types.gaugeConfig<Adapter.categoricalDatum> = {
+  key: (d: Adapter.categoricalDatum) => d.key,
+  value: d => d.value,
+}
+
+let bulletConfig: Types.bulletConfig<Adapter.categoricalDatum> = {
+  key: (d: Adapter.categoricalDatum) => d.key,
+  value: d => d.value,
+}
+
 let scatterConfig: Types.scatterConfig<Adapter.scatterDatum> = {
   key: (d: Adapter.scatterDatum) => d.series,
   x: d => d.x,
@@ -30,7 +50,43 @@ let render = (data: Adapter.adaptedData, options: cliOptions): string =>
         },
         (),
       )
-    | _ =>
+    | #pie =>
+      Pie.make(
+        rows,
+        ~config=pieConfig,
+        ~options={
+          radius: ?options.height->Option.map(h => h * 2),
+        },
+        (),
+      )
+    | #donut =>
+      Donut.make(
+        rows,
+        ~config=donutConfig,
+        ~options={
+          radius: ?options.height->Option.map(h => h * 2),
+        },
+        (),
+      )
+    | #gauge =>
+      Gauge.make(
+        rows,
+        ~config=gaugeConfig,
+        ~options={
+          radius: ?options.height->Option.map(h => h / 2),
+        },
+        (),
+      )
+    | #bullet =>
+      Bullet.make(
+        rows,
+        ~config=bulletConfig,
+        ~options={
+          width: ?options.width,
+        },
+        (),
+      )
+    | #bar | #auto =>
       Bar.make(
         rows,
         ~config=barConfig,
@@ -39,6 +95,8 @@ let render = (data: Adapter.adaptedData, options: cliOptions): string =>
         },
         (),
       )
+    | #scatter =>
+      JsError.throwWithMessage("Scatter chart requires scatter data")
     }
   | Adapter.Scatter(rows) =>
     Scatter.make(

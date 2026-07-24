@@ -10,11 +10,7 @@ open ChartValidation
 open ChartPadding
 
 let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?, ()): string => {
-  // Guard: empty data
-  let _ = switch data->Array.length == 0 {
-    | true => JsError.throwWithMessage("Error: Gauge chart requires at least one data point")
-    | false => ()
-  }
+  ensureNonEmpty(data, "Gauge")
 
   let options: option<gaugeOptions> = opts
 
@@ -25,11 +21,7 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
   let innerRadius = radius / 2
   let innerRadiusSq = innerRadius * innerRadius
 
-  // Guard: data[0] exists
-  let firstItem = switch data[0] {
-  | Some(x) => x
-  | None => JsError.throwWithMessage("Error: Gauge chart requires at least one data point")
-  }
+  let firstItem = data[0]->Option.getExn
 
   let rawValue = firstItem->config.value
 
@@ -71,8 +63,6 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
           if j == 0 && i == -1 {
             let pct = Math.round(value *. 100.0)->Float.toInt
             let pctStr = pct->Int.toString
-            /* Use Js.String.slice which maps to JS String.prototype.slice */
-            let pctStr = Js.String.slice(~from=0, ~to_=2, pctStr)
             result := result.contents ++ pctStr
             if pctStr->String.length < 2 {
               result := result.contents ++ " "

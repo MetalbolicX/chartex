@@ -244,7 +244,7 @@ let testAllOptionsOptionals = () => {
   let _gaugeOpts: Types.gaugeOptions = {radius: 20, left: 0, style: "#", bgStyle: "."}
   let _pieOpts: Types.pieOptions = {radius: 20, left: 0, innerRadius: 10}
   let _donutOpts: Types.donutOptions = {radius: 20, left: 0, innerRadius: 10}
-  let _sparkOpts: Types.sparklineOptions = {width: 80, height: 12, tolerance: 1, style: "#", yAxisChar: "|"}
+  let _sparkOpts: Types.sparklineOptions = {width: 80, height: 12, style: "#", yAxisChar: "|"}
   // Also verify empty records compile (all fields optional)
   let _empty1: Types.barOptions = {}
   let _empty2: Types.scatterOptions = {}

@@ -4,6 +4,12 @@
  * Reusable guards for chart numeric input validation.
  */
 
+let ensureNonEmpty = (data: array<'a>, chartName: string): unit =>
+  switch data->Array.length == 0 {
+  | true => JsError.throwWithMessage("Error: " ++ chartName ++ " chart requires at least one data point")
+  | false => ()
+  }
+
 let ensureNoNaN = (values: array<float>, message: string): unit => {
   let hasNaN = values->Array.some(v => Float.isNaN(v))
   switch hasNaN {

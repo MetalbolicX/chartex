@@ -10,11 +10,7 @@ open ChartValidation
 open ChartPadding
 
 let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, ()): string => {
-  // Guard: empty data
-  let _ = switch data->Array.length == 0 {
-    | true => JsError.throwWithMessage("Error: Pie chart requires at least one data point")
-    | false => ()
-  }
+  ensureNonEmpty(data, "Pie")
 
   let options: option<pieOptions> = opts
 
@@ -45,9 +41,13 @@ let make = (data: array<'data>, ~config: pieConfig<'data>, ~options as opts=?, (
   let keys = data->Array.map(config.key)
   let total = values->Array.reduce(0.0, (a, b) => a +. b)
 
-  // Guard: NaN or Infinity in values or total
-  ensureNoNaN(values, "Error: Pie chart data contains NaN values")
-  ensureNoInfinite(values, "Error: Pie chart data contains infinite values")
+  values->Array.forEach(v =>
+    ensureFinite(
+      v,
+      "Error: Pie chart data contains NaN values",
+      "Error: Pie chart data contains infinite values",
+    )
+  )
 
   let maxKeyLength = data->Array.reduce(0, (acc, item) => {
     let l = item->config.key->String.length

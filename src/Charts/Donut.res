@@ -10,11 +10,7 @@ open ChartValidation
 open ChartPadding
 
 let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?, ()): string => {
-  // Guard: empty data
-  let _ = switch data->Array.length == 0 {
-  | true => JsError.throwWithMessage("Error: Donut chart requires at least one data point")
-  | false => ()
-  }
+  ensureNonEmpty(data, "Donut")
 
   let options: option<donutOptions> = opts
 
@@ -48,9 +44,13 @@ let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?,
   let keys = data->Array.map(config.key)
   let total = values->Array.reduce(0.0, (a, b) => a +. b)
 
-  // Guard: NaN or Infinity in values or total
-  ensureNoNaN(values, "Error: Donut chart data contains NaN values")
-  ensureNoInfinite(values, "Error: Donut chart data contains infinite values")
+  values->Array.forEach(v =>
+    ensureFinite(
+      v,
+      "Error: Donut chart data contains NaN values",
+      "Error: Donut chart data contains infinite values",
+    )
+  )
 
   let maxKeyLength = data->Array.reduce(0, (acc, item) => {
     let l = item->config.key->String.length

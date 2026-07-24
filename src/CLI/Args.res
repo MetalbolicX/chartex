@@ -13,6 +13,10 @@ let parseChartType = (value: option<string>): Bindings.Util.chartType =>
   | Some("bar") => #bar
   | Some("scatter") => #scatter
   | Some("sparkline") => #sparkline
+  | Some("pie") => #pie
+  | Some("donut") => #donut
+  | Some("gauge") => #gauge
+  | Some("bullet") => #bullet
   | _ => #auto
   }
 
@@ -117,7 +121,7 @@ let parseWith = (argv: array<string>): CliTypes.parsedArgs => {
 
 let parse = (): CliTypes.parsedArgs => Bindings.Process.argv->Array.slice(~start=2)->parseWith
 
-let helpText = `Usage: chartex [--file path] [--format auto|json|ndjson|csv] [--chart bar|scatter|sparkline]
+let helpText = `Usage: chartex [--file path] [--format auto|json|ndjson|csv] [--chart bar|scatter|sparkline|pie|donut|gauge|bullet]
   Reads input from stdin by default and prints an ASCII chart to stdout.
   Flags:
   --file, -f      Input file path

@@ -98,6 +98,56 @@ let testGaugeHappyPath = () => {
   else { failWith("Gauge: missing key label") }
 }
 
+let testGaugePercentageZero = () => {
+  let data: array<gaugeData> = [{label: "Empty", percentage: 0.0, gaugeStyle: "*"}]
+  let config: Types.gaugeConfig<gaugeData> = {key: d => d.label, value: d => d.percentage, style: d => d.gaugeStyle}
+  let opts: Types.gaugeOptions = {radius: 10}
+  let result = Gauge.make(data, ~config, ~options=opts, ())
+  if result->String.includes("0") && result->String.includes("100") && result->String.includes("Empty") {
+    passWith("Gauge: 0% renders with scale labels")
+  } else {
+    failWith("Gauge: 0% missing scale/key labels")
+  }
+}
+
+let testGaugePercentageMid = () => {
+  let data: array<gaugeData> = [{label: "Mid", percentage: 50.0, gaugeStyle: "*"}]
+  let config: Types.gaugeConfig<gaugeData> = {key: d => d.label, value: d => d.percentage, style: d => d.gaugeStyle}
+  let opts: Types.gaugeOptions = {radius: 10}
+  let result = Gauge.make(data, ~config, ~options=opts, ())
+  if result->String.includes("50") { passWith("Gauge: 50% center displays 50") }
+  else { failWith("Gauge: 50% missing center percentage") }
+}
+
+let testGaugePercentage99 = () => {
+  let data: array<gaugeData> = [{label: "AlmostFull", percentage: 99.0, gaugeStyle: "*"}]
+  let config: Types.gaugeConfig<gaugeData> = {key: d => d.label, value: d => d.percentage, style: d => d.gaugeStyle}
+  let opts: Types.gaugeOptions = {radius: 10}
+  let result = Gauge.make(data, ~config, ~options=opts, ())
+  if result->String.includes("99") { passWith("Gauge: 99% center displays 99") }
+  else { failWith("Gauge: 99% missing center percentage") }
+}
+
+let testGaugePercentage100 = () => {
+  let data: array<gaugeData> = [{label: "Full", percentage: 100.0, gaugeStyle: "*"}]
+  let config: Types.gaugeConfig<gaugeData> = {key: d => d.label, value: d => d.percentage, style: d => d.gaugeStyle}
+  let opts: Types.gaugeOptions = {radius: 10}
+  let result = Gauge.make(data, ~config, ~options=opts, ())
+  let lines = result->String.split("\n")
+  // Center cell is the line that contains neither "0" nor the key suffix pattern;
+  // it sits directly above the bottom scale line (which starts with "0   Full").
+  let centerLine = switch lines[lines->Array.length - 2] {
+  | Some(line) => line
+  | None => ""
+  }
+  // At 100% the center must show "100" (not "10" from the slice truncation).
+  if centerLine->String.includes("100") {
+    passWith("Gauge: 100% center displays 100 (not truncated)")
+  } else {
+    failWith("Gauge: 100% center truncated to '10' instead of '100'")
+  }
+}
+
 // ─── Scatter Chart Tests ───
 
 let testScatterHappyPath = () => {
@@ -142,7 +192,7 @@ let testSparklineHappyPath = () => {
     {time: "t5", value: 4.0, lineStyle: "*"},
   ]
   let config: Types.sparklineConfig<sparklineData> = {key: d => d.time, value: d => d.value, style: d => d.lineStyle}
-  let opts: Types.sparklineOptions = {width: 40, height: 8, tolerance: 1}
+  let opts: Types.sparklineOptions = {width: 40, height: 8}
   let result = Sparkline.make(data, ~config, ~options=opts, ())
   if result->String.includes("*") { passWith("Sparkline: contains style chars") }
   else { failWith("Sparkline: missing style chars") }
@@ -167,6 +217,10 @@ test("Bullet: renders with 2 items, contains keys and value labels", () => testB
 test("Pie: renders with 3 items, contains styles and legend", () => testPieHappyPath())
 test("Donut: renders with 3 items, contains styles and legend", () => testDonutHappyPath())
 test("Gauge: renders percentage value and scale labels", () => testGaugeHappyPath())
+test("Gauge: 0% renders with scale labels", () => testGaugePercentageZero())
+test("Gauge: 50% center displays 50", () => testGaugePercentageMid())
+test("Gauge: 99% center displays 99", () => testGaugePercentage99())
+test("Gauge: 100% center displays 100 (not truncated)", () => testGaugePercentage100())
 test("Scatter: renders with 3 points, contains axes", () => testScatterHappyPath())
 test("Scatter: legend shows series names", () => testScatterLegend())
 test("Sparkline: renders with 5 points with interpolation", () => testSparklineHappyPath())

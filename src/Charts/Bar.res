@@ -10,11 +10,7 @@ open ChartValidation
 open ChartPadding
 
 let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, ()): string => {
-  // Guard: empty data
-  let _ = switch data->Array.length == 0 {
-    | true => JsError.throwWithMessage("Error: Bar chart requires at least one data point")
-    | false => ()
-  }
+  ensureNonEmpty(data, "Bar")
 
   let options: option<barOptions> = opts
 
@@ -27,9 +23,13 @@ let make = (data: array<'data>, ~config: barConfig<'data>, ~options as opts=?, (
   let values = data->Array.map(config.value)
   let maxVal = values->Array.reduce(-1.0e308, (acc, v) => if v > acc { v } else { acc })
 
-  // Guard: NaN or Infinity in values
-  ensureNoNaN(values, "Error: Bar chart data contains NaN values")
-  ensureNoInfinite(values, "Error: Bar chart data contains infinite values")
+  values->Array.forEach(v =>
+    ensureFinite(
+      v,
+      "Error: Bar chart data contains NaN values",
+      "Error: Bar chart data contains infinite values",
+    )
+  )
 
   // Guard: negative values are not supported (bar charts require positive values)
   ensureNoNegative(values, "Error: Bar chart does not support negative values. Filter out negative values before rendering.")

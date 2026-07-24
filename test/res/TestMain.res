@@ -106,6 +106,128 @@ let testRenderScatter = () => {
   }
 }
 
+// ─── render: Pie branch ─────────────────────────────────────────
+
+let testRenderPie = () => {
+  let data = Categorical([
+    {key: "Apple", value: 30.0},
+    {key: "Banana", value: 50.0},
+    {key: "Cherry", value: 20.0},
+  ])
+  let opts: cliOptions = {
+    format: #auto,
+    chartType: #pie,
+    noHeader: false,
+  }
+
+  try {
+    let output = render(data, opts)
+    // Pie output should include legend entries with percentages
+    if output->String.includes("Apple") && output->String.includes("Banana") && output->String.includes("%") {
+      passWith("render: Pie branch renders Categorical data with legend")
+    } else {
+      failWith("render: Pie output missing expected legend keys")
+    }
+  } catch {
+  | JsExn(payload) =>
+    switch JsExn.message(payload) {
+    | Some(msg) => failWith("render: Pie threw JsExn: " ++ msg)
+    | None => failWith("render: Pie threw JsExn with no message")
+    }
+  | _ => failWith("render: Pie threw unexpected error")
+  }
+}
+
+// ─── render: Donut branch ──────────────────────────────────────
+
+let testRenderDonut = () => {
+  let data = Categorical([
+    {key: "Red", value: 60.0},
+    {key: "Blue", value: 40.0},
+  ])
+  let opts: cliOptions = {
+    format: #auto,
+    chartType: #donut,
+    noHeader: false,
+  }
+
+  try {
+    let output = render(data, opts)
+    // Donut output should include legend entries with percentages
+    if output->String.includes("Red") && output->String.includes("Blue") && output->String.includes("%") {
+      passWith("render: Donut branch renders Categorical data with legend")
+    } else {
+      failWith("render: Donut output missing expected legend keys")
+    }
+  } catch {
+  | JsExn(payload) =>
+    switch JsExn.message(payload) {
+    | Some(msg) => failWith("render: Donut threw JsExn: " ++ msg)
+    | None => failWith("render: Donut threw JsExn with no message")
+    }
+  | _ => failWith("render: Donut threw unexpected error")
+  }
+}
+
+// ─── render: Gauge branch ──────────────────────────────────────
+
+let testRenderGauge = () => {
+  let data = Categorical([{key: "Progress", value: 75.0}])
+  let opts: cliOptions = {
+    format: #auto,
+    chartType: #gauge,
+    noHeader: false,
+  }
+
+  try {
+    let output = render(data, opts)
+    // Gauge output should include 0 and 100 scale labels and the key
+    if output->String.includes("0") && output->String.includes("100") && output->String.includes("Progress") {
+      passWith("render: Gauge branch renders Categorical data with scale labels")
+    } else {
+      failWith("render: Gauge output missing expected scale/key labels")
+    }
+  } catch {
+  | JsExn(payload) =>
+    switch JsExn.message(payload) {
+    | Some(msg) => failWith("render: Gauge threw JsExn: " ++ msg)
+    | None => failWith("render: Gauge threw JsExn with no message")
+    }
+  | _ => failWith("render: Gauge threw unexpected error")
+  }
+}
+
+// ─── render: Bullet branch ─────────────────────────────────────
+
+let testRenderBullet = () => {
+  let data = Categorical([
+    {key: "Target", value: 80.0},
+    {key: "Actual", value: 60.0},
+  ])
+  let opts: cliOptions = {
+    format: #auto,
+    chartType: #bullet,
+    noHeader: false,
+  }
+
+  try {
+    let output = render(data, opts)
+    // Bullet output should include key, value brackets, and bar markers
+    if output->String.includes("Target") && output->String.includes("Actual") && output->String.includes("[80]") {
+      passWith("render: Bullet branch renders Categorical data with labels")
+    } else {
+      failWith("render: Bullet output missing expected labels")
+    }
+  } catch {
+  | JsExn(payload) =>
+    switch JsExn.message(payload) {
+    | Some(msg) => failWith("render: Bullet threw JsExn: " ++ msg)
+    | None => failWith("render: Bullet threw JsExn with no message")
+    }
+  | _ => failWith("render: Bullet threw unexpected error")
+  }
+}
+
 // ─── runWithOptions: success case ────────────────────────────────
 
 let testRunWithOptionsSuccess = () => {
@@ -202,6 +324,11 @@ let testRunWithOptionsRenderError = () => {
 test("render: Bar branch renders Categorical data", () => testRenderBar())
 test("render: Sparkline branch renders Categorical data", () => testRenderSparkline())
 test("render: Scatter branch renders Scatter data", () => testRenderScatter())
+
+test("render: Pie branch renders Categorical data with legend", () => testRenderPie())
+test("render: Donut branch renders Categorical data with legend", () => testRenderDonut())
+test("render: Gauge branch renders Categorical data with scale labels", () => testRenderGauge())
+test("render: Bullet branch renders Categorical data with labels", () => testRenderBullet())
 
 test("runWithOptions: success returns output with rendered chart", () =>
   testRunWithOptionsSuccess()
