@@ -11,14 +11,14 @@
 
 open Test
 open Assertions
-open Adapter
+module A = Adapter
 open CliTypes
 
 // ─── jsonToString ────────────────────────────────────────────────
 
 let testJsonToStringJString = () => {
   let jsonValue = JSON.Encode.string("hello")
-  let result = jsonToString(jsonValue)
+  let result = A.jsonToString(jsonValue)
   switch result {
   | Some(s) => isTextEqualTo("hello", s, ~message="jsonToString: JString extracts correctly")
   | None => failWith("jsonToString: JString should return Some")
@@ -28,7 +28,7 @@ let testJsonToStringJString = () => {
 let testJsonToStringJNumber = () => {
   // Use Obj.magic to set a raw float as JSON number value
   let jsonValue = 42.5->Obj.magic
-  let result = jsonToString(jsonValue)
+  let result = A.jsonToString(jsonValue)
   switch result {
   | Some(s) =>
     if s == "42.5" {
@@ -42,7 +42,7 @@ let testJsonToStringJNumber = () => {
 
 let testJsonToStringJBoolTrue = () => {
   let jsonValue = JSON.Encode.bool(true)
-  let result = jsonToString(jsonValue)
+  let result = A.jsonToString(jsonValue)
   switch result {
   | Some(s) => isTextEqualTo("true", s, ~message="jsonToString: JBool(true) converts to \"true\"")
   | None => failWith("jsonToString: JBool should return Some")
@@ -51,7 +51,7 @@ let testJsonToStringJBoolTrue = () => {
 
 let testJsonToStringJBoolFalse = () => {
   let jsonValue = JSON.Encode.bool(false)
-  let result = jsonToString(jsonValue)
+  let result = A.jsonToString(jsonValue)
   switch result {
   | Some(s) => isTextEqualTo("false", s, ~message="jsonToString: JBool(false) converts to \"false\"")
   | None => failWith("jsonToString: JBool should return Some")
@@ -60,7 +60,7 @@ let testJsonToStringJBoolFalse = () => {
 
 let testJsonToStringJNull = () => {
   let jsonValue = JSON.Encode.null
-  let result = jsonToString(jsonValue)
+  let result = A.jsonToString(jsonValue)
   switch result {
   | Some(_) => failWith("jsonToString: JNull should return None")
   | None => passWith("jsonToString: JNull returns None")
@@ -72,7 +72,7 @@ let testJsonToStringJNull = () => {
 let testJsonToFloatJNumber = () => {
   // Use Obj.magic to create JSON number value
   let jsonValue: JSON.t = 99.5->Obj.magic
-  let result = jsonToFloat(jsonValue)
+  let result = A.jsonToFloat(jsonValue)
   switch result {
   | Some(f) =>
     if f == 99.5 {
@@ -86,7 +86,7 @@ let testJsonToFloatJNumber = () => {
 
 let testJsonToFloatJString = () => {
   let jsonValue = JSON.Encode.string("123.5")
-  let result = jsonToFloat(jsonValue)
+  let result = A.jsonToFloat(jsonValue)
   switch result {
   | Some(f) =>
     if f == 123.5 {
@@ -100,7 +100,7 @@ let testJsonToFloatJString = () => {
 
 let testJsonToFloatJBool = () => {
   let jsonValue = JSON.Encode.bool(true)
-  let result = jsonToFloat(jsonValue)
+  let result = A.jsonToFloat(jsonValue)
   switch result {
   | Some(_) => failWith("jsonToFloat: JBool should return None")
   | None => passWith("jsonToFloat: JBool returns None")
@@ -109,7 +109,7 @@ let testJsonToFloatJBool = () => {
 
 let testJsonToFloatJStringInvalid = () => {
   let jsonValue = JSON.Encode.string("not-a-number")
-  let result = jsonToFloat(jsonValue)
+  let result = A.jsonToFloat(jsonValue)
   switch result {
   | Some(_) => failWith("jsonToFloat: invalid string should return None")
   | None => passWith("jsonToFloat: invalid string returns None")
@@ -128,7 +128,7 @@ let testMapCategoricalSuccess = () => {
 
   let rows: array<row> = [dict1, dict2]
 
-  switch mapCategorical(rows, ~keyField="key", ~valueField="value") {
+  switch A.mapCategorical(rows, ~keyField="key", ~valueField="value") {
   | Ok(Categorical(data)) =>
     if data->Array.length == 2 {
       passWith("mapCategorical: success returns Categorical with correct count")
@@ -147,7 +147,7 @@ let testMapCategoricalMissingKey = () => {
 
   let rows: array<row> = [dict1]
 
-  switch mapCategorical(rows, ~keyField="key", ~valueField="value") {
+  switch A.mapCategorical(rows, ~keyField="key", ~valueField="value") {
   | Error(msg) =>
     if msg->String.includes("key") {
       passWith("mapCategorical: error when key field missing")
@@ -165,7 +165,7 @@ let testMapCategoricalMissingValue = () => {
 
   let rows: array<row> = [dict1]
 
-  switch mapCategorical(rows, ~keyField="key", ~valueField="value") {
+  switch A.mapCategorical(rows, ~keyField="key", ~valueField="value") {
   | Error(msg) =>
     if msg->String.includes("value") {
       passWith("mapCategorical: error when value field missing")
@@ -183,7 +183,7 @@ let testMapCategoricalNonNumericValue = () => {
 
   let rows: array<row> = [dict1]
 
-  switch mapCategorical(rows, ~keyField="key", ~valueField="value") {
+  switch A.mapCategorical(rows, ~keyField="key", ~valueField="value") {
   | Error(msg) =>
     if msg->String.includes("Invalid key/value types") {
       passWith("mapCategorical: error when value not numeric")
@@ -204,7 +204,7 @@ let testMapScatterSuccess = () => {
 
   let rows: array<row> = [dict1]
 
-  switch mapScatter(rows, ~seriesField="series", ~xField="x", ~yField="y") {
+  switch A.mapScatter(rows, ~seriesField="series", ~xField="x", ~yField="y") {
   | Ok(Scatter(data)) =>
     if data->Array.length == 1 {
       passWith("mapScatter: success returns Scatter with correct count")
@@ -224,7 +224,7 @@ let testMapScatterMissingSeries = () => {
 
   let rows: array<row> = [dict1]
 
-  switch mapScatter(rows, ~seriesField="series", ~xField="x", ~yField="y") {
+  switch A.mapScatter(rows, ~seriesField="series", ~xField="x", ~yField="y") {
   | Error(msg) =>
     if msg->String.includes("series") {
       passWith("mapScatter: error when series field missing")
@@ -243,7 +243,7 @@ let testMapScatterNonNumericX = () => {
 
   let rows: array<row> = [dict1]
 
-  switch mapScatter(rows, ~seriesField="series", ~xField="x", ~yField="y") {
+  switch A.mapScatter(rows, ~seriesField="series", ~xField="x", ~yField="y") {
   | Error(msg) =>
     if msg->String.includes("Invalid scatter field types") {
       passWith("mapScatter: error when x is non-numeric")
@@ -262,7 +262,7 @@ let testMapScatterNonNumericY = () => {
 
   let rows: array<row> = [dict1]
 
-  switch mapScatter(rows, ~seriesField="series", ~xField="x", ~yField="y") {
+  switch A.mapScatter(rows, ~seriesField="series", ~xField="x", ~yField="y") {
   | Error(msg) =>
     if msg->String.includes("Invalid scatter field types") {
       passWith("mapScatter: error when y is non-numeric")
@@ -291,7 +291,7 @@ let testAdaptScatter = () => {
     noHeader: false,
   }
 
-  switch adapt(rows, opts) {
+  switch A.adapt(rows, opts) {
   | Ok(Scatter(_)) => passWith("adapt: #scatter delegates to mapScatter")
   | Ok(Categorical(_)) => failWith("adapt: #scatter should return Scatter, not Categorical")
   | Error(msg) => failWith("adapt: #scatter should not error: " ++ msg)
@@ -312,7 +312,7 @@ let testAdaptBar = () => {
     noHeader: false,
   }
 
-  switch adapt(rows, opts) {
+  switch A.adapt(rows, opts) {
   | Ok(Categorical(_)) => passWith("adapt: #bar delegates to mapCategorical")
   | Ok(Scatter(_)) => failWith("adapt: #bar should return Categorical, not Scatter")
   | Error(msg) => failWith("adapt: #bar should not error: " ++ msg)
@@ -333,7 +333,7 @@ let testAdaptSparkline = () => {
     noHeader: false,
   }
 
-  switch adapt(rows, opts) {
+  switch A.adapt(rows, opts) {
   | Ok(Categorical(_)) => passWith("adapt: #sparkline delegates to mapCategorical")
   | Ok(Scatter(_)) => failWith("adapt: #sparkline should return Categorical, not Scatter")
   | Error(msg) => failWith("adapt: #sparkline should not error: " ++ msg)

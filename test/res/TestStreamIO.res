@@ -60,7 +60,7 @@ let makeOps = (env: fakeEnv): S.inputOps<fakeSource> => {
 let getFileSource = (env: fakeEnv): fakeSource =>
   switch env.fileSource.contents {
   | Some(source) => source
-  | None => Js.Exn.raiseError("expected file source to be created")
+  | None => JsError.throwWithMessage("expected file source to be created")
   }
 
 let triggerData = (source: fakeSource, chunk: string): unit =>

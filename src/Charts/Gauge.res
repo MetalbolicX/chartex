@@ -21,7 +21,7 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
   let innerRadius = radius / 2
   let innerRadiusSq = innerRadius * innerRadius
 
-  let firstItem = data[0]->Option.getExn
+  let firstItem = data[0]->Option.getOrThrow
 
   let rawValue = firstItem->config.value
 
