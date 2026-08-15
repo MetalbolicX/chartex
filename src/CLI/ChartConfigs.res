@@ -34,3 +34,9 @@ let bulletConfig = (): Types.bulletConfig<Adapter.categoricalDatum> => {
   key: (d: Adapter.categoricalDatum) => d.key,
   value: d => d.value,
 }
+
+let scatterConfig = (): Types.scatterConfig<Adapter.scatterDatum> => {
+  key: (d: Adapter.scatterDatum) => d.series,
+  x: d => d.x,
+  y: d => d.y,
+}

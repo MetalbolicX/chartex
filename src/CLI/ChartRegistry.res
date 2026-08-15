@@ -81,11 +81,7 @@ module Impl = {
   }
 
   let renderScatter = (rows: array<Adapter.scatterDatum>, options: CliTypes.cliOptions): string => {
-    let config: Types.scatterConfig<Adapter.scatterDatum> = {
-      key: (d: Adapter.scatterDatum) => d.series,
-      x: d => d.x,
-      y: d => d.y,
-    }
+    let config = ChartConfigs.scatterConfig()
     Scatter.make(
       rows,
       ~config,
