@@ -1,0 +1,38 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Build, Unit, E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build ReScript
+        run: npm run res:build
+
+      - name: Run unit tests
+        run: npm run res:test
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Build CLI bundle
+        run: npm run cli:build
