@@ -181,6 +181,41 @@ let testScatterLegend = () => {
   else { failWith("Scatter legend: missing second series name") }
 }
 
+let testScatterEmptyRejected = () => {
+  try {
+    let _ = Scatter.make([], ~config={key: _ => "", x: _ => 0.0, y: _ => 0.0}, ())
+    failWith("Scatter: should have thrown")
+  } catch {
+  | JsExn(_) => passWith("Scatter: empty data rejected")
+  | _ => failWith("Scatter: unexpected error")
+  }
+}
+
+let testScatterFiniteValidation = (label: string, coord: scatterData) => {
+  let data: array<scatterData> = [
+    {seriesName: "s1", coordX: 1.0, coordY: 1.0, pointStyle: "*"},
+    coord,
+    coord,
+  ]
+  let config: Types.scatterConfig<scatterData> = {key: d => d.seriesName, x: d => d.coordX, y: d => d.coordY, style: d => d.pointStyle}
+  try {
+    let _ = Scatter.make(data, ~config, ())
+    failWith(`Scatter ${label}: should have thrown`)
+  } catch {
+  | JsExn(_) => passWith(`Scatter ${label}: rejected`)
+  | _ => failWith(`Scatter ${label}: unexpected error type`)
+  }
+}
+
+let testScatterNaNOnlyRejected = () =>
+  testScatterFiniteValidation("NaN-only", {seriesName: "s2", coordX: 0.0 /. 0.0, coordY: 1.0, pointStyle: "*"})
+let testScatterMixedNaNRejected = () =>
+  testScatterFiniteValidation("mixed-NaN", {seriesName: "s2", coordX: 2.0, coordY: 0.0 /. 0.0, pointStyle: "*"})
+let testScatterPositiveInfinityRejected = () =>
+  testScatterFiniteValidation("+Infinity", {seriesName: "s2", coordX: 1.0 /. 0.0, coordY: 1.0, pointStyle: "*"})
+let testScatterNegativeInfinityRejected = () =>
+  testScatterFiniteValidation("-Infinity", {seriesName: "s2", coordX: -1.0 /. 0.0, coordY: 1.0, pointStyle: "*"})
+
 // ─── Sparkline Chart Tests ───
 
 let testSparklineHappyPath = () => {
@@ -209,6 +244,31 @@ let testSparklineSinglePoint = () => {
   else { failWith("Sparkline: single point missing style char") }
 }
 
+let testSparklineFiniteValidation = (label: string, value: float) => {
+  let data: array<sparklineData> = [
+    {time: "t1", value: 1.0, lineStyle: "*"},
+    {time: "t2", value, lineStyle: "*"},
+    {time: "t3", value, lineStyle: "*"},
+  ]
+  let config: Types.sparklineConfig<sparklineData> = {key: d => d.time, value: d => d.value, style: d => d.lineStyle}
+  try {
+    let _ = Sparkline.make(data, ~config, ())
+    failWith(`Sparkline ${label}: should have thrown`)
+  } catch {
+  | JsExn(_) => passWith(`Sparkline ${label}: rejected`)
+  | _ => failWith(`Sparkline ${label}: unexpected error type`)
+  }
+}
+
+let testSparklineNaNOnlyRejected = () =>
+  testSparklineFiniteValidation("NaN-only", 0.0 /. 0.0)
+let testSparklineMixedNaNRejected = () =>
+  testSparklineFiniteValidation("mixed-NaN", 0.0 /. 0.0)
+let testSparklinePositiveInfinityRejected = () =>
+  testSparklineFiniteValidation("+Infinity", 1.0 /. 0.0)
+let testSparklineNegativeInfinityRejected = () =>
+  testSparklineFiniteValidation("-Infinity", -1.0 /. 0.0)
+
 // ─── Register tests ───
 
 test("Bar: renders with 3 items, contains keys and styles", () => testBarHappyPath())
@@ -223,5 +283,14 @@ test("Gauge: 99% center displays 99", () => testGaugePercentage99())
 test("Gauge: 100% center displays 100 (not truncated)", () => testGaugePercentage100())
 test("Scatter: renders with 3 points, contains axes", () => testScatterHappyPath())
 test("Scatter: legend shows series names", () => testScatterLegend())
+test("Scatter: empty data rejected with Assert_failure", () => testScatterEmptyRejected())
+test("Scatter: NaN-only coordinates rejected", () => testScatterNaNOnlyRejected())
+test("Scatter: mixed NaN coordinates rejected", () => testScatterMixedNaNRejected())
+test("Scatter: +Infinity coordinates rejected", () => testScatterPositiveInfinityRejected())
+test("Scatter: -Infinity coordinates rejected", () => testScatterNegativeInfinityRejected())
 test("Sparkline: renders with 5 points with interpolation", () => testSparklineHappyPath())
 test("Sparkline: single point renders with style char", () => testSparklineSinglePoint())
+test("Sparkline: NaN-only values rejected", () => testSparklineNaNOnlyRejected())
+test("Sparkline: mixed NaN values rejected", () => testSparklineMixedNaNRejected())
+test("Sparkline: +Infinity values rejected", () => testSparklinePositiveInfinityRejected())
+test("Sparkline: -Infinity values rejected", () => testSparklineNegativeInfinityRejected())

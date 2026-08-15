@@ -7,7 +7,7 @@
 open Types
 open Options
 open ChartValidation
-open ChartPadding
+open CircularChart
 
 let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?, ()): string => {
   ensureNonEmpty(data, "Donut")
@@ -21,28 +21,9 @@ let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?,
   // If innerRadius is 0, default to radius / 2
   let effectiveInnerRadius = if innerRadius == 0 { radius / 2 } else { innerRadius }
 
-  let dataLen = data->Array.length
   let values = data->Array.map(config.value)
 
-  // Handle optional style: use round-robin defaults if not provided
-  let defaultStyles = ["● ", "○ ", "◆ ", "◇ ", "■ ", "□ "]
-  let styles = switch config.style {
-  | Some(styleFn) => data->Array.map(styleFn)
-  | None =>
-    // Round-robin assignment from default styles
-    let defaultStylesLen = Array.length(defaultStyles)
-    let arr = Array.make(~length=dataLen, "●")
-    for i in 0 to dataLen - 1 {
-      let styleIdx = i % defaultStylesLen
-      switch defaultStyles[styleIdx] {
-      | Some(s) => arr[i] = s
-      | None => arr[i] = "●"
-      }
-    }
-    arr
-  }
-  let keys = data->Array.map(config.key)
-  let total = values->Array.reduce(0.0, (a, b) => a +. b)
+  let styles = applyStyles(data, ~defaultStyles=defaultDonutStyles, ~styleFn=config.style)
 
   values->Array.forEach(v =>
     ensureFinite(
@@ -52,34 +33,12 @@ let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?,
     )
   )
 
-  let maxKeyLength = data->Array.reduce(0, (acc, item) => {
-    let l = item->config.key->String.length
-    if l > acc { l } else { acc }
-  })
-
-  // Guard: total == 0.0 means all-zero values, distribute evenly but still render
-  let ratios = total == 0.0
-    ? data->Array.map(_ => 1.0 /. dataLen->Int.toFloat)
-    : data->Array.map(item => item->config.value /. total)
-
-  let gapChar = switch styles[dataLen - 1] { | Some(s) => s | None => " " }
-
-  let rec getPadChar = (styles: array<string>, vals: array<float>, param: float, gap: string): string => {
-    if styles->Array.length == 0 || vals->Array.length == 0 { gap }
-    else {
-      let firstVal = switch vals[0] { | Some(v) => v | None => 0.0 }
-      let firstStyle = switch styles[0] { | Some(s) => s | None => gap }
-      if param <= firstVal { firstStyle }
-      else {
-        getPadChar(
-          Js.Array.sliceFrom(1, styles),
-          Js.Array.sliceFrom(1, vals),
-          param -. firstVal,
-          gap,
-        )
-      }
-    }
-  }
+  let (total, ratios, keys, maxKeyLength, gapChar) = computeTotals(
+    data,
+    ~getKey=config.key,
+    ~getValue=config.value,
+    ~styles,
+  )
 
   let result = ref("")
 
@@ -113,20 +72,15 @@ let make = (data: array<'data>, ~config: donutConfig<'data>, ~options as opts=?,
 
   result := result.contents ++ "\n\n" ++ Js.String.repeat(left, " ")
 
-  // Legend
-  let idx = ref(0)
-  data->Array.forEach(item => {
-    let i = idx.contents
-    idx := i + 1
-    let styleChar = switch styles[i] { | Some(s) => s | None => "?" }
-    let key = switch keys[i] { | Some(k) => k | None => "?" }
-    let val = item->config.value
-    let pct = if total == 0.0 { 0.0 } else { val /. total *. 100.0 }
-    result := result.contents ++ styleChar ++ " " ++ padStart(key, maxKeyLength, " ") ++ ": " ++ val->Float.toString ++ " (" ++ Math.round(pct)->Float.toInt->Int.toString ++ "%)"
-    if i != dataLen - 1 {
-      result := result.contents ++ "\n" ++ Js.String.repeat(left, " ")
-    }
-  })
+  result := result.contents ++ legend(
+    data,
+    ~getValue=config.value,
+    ~styles,
+    ~keys,
+    ~total,
+    ~maxKeyLength,
+    ~left,
+  )
 
   result.contents
 }

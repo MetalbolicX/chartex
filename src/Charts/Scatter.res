@@ -18,16 +18,18 @@ let computeRanges = (data: array<'data>, ~config: scatterConfig<'data>): (float,
   let xVals = data->Array.map(config.x)
   let yVals = data->Array.map(config.y)
 
+  // Per-coordinate finite validation — closes NaN-masking gap (reduce skips NaN values silently)
+  xVals->Array.forEach(v =>
+    ensureFinite(v, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
+  )
+  yVals->Array.forEach(v =>
+    ensureFinite(v, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
+  )
+
   let minX = xVals->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
   let maxX = xVals->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
   let minY = yVals->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
   let maxY = yVals->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
-
-  // Guard: NaN or Infinity in computed ranges
-  ensureFinite(minX, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
-  ensureFinite(maxX, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
-  ensureFinite(minY, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
-  ensureFinite(maxY, "Error: Scatter chart data contains NaN values", "Error: Scatter chart data contains infinite values")
 
   (minX, maxX, minY, maxY, xVals, yVals)
 }
@@ -219,11 +221,7 @@ let renderLegend = (
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 let make = (data: array<'data>, ~config: scatterConfig<'data>, ~options as opts=?, ()): string => {
-  // Guard: empty data
-  let _ = switch data->Array.length == 0 {
-    | true => JsError.throwWithMessage("Error: Scatter chart requires at least one data point")
-    | false => ()
-  }
+  ensureNonEmpty(data, "Scatter")
 
   let options: option<scatterOptions> = opts
 

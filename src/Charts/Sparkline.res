@@ -45,13 +45,18 @@ let make = (data: array<'data>, ~config: sparklineConfig<'data>, ~options as opt
   })
   let numSeries = seriesCount.contents
 
+  // Per-value finite validation — closes NaN-masking gap (reduce skips NaN values silently)
+  values->Array.forEach(v =>
+    ensureFinite(
+      v,
+      "Error: Sparkline chart data contains NaN values",
+      "Error: Sparkline chart data contains infinite values",
+    )
+  )
+
   // Single-pass min+max instead of two separate reduce calls
   let minVal = values->Array.reduce(1e308, (a, v) => if v < a { v } else { a })
   let maxVal = values->Array.reduce(-1e308, (a, v) => if v > a { v } else { a })
-
-  // Guard: NaN or Infinity values
-  ensureFinite(minVal, "Error: Sparkline chart data contains NaN values", "Error: Sparkline chart data contains infinite values")
-  ensureFinite(maxVal, "Error: Sparkline chart data contains NaN values", "Error: Sparkline chart data contains infinite values")
 
   // Handle degenerate case: all values identical
   let effectiveMin = switch maxVal == minVal {
