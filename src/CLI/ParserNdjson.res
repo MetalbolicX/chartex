@@ -22,7 +22,7 @@ let createNdjsonParser = (~cfg: parserConfig): parser => {
       | JsonOk(obj) =>
         switch cfg.maxRows {
         | None => ()
-        | Some(max) if rowCount.contents >= max => error := Some("Row limit exceeded")
+        | Some(max) if rowCount.contents >= max => error := Some("Error: Parser row limit exceeded")
         | Some(_) => ()
         }
         switch error.contents {

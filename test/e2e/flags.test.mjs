@@ -43,8 +43,8 @@ describe('CLI Flags E2E', () => {
     if (r.exitCode !== 2) {
       throw new Error(`expected exit code 2, got ${r.exitCode}. stderr: ${r.stderr}`);
     }
-    if (!r.stderr.includes('Row limit exceeded')) {
-      throw new Error(`expected "Row limit exceeded" in stderr, got: ${r.stderr}`);
+    if (!r.stderr.includes('Error: Parser row limit exceeded')) {
+      throw new Error(`expected "Error: Parser row limit exceeded" in stderr, got: ${r.stderr}`);
     }
   });
 

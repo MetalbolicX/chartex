@@ -28,7 +28,7 @@ let createJsonArrayParser = (~cfg: parserConfig): parser => {
       | JsonOk(obj) =>
         switch cfg.maxRows {
         | None => ()
-        | Some(max) if rowCount.contents >= max => error := Some("Row limit exceeded")
+        | Some(max) if rowCount.contents >= max => error := Some("Error: Parser row limit exceeded")
         | Some(_) => ()
         }
         switch error.contents {
@@ -110,7 +110,7 @@ let createJsonArrayParser = (~cfg: parserConfig): parser => {
                       ended := true
                       loop(idx + 1)
                     }
-                  | _ => error := Some("Malformed JSON array payload")
+                  | _ => error := Some("Error: Parser malformed JSON array payload")
                   }
                 | ch if isWhitespace(ch) || ch == "," => {
                     if depth.contents > 0 {
@@ -140,9 +140,9 @@ let createJsonArrayParser = (~cfg: parserConfig): parser => {
     let incomplete = inString.contents || depth.contents != 0
     switch (error.contents, incomplete, started.contents, ended.contents) {
     | (Some(msg), _, _, _) => Error(msg)
-    | (None, true, _, _) => Error("Incomplete JSON array input")
+    | (None, true, _, _) => Error("Error: Parser incomplete JSON array input")
     | (None, false, false, _) => Error("Empty input")
-    | (None, false, true, false) => Error("Incomplete JSON array input")
+    | (None, false, true, false) => Error("Error: Parser incomplete JSON array input")
     | (None, false, true, true) => Ok(rows)
     }
   }

@@ -47,7 +47,7 @@ let createCsvParser = (~cfg: parserConfig, ~noHeader: bool): parser => {
           })
           switch cfg.maxRows {
           | None => ()
-          | Some(max) if rowCount.contents >= max => error := Some("Row limit exceeded")
+          | Some(max) if rowCount.contents >= max => error := Some("Error: Parser row limit exceeded")
           | Some(_) => ()
           }
           switch error.contents {
@@ -126,7 +126,7 @@ let createCsvParser = (~cfg: parserConfig, ~noHeader: bool): parser => {
   let finish = (): parseResult<array<row>> => {
     let hasPending = currentField() != "" || currentRow->Array.length > 0
     switch (inQuotes.contents, hasPending) {
-    | (true, _) => Error("Unterminated quoted CSV field")
+    | (true, _) => Error("Error: Parser unterminated quoted CSV field")
     | (false, true) => {
         emitRow()
         switch error.contents {

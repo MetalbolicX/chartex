@@ -216,7 +216,7 @@ let testCsvUnterminatedQuote = () => {
   p.pushChunk("\"unterminated,hello\n")
 
   switch p.finish() {
-  | Error("Unterminated quoted CSV field") =>
+  | Error("Error: Parser unterminated quoted CSV field") =>
     passWith("CSV unterminated quote: returns Error with correct message")
   | Error(msg) =>
     failWith("CSV unterminated quote: wrong error message: " ++ msg)
@@ -419,7 +419,7 @@ let testJsonArrayUnterminatedQuote = () => {
   p.pushChunk("[{\"key\":\"unterminated")
 
   switch p.finish() {
-  | Error("Incomplete JSON array input") =>
+  | Error("Error: Parser incomplete JSON array input") =>
     passWith("JSON array unterminated quote: returns Error")
   | Error(msg) => failWith("JSON array unterminated quote: wrong error: " ++ msg)
   | Ok(_) => failWith("JSON array unterminated quote: should have returned Error")
@@ -431,7 +431,7 @@ let testJsonArrayMissingClosingBracket = () => {
   p.pushChunk("[{\"key\":\"A\",\"value\":1}")
 
   switch p.finish() {
-  | Error("Incomplete JSON array input") =>
+  | Error("Error: Parser incomplete JSON array input") =>
     passWith("JSON array missing closing bracket: returns Error")
   | Error(msg) =>
     failWith("JSON array missing closing bracket: wrong error: " ++ msg)
@@ -481,8 +481,8 @@ let testCreateNoInput = () => {
   let p = P.create(~format=#auto, ~noHeader=false)
 
   switch p.finish() {
-  | Error("No input received") =>
-    passWith("P.create with no input: returns Error 'No input received'")
+  | Error("Error: Parser no input received") =>
+    passWith("P.create with no input: returns Error 'Error: Parser no input received'")
   | Error(msg) => failWith("P.create with no input: wrong error: " ++ msg)
   | Ok(_) => failWith("P.create with no input: should have returned Error")
   }

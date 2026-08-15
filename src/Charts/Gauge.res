@@ -30,7 +30,7 @@ let make = (data: array<'data>, ~config: gaugeConfig<'data>, ~options as opts=?,
 
   // Guard: value must be 0-100 range (gauge percentage)
   let _ = switch rawValue < 0.0 || rawValue > 100.0 {
-  | true => JsError.throwWithMessage("Error: Gauge value must be between 0 and 100")
+  | true => JsError.throwWithMessage("Error: Gauge chart value must be between 0 and 100")
   | false => ()
   }
 

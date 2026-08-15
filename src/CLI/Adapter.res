@@ -79,9 +79,9 @@ let mapScatter = (
       | (Some(seriesJson), Some(xJson), Some(yJson)) =>
         switch (jsonToString(seriesJson), jsonToFloat(xJson), jsonToFloat(yJson)) {
         | (Some(series), Some(x), Some(y)) => data->Array.push({series, x, y})
-        | _ => error := Some(`Invalid scatter field types for '${seriesField}', '${xField}', '${yField}'`)
+        | _ => error := Some(`Error: Adapter Invalid scatter field types for '${seriesField}', '${xField}', '${yField}'`)
         }
-      | _ => error := Some(`Missing scatter fields '${seriesField}', '${xField}' or '${yField}'`)
+      | _ => error := Some(`Error: Adapter Missing scatter fields '${seriesField}', '${xField}' or '${yField}'`)
       }
     }
   })

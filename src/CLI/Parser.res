@@ -51,7 +51,7 @@ let create = (~format: Bindings.Util.inputFormat, ~noHeader: bool, ~cfg: parserC
         finish: () =>
           switch chosen.contents {
           | Some(parser) => parser.finish()
-          | None => Error("No input received")
+          | None => Error("Error: Parser no input received")
           },
         rowCount: () =>
           switch chosen.contents {

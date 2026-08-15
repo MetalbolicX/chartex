@@ -1,5 +1,6 @@
 open Test
 open Assertions
+open CliTypes
 
 type barData = {product: string, sales: float, barStyle: string}
 type bulletData = {product: string, sales: float, bulletStyle: string}
@@ -294,3 +295,68 @@ test("Sparkline: NaN-only values rejected", () => testSparklineNaNOnlyRejected()
 test("Sparkline: mixed NaN values rejected", () => testSparklineMixedNaNRejected())
 test("Sparkline: +Infinity values rejected", () => testSparklinePositiveInfinityRejected())
 test("Sparkline: -Infinity values rejected", () => testSparklineNegativeInfinityRejected())
+
+// ─── Error message shape regression (plan 003) ───
+
+let testErrorMessageShapePrefix = (
+  label: string,
+  throwFn: unit => unit
+) => {
+  try {
+    throwFn()
+    failWith(`${label}: should have thrown`)
+  } catch {
+  | JsExn(payload) =>
+    switch JsExn.message(payload) {
+    | Some(msg) =>
+      if msg->String.startsWith("Error: ") {
+        passWith(`${label}: error message has "Error: " prefix`)
+      } else {
+        failWith(`${label}: error message missing "Error: " prefix, got: ${msg}`)
+      }
+    | None => failWith(`${label}: error has no message`)
+    }
+  | _ => failWith(`${label}: unexpected error type`)
+  }
+}
+
+let testBarEmptyErrorMessageShape = () =>
+  testErrorMessageShapePrefix("Bar empty data", () => {
+    let _ = Bar.make([], ~config={key: _ => "", value: _ => 0.0}, ())
+    ()
+  })
+
+let testSparklineNaNErrorMessageShape = () =>
+  testErrorMessageShapePrefix("Sparkline NaN", () => {
+    let data: array<sparklineData> = [
+      {time: "t1", value: 1.0, lineStyle: "*"},
+      {time: "t2", value: 0.0 /. 0.0, lineStyle: "*"},
+    ]
+    let config: Types.sparklineConfig<sparklineData> = {key: d => d.time, value: d => d.value, style: d => d.lineStyle}
+    let _ = Sparkline.make(data, ~config, ())
+    ()
+  })
+
+let testScatterCategoricalErrorMessageShape = () => {
+  let row1: CliTypes.row = Dict.make()
+  let _ = row1->Dict.set("department", JSON.Encode.string("Sales"))
+  let _ = row1->Dict.set("revenue", JSON.Encode.string("100"))
+  let row2: CliTypes.row = Dict.make()
+  let _ = row2->Dict.set("department", JSON.Encode.string("Eng"))
+  let _ = row2->Dict.set("revenue", JSON.Encode.string("200"))
+  let rows: array<CliTypes.row> = [row1, row2]
+  let opts: CliTypes.cliOptions = {format: #auto, chartType: #scatter, noHeader: false}
+  switch Adapter.adapt(rows, opts) {
+  | Adapter.Ok(_) => failWith("Scatter categorical data: should have returned Error")
+  | Adapter.Error(msg) =>
+    if msg->String.startsWith("Error: ") {
+      passWith("Scatter categorical data: error message has \"Error: \" prefix")
+    } else {
+      failWith("Scatter categorical data: error message missing \"Error: \" prefix, got: " ++ msg)
+    }
+  }
+}
+
+test("Bar empty data: error message has Error: prefix", () => testBarEmptyErrorMessageShape())
+test("Sparkline NaN: error message has Error: prefix", () => testSparklineNaNErrorMessageShape())
+test("Scatter categorical data: error message has Error: prefix", () => testScatterCategoricalErrorMessageShape())
