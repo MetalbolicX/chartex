@@ -161,3 +161,6 @@ dist
 
 /example
 /lib
+
+# Local tooling
+.codegraph/
