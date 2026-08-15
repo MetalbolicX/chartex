@@ -25,7 +25,8 @@ let parseJsonObject = (payload: string): jsonParseResult =>
   | _ => JsonError("Invalid JSON object (parse failed)")
   }
 
-let isWhitespace = (ch: string): bool => ch == " " || ch == "\n" || ch == "\r" || ch == "\t"
+let isWhitespace = (ch: string): bool =>
+  ch == " " || ch == "\n" || ch == "\r" || ch == "\t" || ch == "\u{FEFF}"
 
 let keyForColumn = (header: option<array<string>>, idx: int, noHeader: bool): string =>
   switch (header, noHeader) {

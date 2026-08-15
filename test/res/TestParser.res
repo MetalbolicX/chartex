@@ -75,6 +75,27 @@ let testDetectFormat = () => {
     P.detectFormat("  [1,2,3]")->Obj.magic->Obj.magic,
     ~message="detectFormat: leading whitespace before [ returns #json",
   )
+
+  // UTF-8 BOM: NDJSON prefixed with BOM (\uFEFF) returns #ndjson
+  isTextEqualTo(
+    #ndjson->Obj.magic->Obj.magic,
+    P.detectFormat("\u{FEFF}{\"key\":\"val\"}")->Obj.magic->Obj.magic,
+    ~message="detectFormat: BOM-prefixed NDJSON returns #ndjson",
+  )
+
+  // UTF-8 BOM: JSON array prefixed with BOM returns #json
+  isTextEqualTo(
+    #json->Obj.magic->Obj.magic,
+    P.detectFormat("\u{FEFF}[1,2,3]")->Obj.magic->Obj.magic,
+    ~message="detectFormat: BOM-prefixed JSON array returns #json",
+  )
+
+  // UTF-8 BOM: CSV prefixed with BOM returns #csv
+  isTextEqualTo(
+    #csv->Obj.magic->Obj.magic,
+    P.detectFormat("\u{FEFF}name,value\nfoo,1")->Obj.magic->Obj.magic,
+    ~message="detectFormat: BOM-prefixed CSV returns #csv",
+  )
 }
 
 // ─────────────────────────────────────────────────────────────────
